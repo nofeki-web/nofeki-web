@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 650">
+<defs>
+ <linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#111827"/><stop offset="1" stop-color="#0b1220"/></linearGradient>
+ <linearGradient id="t" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5EEAD4"/><stop offset="1" stop-color="#14B8A6"/></linearGradient>
+ <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#263247"/><stop offset="1" stop-color="#101827"/></linearGradient>
+ <filter id="s"><feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000" flood-opacity=".3"/></filter>
+</defs>
+<rect width="900" height="650" rx="34" fill="url(#b)"/>
+<circle cx="760" cy="95" r="150" fill="#14B8A6" opacity=".08"/><circle cx="120" cy="570" r="190" fill="#14B8A6" opacity=".05"/>
+<!-- warehouse -->
+<path d="M55 445 450 255 845 445v135H55Z" fill="url(#f)" stroke="#334155" stroke-width="2"/>
+<path d="M78 425 450 248 822 425" fill="none" stroke="#475569" stroke-width="4"/>
+<g stroke="#64748B" stroke-width="5"><path d="M92 415v150M270 330v235M630 330v235M808 415v150"/><path d="M92 440h178M92 485h178M92 530h178M630 440h178M630 485h178M630 530h178"/></g>
+<g fill="#14B8A6"><rect x="108" y="420" width="52" height="10" rx="3"/><rect x="170" y="420" width="70" height="10" rx="3"/><rect x="120" y="465" width="72" height="10" rx="3"/><rect x="202" y="465" width="42" height="10" rx="3"/><rect x="105" y="510" width="58" height="10" rx="3"/><rect x="173" y="510" width="68" height="10" rx="3"/><rect x="660" y="420" width="58" height="10" rx="3"/><rect x="730" y="420" width="56" height="10" rx="3"/><rect x="650" y="465" width="74" height="10" rx="3"/><rect x="736" y="465" width="48" height="10" rx="3"/><rect x="666" y="510" width="48" height="10" rx="3"/><rect x="724" y="510" width="64" height="10" rx="3"/></g>
+<g fill="#334155"><rect x="110" y="395" width="55" height="22" rx="4"/><rect x="173" y="395" width="65" height="22" rx="4"/><rect x="118" y="440" width="64" height="22" rx="4"/><rect x="190" y="440" width="50" height="22" rx="4"/><rect x="106" y="485" width="56" height="22" rx="4"/><rect x="170" y="485" width="70" height="22" rx="4"/><rect x="658" y="395" width="60" height="22" rx="4"/><rect x="727" y="395" width="58" height="22" rx="4"/><rect x="650" y="440" width="68" height="22" rx="4"/><rect x="728" y="440" width="52" height="22" rx="4"/><rect x="664" y="485" width="52" height="22" rx="4"/><rect x="724" y="485" width="62" height="22" rx="4"/></g>
+<!-- connected route -->
+<path d="M305 545c70-35 100-91 145-120s72-71 125-105" fill="none" stroke="#334155" stroke-width="34" stroke-linecap="round"/>
+<path d="M305 545c70-35 100-91 145-120s72-71 125-105" fill="none" stroke="url(#t)" stroke-width="5" stroke-linecap="round" stroke-dasharray="10 14"/>
+<rect x="392" y="433" width="58" height="40" rx="7" fill="#E5E7EB" transform="rotate(-28 421 453)"/><rect x="493" y="368" width="58" height="40" rx="7" fill="#E5E7EB" transform="rotate(-35 522 388)"/>
+<!-- data cards -->
+<g filter="url(#s)"><rect x="46" y="48" width="246" height="126" rx="18" fill="#fff"/><text x="72" y="82" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#6B7280">INVENTARIO DISPONIBLE</text><text x="72" y="123" font-family="Arial,sans-serif" font-size="31" font-weight="900" fill="#111827">$128.4M</text><rect x="72" y="145" width="176" height="7" rx="4" fill="#E5E7EB"/><rect x="72" y="145" width="122" height="7" rx="4" fill="#14B8A6"/></g>
+<g filter="url(#s)"><rect x="607" y="52" width="246" height="145" rx="18" fill="#0F172A" stroke="#334155"/><text x="633" y="85" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#94A3B8">SKUs EN RIESGO</text><text x="633" y="128" font-family="Arial,sans-serif" font-size="36" font-weight="900" fill="#fff">18</text><text x="633" y="157" font-family="Arial,sans-serif" font-size="12" fill="#5EEAD4">Prioridad operativa</text><circle cx="806" cy="111" r="26" fill="#14B8A6" opacity=".15"/><path d="M794 111h24M806 99v24" stroke="#5EEAD4" stroke-width="3" stroke-linecap="round"/></g>
+<!-- network -->
+<g stroke="#14B8A6" stroke-width="2" opacity=".45"><path d="M340 218 450 176 565 222 640 170"/><path d="M450 176v72"/></g><g fill="#5EEAD4"><circle cx="340" cy="218" r="5"/><circle cx="450" cy="176" r="5"/><circle cx="565" cy="222" r="5"/></g>
+<g transform="translate(324 90)"><rect width="252" height="44" rx="22" fill="#14B8A6" opacity=".14" stroke="#14B8A6" stroke-opacity=".45"/><circle cx="24" cy="22" r="5" fill="#5EEAD4"/><text x="40" y="27" font-family="Arial,sans-serif" font-size="12" font-weight="800" fill="#CCFBF1" letter-spacing="1.5">OPERACIÓN CONECTADA</text></g>
+</svg>
