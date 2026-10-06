@@ -48,7 +48,7 @@ a{
 }
 
 /* =========================
-   NAVIGATION
+   NAV
 ========================= */
 
 .nav{
@@ -124,7 +124,7 @@ a{
 
 .btn.primary{
   background:var(--navy);
-  color:white
+  color:#fff
 }
 
 .btn.primary:hover{
@@ -134,7 +134,7 @@ a{
 .btn.turq{
   background:var(--turq);
   border-color:var(--turq);
-  color:white
+  color:#fff
 }
 
 .btn.turq:hover{
@@ -152,65 +152,88 @@ a{
 
 .hero{
   position:relative;
-  min-height:680px;
-  padding:90px 0 100px;
-  display:flex;
-  align-items:center;
+  min-height:650px;
   overflow:hidden;
-  background:#fff
-}
-
-/*
-  La imagen ocupa TODO el hero.
-  El texto permanece como HTML real.
-*/
-.hero:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:url("assets/hero-supply-chain-clean.jpg");
-  background-size:cover;
-  background-position:center center;
-  background-repeat:no-repeat;
-  z-index:0;
-  transform:scale(1.01)
-}
-
-/*
-  Gradiente blanco → imagen.
-  Más blanco a la izquierda para garantizar
-  legibilidad y más transparencia hacia la derecha.
-*/
-.hero:after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.99) 0%,
-      rgba(255,255,255,.97) 18%,
-      rgba(255,255,255,.88) 32%,
-      rgba(255,255,255,.58) 46%,
-      rgba(255,255,255,.20) 63%,
-      rgba(255,255,255,.02) 82%,
-      rgba(255,255,255,0) 100%
-    );
-  z-index:1
+  background:#fff;
+  display:flex;
+  align-items:center
 }
 
 .hero-layout{
-  position:relative;
-  z-index:2;
   width:min(1160px,92%);
   margin:auto;
-  display:block
+  min-height:650px;
+  display:grid;
+  grid-template-columns:52% 48%;
+  align-items:center;
+  position:relative
 }
 
 .hero-copy{
-  max-width:650px;
   position:relative;
-  z-index:3
+  z-index:5;
+  max-width:650px;
+  padding:80px 0
+}
+
+.hero-image{
+  position:absolute;
+  top:0;
+  right:-5vw;
+  width:62%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  z-index:1;
+  overflow:hidden
+}
+
+.hero-image img{
+  width:100%;
+  height:auto;
+  max-height:100%;
+  object-fit:contain;
+  object-position:center right;
+  display:block
+}
+
+/*
+  Transición suave entre el texto y la fotografía.
+  La imagen sigue siendo una imagen real,
+  por lo que no existe el recorte de "cover".
+*/
+.hero-image:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      90deg,
+      #fff 0%,
+      rgba(255,255,255,.98) 10%,
+      rgba(255,255,255,.78) 24%,
+      rgba(255,255,255,.28) 39%,
+      rgba(255,255,255,0) 55%
+    )
+}
+
+.hero-image:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.15) 0%,
+      rgba(255,255,255,0) 20%,
+      rgba(255,255,255,0) 82%,
+      rgba(255,255,255,.10) 100%
+    )
 }
 
 .eyebrow{
@@ -240,18 +263,6 @@ a{
   gap:12px;
   flex-wrap:wrap;
   margin-top:28px
-}
-
-/*
-  El antiguo visual ya no se necesita porque
-  la fotografía funciona como fondo.
-*/
-.hero-visual{
-  display:none
-}
-
-.hero-badge{
-  display:none
 }
 
 /* =========================
@@ -361,7 +372,7 @@ a{
   background:var(--navy);
   border-radius:22px;
   padding:20px;
-  color:white;
+  color:#fff;
   box-shadow:var(--shadow)
 }
 
@@ -415,7 +426,7 @@ a{
 
 .footer{
   background:var(--navy);
-  color:white;
+  color:#fff;
   padding:48px 0
 }
 
@@ -596,30 +607,19 @@ a{
 
 @media(max-width:1000px){
 
-  .hero{
-    min-height:640px
+  .hero-layout{
+    grid-template-columns:55% 45%
   }
 
-  .hero-copy{
-    max-width:610px
+  .hero-image{
+    width:58%;
+    right:-4vw
   }
 
-  .hero:before{
-    background-position:58% center
+  .hero h1{
+    font-size:clamp(44px,6vw,68px)
   }
 
-  .hero:after{
-    background:
-      linear-gradient(
-        90deg,
-        rgba(255,255,255,.99) 0%,
-        rgba(255,255,255,.96) 28%,
-        rgba(255,255,255,.78) 46%,
-        rgba(255,255,255,.32) 65%,
-        rgba(255,255,255,.05) 88%,
-        rgba(255,255,255,0) 100%
-      )
-  }
 }
 
 @media(max-width:800px){
@@ -642,29 +642,68 @@ a{
     grid-template-columns:1fr 1fr
   }
 
+  /*
+    En tablet/móvil la imagen pasa a una zona
+    inferior real, sin cover.
+  */
+
   .hero{
-    min-height:650px;
-    padding:70px 0 80px
+    min-height:auto;
+    padding:0
   }
 
-  .hero:before{
-    background-position:68% center
+  .hero-layout{
+    width:100%;
+    min-height:auto;
+    display:flex;
+    flex-direction:column;
+    align-items:stretch
   }
 
-  .hero:after{
+  .hero-copy{
+    width:min(92%,650px);
+    margin:auto;
+    padding:75px 0 45px;
+    z-index:5
+  }
+
+  .hero-image{
+    position:relative;
+    top:auto;
+    right:auto;
+    width:100%;
+    height:auto;
+    min-height:300px;
+    display:block;
+    overflow:hidden
+  }
+
+  .hero-image img{
+    width:100%;
+    height:auto;
+    max-height:none;
+    object-fit:contain;
+    object-position:center center
+  }
+
+  .hero-image:before{
     background:
       linear-gradient(
-        90deg,
-        rgba(255,255,255,.98) 0%,
-        rgba(255,255,255,.94) 45%,
-        rgba(255,255,255,.55) 72%,
-        rgba(255,255,255,.15) 100%
+        180deg,
+        #fff 0%,
+        rgba(255,255,255,.72) 10%,
+        rgba(255,255,255,0) 30%
       )
+  }
+
+  .hero-image:after{
+    background:none
   }
 
   .section{
     padding:60px 0
   }
+
 }
 
 @media(max-width:520px){
@@ -685,8 +724,8 @@ a{
     grid-template-columns:1fr
   }
 
-  .hero{
-    min-height:680px
+  .hero-copy{
+    padding:65px 0 35px
   }
 
   .hero h1{
@@ -697,29 +736,17 @@ a{
     font-size:18px
   }
 
-  .hero:before{
-    background-position:67% center
-  }
-
-  .hero:after{
-    background:
-      linear-gradient(
-        90deg,
-        rgba(255,255,255,.99) 0%,
-        rgba(255,255,255,.96) 40%,
-        rgba(255,255,255,.72) 62%,
-        rgba(255,255,255,.25) 82%,
-        rgba(255,255,255,.05) 100%
-      )
-  }
-
   .hero-actions{
     flex-direction:column;
-    align-items:flex-start
+    align-items:stretch
   }
 
   .hero-actions .btn{
     width:100%
+  }
+
+  .hero-image{
+    min-height:250px
   }
 }
 </style>
@@ -728,14 +755,26 @@ a{
 <body>
 
 <!-- =========================
-     NAVIGATION
+     NAV
 ========================= -->
 
 <nav class="nav">
-  <div class="container" style="display:flex;width:100%;justify-content:space-between;align-items:center">
 
-    <a class="brand" href="#inicio" aria-label="NOFEKI inicio">
-      <img class="brand-logo" src="assets/logo-turquesa.png" alt="NOFEKI">
+  <div
+    class="container"
+    style="display:flex;width:100%;justify-content:space-between;align-items:center"
+  >
+
+    <a
+      class="brand"
+      href="#inicio"
+      aria-label="NOFEKI inicio"
+    >
+      <img
+        class="brand-logo"
+        src="assets/logo-turquesa.png"
+        alt="NOFEKI"
+      >
     </a>
 
     <div class="links">
@@ -745,11 +784,15 @@ a{
       <a href="#app">Probar app</a>
     </div>
 
-    <a class="btn primary" href="#app">
+    <a
+      class="btn primary"
+      href="#app"
+    >
       Probar microapp
     </a>
 
   </div>
+
 </nav>
 
 
@@ -759,7 +802,7 @@ a{
 
 <header id="inicio" class="hero">
 
-  <div class="container hero-layout">
+  <div class="hero-layout">
 
     <div class="hero-copy">
 
@@ -780,15 +823,33 @@ a{
 
       <div class="hero-actions">
 
-        <a class="btn primary" href="#ops">
+        <a
+          class="btn primary"
+          href="#ops"
+        >
           Conocer NOFEKI OPS
         </a>
 
-        <a class="btn" href="#microapps">
+        <a
+          class="btn"
+          href="#microapps"
+        >
           Explorar microapps
         </a>
 
       </div>
+
+    </div>
+
+
+    <!-- IMAGEN REAL, SIN BACKGROUND-COVER -->
+
+    <div class="hero-image">
+
+      <img
+        src="assets/hero-supply-chain-clean.jpg"
+        alt="Operación moderna de supply chain, inventario y logística"
+      >
 
     </div>
 
@@ -835,7 +896,10 @@ a{
           movimientos, compras, análisis, alertas y recomendaciones.
         </p>
 
-        <a class="btn light" href="#ops">
+        <a
+          class="btn light"
+          href="#ops"
+        >
           Ver solución
         </a>
 
@@ -857,7 +921,10 @@ a{
           gastos, seguimiento, control, análisis y productividad.
         </p>
 
-        <a class="btn light" href="#microapps">
+        <a
+          class="btn light"
+          href="#microapps"
+        >
           Ver catálogo
         </a>
 
@@ -879,7 +946,10 @@ a{
           para llevar mejores decisiones a la operación.
         </p>
 
-        <a class="btn light" href="#contacto">
+        <a
+          class="btn light"
+          href="#contacto"
+        >
           Conocer más
         </a>
 
@@ -976,6 +1046,7 @@ a{
             <small>
               Inventario disponible
             </small>
+
             <strong>
               $128.4M
             </strong>
@@ -985,6 +1056,7 @@ a{
             <small>
               SKUs en riesgo
             </small>
+
             <strong>
               18
             </strong>
@@ -994,6 +1066,7 @@ a{
             <small>
               Cobertura promedio
             </small>
+
             <strong>
               32 días
             </strong>
@@ -1003,6 +1076,7 @@ a{
             <small>
               Exceso identificado
             </small>
+
             <strong>
               11.8%
             </strong>
@@ -1010,7 +1084,9 @@ a{
 
         </div>
 
-        <div style="margin-top:16px;color:#9CA3AF;font-size:12px">
+        <div
+          style="margin-top:16px;color:#9CA3AF;font-size:12px"
+        >
           Nivel de atención
         </div>
 
@@ -1067,9 +1143,14 @@ a{
         </p>
 
         <div class="bottom">
-          <a class="btn turq" href="#app">
+
+          <a
+            class="btn turq"
+            href="#app"
+          >
             Abrir microapp
           </a>
+
         </div>
 
       </div>
@@ -1091,9 +1172,14 @@ a{
         </p>
 
         <div class="bottom">
-          <a class="btn light" href="#contacto">
+
+          <a
+            class="btn light"
+            href="#contacto"
+          >
             Me interesa
           </a>
+
         </div>
 
       </div>
@@ -1115,9 +1201,14 @@ a{
         </p>
 
         <div class="bottom">
-          <a class="btn light" href="#contacto">
+
+          <a
+            class="btn light"
+            href="#contacto"
+          >
             Me interesa
           </a>
+
         </div>
 
       </div>
@@ -1156,6 +1247,7 @@ a{
       <div class="app-head">
 
         <div>
+
           <h2>
             Registro de gastos
           </h2>
@@ -1163,9 +1255,13 @@ a{
           <small id="status">
             0 movimientos
           </small>
+
         </div>
 
-        <button class="btn light" onclick="clearAll()">
+        <button
+          class="btn light"
+          onclick="clearAll()"
+        >
           Borrar datos
         </button>
 
@@ -1179,19 +1275,43 @@ a{
           <div class="formgrid">
 
             <div class="field">
-              <label>Fecha</label>
-              <input id="date" type="date" required>
+
+              <label>
+                Fecha
+              </label>
+
+              <input
+                id="date"
+                type="date"
+                required
+              >
+
             </div>
 
-            <div class="field">
-              <label>Descripción</label>
-              <input id="desc" placeholder="Ej. mercado" required>
-            </div>
 
             <div class="field">
-              <label>Categoría</label>
+
+              <label>
+                Descripción
+              </label>
+
+              <input
+                id="desc"
+                placeholder="Ej. mercado"
+                required
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Categoría
+              </label>
 
               <select id="cat">
+
                 <option>Alimentación</option>
                 <option>Transporte</option>
                 <option>Vivienda</option>
@@ -1201,11 +1321,18 @@ a{
                 <option>Salud</option>
                 <option>Compras</option>
                 <option>Otros</option>
+
               </select>
+
             </div>
 
+
             <div class="field">
-              <label>Monto (COP)</label>
+
+              <label>
+                Monto (COP)
+              </label>
+
               <input
                 id="amount"
                 type="number"
@@ -1214,38 +1341,69 @@ a{
                 placeholder="0"
                 required
               >
+
             </div>
 
+
             <div class="field">
-              <label>Tipo</label>
+
+              <label>
+                Tipo
+              </label>
 
               <select id="type">
+
                 <option>Necesario</option>
                 <option>Discrecional</option>
                 <option>Deuda</option>
+
               </select>
+
             </div>
 
+
             <div class="field">
-              <label>Medio de pago</label>
+
+              <label>
+                Medio de pago
+              </label>
 
               <select id="pay">
+
                 <option>Débito</option>
                 <option>Crédito</option>
                 <option>Efectivo</option>
                 <option>Transferencia</option>
                 <option>Otro</option>
+
               </select>
+
             </div>
+
 
             <div class="field">
-              <label>Nota (opcional)</label>
-              <input id="note" placeholder="Detalle">
+
+              <label>
+                Nota (opcional)
+              </label>
+
+              <input
+                id="note"
+                placeholder="Detalle"
+              >
+
             </div>
 
-            <div class="field" style="justify-content:end">
 
-              <button class="btn primary" type="submit">
+            <div
+              class="field"
+              style="justify-content:end"
+            >
+
+              <button
+                class="btn primary"
+                type="submit"
+              >
                 Agregar gasto
               </button>
 
@@ -1256,9 +1414,17 @@ a{
         </form>
 
 
-        <div class="reports" id="reports"></div>
+        <div
+          class="reports"
+          id="reports"
+        ></div>
 
-        <div class="chart" id="chart"></div>
+
+        <div
+          class="chart"
+          id="chart"
+        ></div>
+
 
         <div class="tablewrap">
 
@@ -1284,9 +1450,12 @@ a{
 
         </div>
 
+
         <div class="note">
+
           Consejo: registra los movimientos durante el día.
           La utilidad del reporte depende de la constancia del registro.
+
         </div>
 
       </div>
@@ -1304,7 +1473,10 @@ a{
 
 <section id="contacto" class="section">
 
-  <div class="container" style="text-align:center">
+  <div
+    class="container"
+    style="text-align:center"
+  >
 
     <div class="eyebrow">
       NOFEKI
@@ -1322,7 +1494,10 @@ a{
       simples para convertir problemas cotidianos en soluciones prácticas.
     </p>
 
-    <a class="btn primary" href="mailto:hola@nofeki.com">
+    <a
+      class="btn primary"
+      href="mailto:hola@nofeki.com"
+    >
       Hablemos
     </a>
 
@@ -1340,11 +1515,13 @@ a{
   <div class="container">
 
     <div class="brand">
+
       <img
         class="brand-logo"
         src="assets/logo-blanco.png"
         alt="NOFEKI"
       >
+
     </div>
 
     <p>
@@ -1369,9 +1546,10 @@ a{
 
 const KEY = "nofeki_gastos_v1";
 
-let expenses = JSON.parse(
-  localStorage.getItem(KEY) || "[]"
-);
+let expenses =
+  JSON.parse(
+    localStorage.getItem(KEY) || "[]"
+  );
 
 
 const money = n =>
@@ -1400,7 +1578,7 @@ function save(){
 function render(){
 
   document.getElementById("status").textContent =
-    `${expenses.length} movimiento${expenses.length === 1 ? "" : "s"}`;
+    `${expenses.length} movimiento${expenses.length===1?"":"s"}`;
 
 
   const total =
@@ -1472,7 +1650,8 @@ function render(){
 
   expenses.forEach(e => {
 
-    const m = e.date.slice(0,7);
+    const m =
+      e.date.slice(0,7);
 
     month[m] =
       (month[m] || 0) + e.amount;
@@ -1496,34 +1675,36 @@ function render(){
   document.getElementById("chart").innerHTML =
     ms.length
 
-      ? ms.map(
-          ([m,v]) =>
+      ?
 
-            `<div class="col">
+      ms.map(
+        ([m,v]) =>
 
-              <i
-                style="height:${Math.max(
-                  5,
-                  v / max * 175
-                )}px"
-              ></i>
+          `<div class="col">
 
-              <span>${m}</span>
+            <i
+              style="height:${Math.max(
+                5,
+                v/max*175
+              )}px"
+            ></i>
 
-              <span>${money(v)}</span>
+            <span>${m}</span>
 
-            </div>`
-        ).join("")
+            <span>${money(v)}</span>
+
+          </div>`
+      ).join("")
 
       :
 
-        `<div
-          class="empty"
-          style="width:100%"
-        >
-          Agrega gastos para ver
-          la evolución mensual.
-        </div>`;
+      `<div
+        class="empty"
+        style="width:100%"
+      >
+        Agrega gastos para ver
+        la evolución mensual.
+      </div>`;
 
 
   document.getElementById("rows").innerHTML =
@@ -1635,7 +1816,6 @@ document
         note:note.value.trim()
 
       });
-
 
       e.target.reset();
 
