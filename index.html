@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NOFEKI — Supply Chain · Inventarios · Operaciones · Microapps</title>
+<meta name="description" content="NOFEKI: soluciones digitales para inventarios, operaciones y microapps personales y empresariales.">
+<link rel="icon" type="image/png" href="assets/isotipo-principal.png">
+<link rel="apple-touch-icon" href="assets/isotipo-principal.png">
+<style>
+:root{--navy:#111827;--turq:#14B8A6;--white:#fff;--gray:#F3F4F6;--muted:#6B7280;--line:#E5E7EB;--danger:#DC2626;--shadow:0 16px 45px rgba(17,24,39,.08)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--navy);background:#fff;line-height:1.5}
+a{text-decoration:none;color:inherit}.container{width:min(1160px,92%);margin:auto}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);z-index:20}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.04em}.brand-logo{display:block;width:132px;height:auto}.footer .brand-logo{width:150px}.footer .brand{gap:0}.links{display:flex;gap:24px;color:#374151;font-size:14px}.links a:hover{color:var(--turq)}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:10px;border:1px solid var(--navy);font-weight:800;font-size:14px;cursor:pointer}.btn.primary{background:var(--navy);color:white}.btn.turq{background:var(--turq);border-color:var(--turq);color:white}.btn.light{background:var(--gray);border-color:var(--gray)}
+.hero{padding:92px 0 76px;background:linear-gradient(180deg,#fff 0%,#f8fafc 100%)}.eyebrow{color:var(--turq);font-weight:900;text-transform:uppercase;letter-spacing:.14em;font-size:12px}.hero h1{font-size:clamp(44px,7vw,82px);line-height:.96;letter-spacing:-.065em;margin:14px 0 24px;max-width:880px}.hero p{font-size:20px;color:#4B5563;max-width:720px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.section{padding:82px 0}.section.alt{background:var(--gray)}.section h2{font-size:clamp(32px,4vw,52px);letter-spacing:-.05em;line-height:1.02;margin:10px 0 16px}.lead{color:#6B7280;max-width:720px;font-size:18px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:38px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:25px;box-shadow:0 8px 25px rgba(17,24,39,.04)}.card h3{margin:8px 0;font-size:22px}.card p{color:#6B7280}.tag{display:inline-flex;background:#E6FFFB;color:#0F766E;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:900;text-transform:uppercase}.product{display:flex;flex-direction:column;min-height:270px}.product .bottom{margin-top:auto}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:35px}.step{padding:20px;border-top:3px solid var(--turq)}.num{font-size:13px;color:var(--turq);font-weight:900}.micro-hero{display:grid;grid-template-columns:1fr 1.1fr;gap:40px;align-items:center}.mock{background:var(--navy);border-radius:22px;padding:20px;color:white;box-shadow:var(--shadow)}.mock-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.mock-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.metric{background:rgba(255,255,255,.07);border-radius:14px;padding:16px}.metric small{color:#9CA3AF}.metric strong{display:block;font-size:25px;margin-top:4px}.bar{height:9px;background:#374151;border-radius:99px;overflow:hidden;margin-top:10px}.bar i{display:block;height:100%;background:var(--turq);width:68%}.footer{background:var(--navy);color:white;padding:48px 0}.footer p{color:#9CA3AF}.app{display:none}.app.active{display:block}.app-shell{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}.app-head{padding:24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:center}.app-head h2{margin:0}.app-body{padding:24px}.formgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;font-weight:800;color:#4B5563}.field input,.field select{padding:11px 12px;border:1px solid #D1D5DB;border-radius:9px;font:inherit}.full{grid-column:1/-1}.tablewrap{overflow:auto;margin-top:20px}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{text-align:left;padding:11px;border-bottom:1px solid var(--line);font-size:13px}.table th{color:#6B7280;font-size:11px;text-transform:uppercase}.reports{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.report{background:var(--gray);padding:16px;border-radius:14px}.report small{color:#6B7280}.report strong{display:block;font-size:25px;margin-top:4px}.chart{height:230px;display:flex;align-items:end;gap:10px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#fff}.col{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;height:100%;justify-content:end}.col i{display:block;width:100%;max-width:52px;background:var(--turq);border-radius:8px 8px 2px 2px;min-height:5px}.col span{font-size:10px;color:#6B7280}.empty{padding:30px;text-align:center;color:#6B7280}.note{background:#ECFDF5;border:1px solid #A7F3D0;padding:12px 14px;border-radius:10px;color:#065F46;font-size:13px;margin-top:15px}
+@media(max-width:800px){.links{display:none}.grid,.steps,.micro-hero{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr 1fr}.reports{grid-template-columns:1fr 1fr}.hero{padding-top:60px}.section{padding:60px 0}}
+@media(max-width:520px){.brand-logo{width:118px}.footer .brand-logo{width:138px}.formgrid{grid-template-columns:1fr}.reports{grid-template-columns:1fr}.hero h1{font-size:48px}}
+</style>
+</head>
+<body>
+<nav class="nav"><div class="container" style="display:flex;width:100%;justify-content:space-between;align-items:center"><a class="brand" href="#inicio" aria-label="NOFEKI inicio"><img class="brand-logo" src="assets/logo-principal.png" alt="NOFEKI"></a><div class="links"><a href="#soluciones">Soluciones</a><a href="#microapps">Microapps</a><a href="#ops">NOFEKI OPS</a><a href="#app">Probar app</a></div><a class="btn primary" href="#app">Probar microapp</a></div></nav>
+
+<header id="inicio" class="hero"><div class="container">
+<div class="eyebrow">Supply chain · Inventarios · Operaciones · Microapps</div>
+<h1>Menos tiempo operando. Más tiempo generando valor.</h1>
+<p>NOFEKI crea herramientas digitales simples para convertir información en decisiones, decisiones en acciones y operaciones en mejores resultados.</p>
+<div class="hero-actions"><a class="btn primary" href="#ops">Conocer NOFEKI OPS</a><a class="btn" href="#microapps">Explorar microapps</a></div>
+</div></header>
+
+<section id="soluciones" class="section"><div class="container">
+<div class="eyebrow">Qué hacemos</div><h2>Herramientas que resuelven problemas reales.</h2><p class="lead">Un ecosistema digital pensado para personas y empresas que necesitan más claridad, menos trabajo manual y mejores decisiones.</p>
+<div class="grid">
+<div class="card"><span class="tag">Empresas</span><h3>NOFEKI OPS</h3><p>Gestión de inventarios y operaciones con dashboard, movimientos, compras, análisis, alertas y recomendaciones.</p><a class="btn light" href="#ops">Ver solución</a></div>
+<div class="card"><span class="tag">Personal + empresa</span><h3>Microapps</h3><p>Pequeñas aplicaciones enfocadas en un problema específico: gastos, seguimiento, control, análisis y productividad.</p><a class="btn light" href="#microapps">Ver catálogo</a></div>
+<div class="card"><span class="tag">Próximamente</span><h3>Productos digitales</h3><p>Plantillas, playbooks, diagnósticos y herramientas prácticas para llevar mejores decisiones a la operación.</p><a class="btn light" href="#contacto">Conocer más</a></div>
+</div></div></section>
+
+<section id="ops" class="section alt"><div class="container"><div class="micro-hero">
+<div><div class="eyebrow">Producto principal</div><h2>NOFEKI OPS</h2><p class="lead">Un SaaS de inventarios y operaciones diseñado para pasar del dato a la acción.</p>
+<div class="steps"><div class="step"><span class="num">01</span><b>Visibilidad</b><p>Inventario, movimientos y compras en un solo lugar.</p></div><div class="step"><span class="num">02</span><b>Análisis</b><p>Rotación, cobertura, exceso, riesgo y ABC.</p></div><div class="step"><span class="num">03</span><b>Prioridad</b><p>Identifica qué necesita atención primero.</p></div><div class="step"><span class="num">04</span><b>Acción</b><p>Convierte hallazgos en decisiones concretas.</p></div></div></div>
+<div class="mock"><div class="mock-top"><strong>NOFEKI OPS</strong><span style="color:#5EEAD4">● Live prototype</span></div><div class="mock-grid"><div class="metric"><small>Inventario disponible</small><strong>$128.4M</strong></div><div class="metric"><small>SKUs en riesgo</small><strong>18</strong></div><div class="metric"><small>Cobertura promedio</small><strong>32 días</strong></div><div class="metric"><small>Exceso identificado</small><strong>11.8%</strong></div></div><div style="margin-top:16px;color:#9CA3AF;font-size:12px">Nivel de atención</div><div class="bar"><i></i></div></div>
+</div></div></section>
+
+<section id="microapps" class="section"><div class="container"><div class="eyebrow">Nuevo ecosistema</div><h2>Microapps para problemas concretos.</h2><p class="lead">Aplicaciones pequeñas, rápidas y enfocadas. Para uso personal o empresarial. La idea: resolver una necesidad sin convertirla en un proyecto enorme.</p>
+<div class="grid">
+<div class="card product"><span class="tag">Personal · Disponible</span><h3>NOFEKI Gastos</h3><p>Registra tus gastos y visualiza cómo se distribuye tu dinero por categoría, periodo y tipo de gasto.</p><div class="bottom"><a class="btn turq" href="#app">Abrir microapp</a></div></div>
+<div class="card product"><span class="tag">Empresa · Próximamente</span><h3>NOFEKI Health Check</h3><p>Diagnóstico rápido del estado de un inventario: confiabilidad, cobertura, exceso, riesgo y oportunidades.</p><div class="bottom"><a class="btn light" href="#contacto">Me interesa</a></div></div>
+<div class="card product"><span class="tag">Empresa · Próximamente</span><h3>NOFEKI Action Board</h3><p>Convierte hallazgos operativos en prioridades, responsables, fechas y seguimiento.</p><div class="bottom"><a class="btn light" href="#contacto">Me interesa</a></div></div>
+</div></div></section>
+
+<section id="app" class="section alt"><div class="container">
+<div class="eyebrow">Microapp 01</div><h2>NOFEKI Gastos</h2><p class="lead">Tu registro personal de gastos con reportes interactivos. Los datos se guardan localmente en este navegador; no se envían a un servidor.</p>
+<div class="app-shell">
+<div class="app-head"><div><h2>Registro de gastos</h2><small id="status">0 movimientos</small></div><button class="btn light" onclick="clearAll()">Borrar datos</button></div>
+<div class="app-body">
+<form id="expenseForm"><div class="formgrid">
+<div class="field"><label>Fecha</label><input id="date" type="date" required></div>
+<div class="field"><label>Descripción</label><input id="desc" placeholder="Ej. mercado" required></div>
+<div class="field"><label>Categoría</label><select id="cat"><option>Alimentación</option><option>Transporte</option><option>Vivienda</option><option>Servicios</option><option>Deudas</option><option>Ocio</option><option>Salud</option><option>Compras</option><option>Otros</option></select></div>
+<div class="field"><label>Monto (COP)</label><input id="amount" type="number" min="0" step="100" placeholder="0" required></div>
+<div class="field"><label>Tipo</label><select id="type"><option>Necesario</option><option>Discrecional</option><option>Deuda</option></select></div>
+<div class="field"><label>Medio de pago</label><select id="pay"><option>Débito</option><option>Crédito</option><option>Efectivo</option><option>Transferencia</option><option>Otro</option></select></div>
+<div class="field"><label>Nota (opcional)</label><input id="note" placeholder="Detalle"></div>
+<div class="field" style="justify-content:end"><button class="btn primary" type="submit">Agregar gasto</button></div>
+</div></form>
+<div class="reports" id="reports"></div>
+<div class="chart" id="chart"></div>
+<div class="tablewrap"><table class="table"><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Pago</th><th>Monto</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="note">Consejo: registra los movimientos durante el día. La utilidad del reporte depende de la constancia del registro.</div>
+</div></div></div></section>
+
+<section id="contacto" class="section"><div class="container" style="text-align:center"><div class="eyebrow">NOFEKI</div><h2>Construyamos herramientas que sí se usan.</h2><p class="lead" style="margin:0 auto 24px">NOFEKI combina operaciones, inventarios y productos digitales simples para convertir problemas cotidianos en soluciones prácticas.</p><a class="btn primary" href="mailto:hola@nofeki.com">Hablemos</a></div></section>
+
+<footer class="footer"><div class="container"><div class="brand"><img class="brand-logo" src="assets/logo-blanco.png" alt="NOFEKI"></div><p>Supply chain · Inventarios · Operaciones · Microapps</p><small>© <span id="year"></span> NOFEKI. Todos los derechos reservados.</small></div></footer>
+
+<script>
+const KEY="nofeki_gastos_v1";
+let expenses=JSON.parse(localStorage.getItem(KEY)||"[]");
+const money=n=>new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(n);
+function save(){localStorage.setItem(KEY,JSON.stringify(expenses));render();}
+function render(){
+ document.getElementById("status").textContent=`${expenses.length} movimiento${expenses.length===1?"":"s"}`;
+ const total=expenses.reduce((s,e)=>s+e.amount,0);
+ const cats={}; expenses.forEach(e=>cats[e.cat]=(cats[e.cat]||0)+e.amount);
+ const top=Object.entries(cats).sort((a,b)=>b[1]-a[1])[0];
+ const avg=expenses.length?total/expenses.length:0;
+ document.getElementById("reports").innerHTML=[
+  ["Total gastado",money(total)],["Movimientos",expenses.length],["Promedio",money(avg)],["Mayor categoría",top?`${top[0]} · ${money(top[1])}`:"—"]
+ ].map(x=>`<div class="report"><small>${x[0]}</small><strong>${x[1]}</strong></div>`).join("");
+ const month={};expenses.forEach(e=>{const m=e.date.slice(0,7);month[m]=(month[m]||0)+e.amount});
+ const ms=Object.entries(month).sort().slice(-6), max=Math.max(...ms.map(x=>x[1]),1);
+ document.getElementById("chart").innerHTML=ms.length?ms.map(([m,v])=>`<div class="col"><i style="height:${Math.max(5,v/max*175)}px"></i><span>${m}</span><span>${money(v)}</span></div>`).join(""):`<div class="empty" style="width:100%">Agrega gastos para ver la evolución mensual.</div>`;
+ document.getElementById("rows").innerHTML=expenses.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(e=>`<tr><td>${e.date}</td><td>${escapeHtml(e.desc)}</td><td>${e.cat}</td><td>${e.type}</td><td>${e.pay}</td><td><b>${money(e.amount)}</b></td><td><button class="btn light" onclick="removeExpense('${e.id}')">Eliminar</button></td></tr>`).join("")||`<tr><td colspan="7"><div class="empty">Todavía no hay gastos registrados.</div></td></tr>`;
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
+document.getElementById("expenseForm").addEventListener("submit",e=>{e.preventDefault();expenses.push({id:crypto.randomUUID(),date:date.value,desc:desc.value.trim(),cat:cat.value,amount:Number(amount.value),type:type.value,pay:pay.value,note:note.value.trim()});e.target.reset();date.value=new Date().toISOString().slice(0,10);save();});
+function removeExpense(id){expenses=expenses.filter(e=>e.id!==id);save();}
+function clearAll(){if(confirm("¿Borrar todos los gastos guardados en este navegador?")){expenses=[];save();}}
+document.getElementById("year").textContent=new Date().getFullYear(); date.value=new Date().toISOString().slice(0,10); render();
+</script>
+</body>
+</html>
