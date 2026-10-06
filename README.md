@@ -21,3 +21,4 @@ Turquoise #14B8A6
 White #FFFFFF
 Light Gray #F3F4F6
 Tipografía: Inter / system fallback
+Versión conectada a Vercel.
