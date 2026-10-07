@@ -1,443 +1,826 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
 
-<title>PQR — NOFEKI</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<meta
-  name="description"
-  content="Canal de peticiones, quejas, reclamos y solicitudes de NOFEKI."
->
+  <title>PQR | NOFEKI</title>
 
-<link rel="icon" href="assets/isotipo-principal.png">
+  <meta
+    name="description"
+    content="Canal de Peticiones, Quejas, Reclamos y demás solicitudes de NOFEKI."
+  >
 
-<style>
-:root{
-  --navy:#111827;
-  --turquoise:#14B8A6;
-  --white:#ffffff;
-  --gray:#6B7280;
-  --light:#F3F4F6;
-  --border:#E5E7EB;
-}
+  <style>
 
-*{
-  box-sizing:border-box;
-}
+    :root {
+      --navy: #111827;
+      --turquoise: #14B8A6;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-500: #6B7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
 
-body{
-  margin:0;
-  font-family:Inter,Arial,sans-serif;
-  color:var(--navy);
-  background:#fff;
-  line-height:1.7;
-}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-.header{
-  border-bottom:1px solid var(--border);
-  background:#fff;
-}
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      line-height: 1.7;
+    }
 
-.header-inner{
-  width:min(1100px,92%);
-  margin:auto;
-  padding:22px 0;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-.logo{
-  height:42px;
-  width:auto;
-}
+    .header {
+      background: var(--navy);
+      padding: 22px 0;
+    }
 
-.back{
-  color:var(--navy);
-  text-decoration:none;
-  font-size:14px;
-  font-weight:600;
-}
+    .container {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+    }
 
-.back:hover{
-  color:var(--turquoise);
-}
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
 
-.container{
-  width:min(850px,92%);
-  margin:auto;
-}
+    .brand-logo {
+      width: 125px;
+      height: auto;
+      display: block;
+    }
 
-main{
-  padding:60px 0 80px;
-}
+    .back-link {
+      color: #D1D5DB;
+      font-size: 14px;
+      transition: color 0.2s ease;
+    }
 
-.eyebrow{
-  color:var(--turquoise);
-  font-size:13px;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-}
+    .back-link:hover {
+      color: var(--white);
+    }
 
-h1{
-  font-size:clamp(32px,5vw,46px);
-  line-height:1.15;
-  margin:12px 0 15px;
-}
+    .hero {
+      background: var(--white);
+      padding: 70px 0 60px;
+      border-bottom: 1px solid var(--gray-200);
+    }
 
-.subtitle{
-  color:var(--gray);
-  font-size:16px;
-  margin-bottom:40px;
-}
+    .eyebrow {
+      color: var(--turquoise);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
 
-.notice{
-  background:var(--light);
-  border-left:4px solid var(--turquoise);
-  padding:20px;
-  border-radius:8px;
-  margin:25px 0;
-}
+    h1 {
+      color: var(--gray-900);
+      font-size: clamp(36px, 6vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
 
-h2{
-  font-size:23px;
-  margin-top:38px;
-}
+    .hero p {
+      max-width: 760px;
+      font-size: 18px;
+      color: var(--gray-500);
+    }
 
-p,
-li{
-  font-size:16px;
-}
+    .content {
+      padding: 60px 0 80px;
+    }
 
-ul{
-  padding-left:24px;
-}
+    .legal-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 18px;
+      padding: 42px;
+      box-shadow: 0 8px 30px rgba(17, 24, 39, 0.04);
+    }
 
-.email{
-  color:var(--turquoise);
-  font-weight:700;
-}
+    .legal-card + .legal-card {
+      margin-top: 24px;
+    }
 
-.contact{
-  display:inline-block;
-  margin-top:10px;
-  padding:13px 18px;
-  background:var(--navy);
-  color:#fff;
-  text-decoration:none;
-  border-radius:10px;
-  font-weight:700;
-}
+    h2 {
+      color: var(--gray-900);
+      font-size: 25px;
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
 
-.contact:hover{
-  background:var(--turquoise);
-}
+    h3 {
+      color: var(--gray-900);
+      font-size: 18px;
+      margin: 28px 0 10px;
+    }
 
-.footer{
-  background:var(--navy);
-  color:#fff;
-  padding:35px 0;
-}
+    p {
+      margin-bottom: 16px;
+    }
 
-.footer p{
-  color:#D1D5DB;
-}
+    ul {
+      padding-left: 22px;
+      margin: 14px 0 20px;
+    }
 
-.footer small{
-  color:#9CA3AF;
-}
+    li {
+      margin-bottom: 9px;
+    }
 
-.footer a{
-  color:#D1D5DB;
-  text-decoration:none;
-}
+    strong {
+      color: var(--gray-900);
+    }
 
-.footer a:hover{
-  color:#fff;
-}
+    .highlight {
+      background: #ECFDF5;
+      border-left: 4px solid var(--turquoise);
+      padding: 20px 22px;
+      border-radius: 10px;
+      margin: 24px 0;
+    }
 
-@media(max-width:600px){
+    .contact-box {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 30px;
+      margin-top: 30px;
+    }
 
-  main{
-    padding:40px 0 60px;
-  }
+    .contact-box h2 {
+      color: var(--white);
+      margin-bottom: 10px;
+    }
 
-  h2{
-    font-size:21px;
-  }
+    .contact-box p {
+      color: #D1D5DB;
+    }
 
-  p,
-  li{
-    font-size:15px;
-  }
+    .contact-button {
+      display: inline-block;
+      background: var(--turquoise);
+      color: var(--white);
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 9px;
+      margin-top: 8px;
+      transition: opacity 0.2s ease;
+    }
 
-}
-</style>
+    .contact-button:hover {
+      opacity: 0.9;
+    }
+
+    .footer {
+      background: var(--navy);
+      color: #D1D5DB;
+      padding: 45px 0 35px;
+    }
+
+    .footer .brand {
+      margin-bottom: 12px;
+    }
+
+    .footer .brand-logo {
+      width: 115px;
+    }
+
+    .footer p {
+      color: #9CA3AF;
+      margin-bottom: 18px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+      font-size: 14px;
+    }
+
+    .footer-links a {
+      color: #D1D5DB;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer small {
+      color: #6B7280;
+    }
+
+    @media (max-width: 700px) {
+
+      .header {
+        padding: 18px 0;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      .brand-logo {
+        width: 105px;
+      }
+
+      .hero {
+        padding: 55px 0 45px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .content {
+        padding: 35px 0 55px;
+      }
+
+      .legal-card {
+        padding: 26px 22px;
+        border-radius: 14px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .contact-box {
+        padding: 24px;
+      }
+
+      .footer-links {
+        gap: 12px 16px;
+      }
+    }
+
+  </style>
 </head>
 
 <body>
 
-<header class="header">
+  <!-- =========================
+       HEADER
+  ========================== -->
 
-  <div class="header-inner">
+  <header class="header">
 
-    <a href="index.html">
-      <img
-        class="logo"
-        src="assets/logo-principal.png"
-        alt="NOFEKI">
-    </a>
+    <div class="container">
 
-    <a
-      class="back"
-      href="index.html">
-      ← Volver a NOFEKI
-    </a>
+      <div class="header-inner">
 
-  </div>
+        <a href="index.html" aria-label="NOFEKI - Inicio">
 
-</header>
+          <img
+            class="brand-logo"
+            src="assets/logo-blanco.png"
+            alt="NOFEKI"
+          >
 
+        </a>
 
-<main>
+        <a
+          class="back-link"
+          href="index.html">
+          ← Volver a NOFEKI
+        </a>
 
-  <div class="container">
+      </div>
 
-    <div class="eyebrow">
-      NOFEKI · Atención
     </div>
 
-    <h1>
-      Peticiones, Quejas y Reclamos
-    </h1>
-
-    <p class="subtitle">
-      Canal de atención y contacto de NOFEKI
-    </p>
+  </header>
 
 
-    <div class="notice">
+  <!-- =========================
+       HERO
+  ========================== -->
 
-      <strong>¿Necesitas comunicarte con NOFEKI?</strong>
+  <section class="hero">
+
+    <div class="container">
+
+      <div class="eyebrow">
+        Atención y contacto
+      </div>
+
+      <h1>
+        Peticiones, Quejas y Reclamos
+      </h1>
 
       <p>
-        Puedes utilizar este canal para presentar peticiones, quejas,
-        reclamos, consultas, solicitudes relacionadas con nuestros
-        productos y servicios o asuntos relacionados con el tratamiento
-        de datos personales.
+        En NOFEKI valoramos las solicitudes, comentarios, inquietudes
+        y oportunidades de mejora de las personas que interactúan con
+        nuestros productos, servicios y contenidos.
       </p>
 
     </div>
 
-
-    <h2>1. ¿Qué puedes presentar?</h2>
-
-    <ul>
-
-      <li>
-        <strong>Petición:</strong> solicitud de información o actuación
-        relacionada con NOFEKI.
-      </li>
-
-      <li>
-        <strong>Queja:</strong> manifestación de inconformidad respecto
-        de una atención, servicio o actuación.
-      </li>
-
-      <li>
-        <strong>Reclamo:</strong> manifestación relacionada con una
-        inconformidad frente a un servicio o situación que requiera
-        revisión.
-      </li>
-
-      <li>
-        <strong>Solicitud:</strong> cualquier requerimiento relacionado
-        con nuestros productos, servicios o canales de atención.
-      </li>
-
-    </ul>
+  </section>
 
 
-    <h2>2. Canal de atención</h2>
+  <!-- =========================
+       CONTENIDO
+  ========================== -->
 
-    <p>
-      Actualmente el canal oficial de atención de NOFEKI es el correo
-      electrónico:
-    </p>
+  <main class="content">
 
-    <p>
-      <a
-        class="contact"
-        href="mailto:nofeki07@gmail.com">
-        nofeki07@gmail.com
-      </a>
-    </p>
+    <div class="container">
 
 
-    <h2>3. Información recomendada</h2>
+      <!-- 1 -->
 
-    <p>
-      Para facilitar la atención de la solicitud, recomendamos incluir:
-    </p>
+      <section class="legal-card">
 
-    <ul>
+        <h2>
+          1. Objeto
+        </h2>
 
-      <li>Nombre completo.</li>
+        <p>
+          Este canal tiene como finalidad facilitar la recepción y
+          atención de peticiones, quejas, reclamos, solicitudes,
+          comentarios y demás comunicaciones relacionadas con NOFEKI,
+          sus productos, servicios, contenidos o canales digitales.
+        </p>
 
-      <li>Correo electrónico de contacto.</li>
+        <p>
+          NOFEKI procurará atender cada solicitud de manera clara,
+          respetuosa y oportuna, teniendo en cuenta su naturaleza y
+          las disposiciones legales que resulten aplicables.
+        </p>
 
-      <li>Descripción clara de la solicitud.</li>
-
-      <li>Información relacionada con el producto o servicio,
-      cuando corresponda.</li>
-
-      <li>Documentos o evidencias que considere relevantes.</li>
-
-    </ul>
-
-
-    <h2>4. Solicitudes relacionadas con datos personales</h2>
-
-    <p>
-      Si la solicitud está relacionada específicamente con el tratamiento
-      de datos personales, el titular podrá ejercer sus derechos
-      conforme a la Política de Tratamiento de Datos Personales de NOFEKI.
-    </p>
-
-    <p>
-      Para estos casos también puede utilizar el correo:
-    </p>
-
-    <p>
-      <strong class="email">
-        nofeki07@gmail.com
-      </strong>
-    </p>
-
-    <p>
-      Consulte la política completa:
-    </p>
-
-    <p>
-      <a
-        href="privacidad.html"
-        style="color:#14B8A6;font-weight:700;">
-        Política de Tratamiento de Datos Personales →
-      </a>
-    </p>
+      </section>
 
 
-    <h2>5. Atención de las solicitudes</h2>
+      <!-- 2 -->
 
-    <p>
-      NOFEKI procurará atender las solicitudes dentro de los términos
-      establecidos por la normativa colombiana aplicable y de acuerdo
-      con la naturaleza de cada solicitud.
-    </p>
+      <section class="legal-card">
 
-    <p>
-      Cuando sea necesario solicitar información adicional para poder
-      responder adecuadamente, NOFEKI podrá comunicarse con el solicitante
-      utilizando los datos de contacto proporcionados.
-    </p>
+        <h2>
+          2. ¿Qué puedes presentar?
+        </h2>
 
+        <p>
+          A través de este canal puedes comunicar, entre otros:
+        </p>
 
-    <h2>6. Protección de la información</h2>
+        <ul>
 
-    <p>
-      La información recibida a través de este canal será tratada de
-      acuerdo con las finalidades correspondientes y con la normativa
-      aplicable sobre protección de datos personales.
-    </p>
+          <li>
+            <strong>Petición:</strong>
+            solicitud de información, aclaración o actuación relacionada
+            con NOFEKI.
+          </li>
 
+          <li>
+            <strong>Queja:</strong>
+            manifestación de inconformidad relacionada con una actuación,
+            atención o experiencia.
+          </li>
 
-    <h2>7. Contacto</h2>
+          <li>
+            <strong>Reclamo:</strong>
+            manifestación de inconformidad relacionada con un producto,
+            servicio o situación que requiera revisión.
+          </li>
 
-    <p>
-      Canal oficial:
-    </p>
+          <li>
+            <strong>Solicitud:</strong>
+            requerimiento relacionado con nuestros productos, servicios,
+            contenidos o canales.
+          </li>
 
-    <p>
-      <a
-        class="contact"
-        href="mailto:nofeki07@gmail.com">
-        Enviar solicitud
-      </a>
-    </p>
+          <li>
+            <strong>Solicitud relacionada con datos personales:</strong>
+            ejercicio de los derechos previstos en nuestra
+            <a
+              href="privacidad.html"
+              style="color:#0F766E;font-weight:600;">
+              Política de privacidad
+            </a>.
+          </li>
 
+        </ul>
 
-    <h2>8. Actualizaciones</h2>
-
-    <p>
-      Este canal podrá actualizarse cuando NOFEKI incorpore nuevos
-      mecanismos de atención, formularios, sistemas de seguimiento o
-      canales adicionales.
-    </p>
-
-  </div>
-
-</main>
-
-
-<footer class="footer">
-
-  <div class="container">
-
-    <strong>NOFEKI</strong>
-
-    <p>
-      Supply Chain · Inventarios · Operaciones · Microapps
-    </p>
-
-    <p
-      style="display:flex;gap:18px;flex-wrap:wrap;font-size:14px;">
-
-      <a href="terminos.html">
-        Términos y condiciones
-      </a>
-
-      <a href="privacidad.html">
-        Política de privacidad
-      </a>
-
-      <a href="aviso-privacidad.html">
-        Aviso de privacidad
-      </a>
-
-      <a href="politica-cookies.html">
-        Política de cookies
-      </a>
-
-      <a href="propiedad-intelectual.html">
-        Propiedad intelectual
-      </a>
-
-      <a href="pqr.html">
-        PQR
-      </a>
-
-      <a href="mailto:nofeki07@gmail.com">
-        Contacto
-      </a>
-
-    </p>
-
-    <small>
-      © <span id="year"></span> NOFEKI. Todos los derechos reservados.
-    </small>
-
-  </div>
-
-</footer>
+      </section>
 
 
-<script>
-document.getElementById("year").textContent =
-new Date().getFullYear();
-</script>
+      <!-- 3 -->
+
+      <section class="legal-card">
+
+        <h2>
+          3. Información recomendada
+        </h2>
+
+        <p>
+          Para facilitar la revisión y respuesta de la solicitud,
+          recomendamos incluir:
+        </p>
+
+        <ul>
+
+          <li>
+            Nombre completo.
+          </li>
+
+          <li>
+            Correo electrónico para recibir respuesta.
+          </li>
+
+          <li>
+            Tipo de solicitud.
+          </li>
+
+          <li>
+            Descripción clara de la situación.
+          </li>
+
+          <li>
+            Motivos o razones de la solicitud, cuando corresponda.
+          </li>
+
+          <li>
+            Información o documentos que permitan comprender
+            adecuadamente el caso.
+          </li>
+
+        </ul>
+
+        <p>
+          Si la solicitud está relacionada con un producto, servicio,
+          comunicación o interacción específica, puede ser útil indicar
+          la fecha y cualquier información que permita identificarla.
+        </p>
+
+      </section>
+
+
+      <!-- 4 -->
+
+      <section class="legal-card">
+
+        <h2>
+          4. Recepción de solicitudes
+        </h2>
+
+        <p>
+          Las solicitudes pueden enviarse a través del correo electrónico
+          oficial de contacto de NOFEKI:
+        </p>
+
+        <div class="highlight">
+
+          <strong>
+            nofeki07@gmail.com
+          </strong>
+
+          <p style="margin:8px 0 0;">
+            Este canal permite recibir peticiones, quejas, reclamos,
+            solicitudes generales y comunicaciones relacionadas con
+            nuestros productos y servicios.
+          </p>
+
+        </div>
+
+        <p>
+          La recepción de una comunicación no implica por sí misma la
+          aceptación de los hechos, pretensiones o conclusiones planteadas
+          por quien la presenta. Cada caso será revisado de acuerdo con
+          su naturaleza y la información disponible.
+        </p>
+
+      </section>
+
+
+      <!-- 5 -->
+
+      <section class="legal-card">
+
+        <h2>
+          5. Tiempos de atención y respuesta
+        </h2>
+
+        <p>
+          NOFEKI procurará atender y responder las peticiones, quejas,
+          reclamos y demás solicitudes recibidas de manera oportuna,
+          clara y de fondo, de acuerdo con la naturaleza de cada solicitud
+          y con las disposiciones legales que resulten aplicables.
+        </p>
+
+        <p>
+          El término de respuesta podrá variar según el tipo de solicitud,
+          la información requerida, la necesidad de realizar verificaciones
+          adicionales y el régimen legal aplicable al caso concreto.
+        </p>
+
+        <p>
+          Cuando resulte necesario solicitar información adicional para
+          atender adecuadamente una solicitud, NOFEKI podrá requerirla al
+          solicitante y, cuando corresponda, informar las circunstancias
+          que puedan afectar el tiempo de atención.
+        </p>
+
+        <p>
+          Cuando una solicitud se encuentre sometida a un término legal
+          específico, NOFEKI atenderá la solicitud de conformidad con
+          dicho término y las normas que resulten aplicables.
+        </p>
+
+        <p>
+          La recepción de una PQR no implica, por sí misma, la aceptación
+          de los hechos, pretensiones o solicitudes planteadas, ni supone
+          el reconocimiento automático de responsabilidad por parte de
+          NOFEKI.
+        </p>
+
+      </section>
+
+
+      <!-- 6 -->
+
+      <section class="legal-card">
+
+        <h2>
+          6. Solicitudes relacionadas con datos personales
+        </h2>
+
+        <p>
+          Si tu solicitud está relacionada con el tratamiento de datos
+          personales, podrás ejercer los derechos reconocidos por la
+          legislación colombiana aplicable y desarrollados en nuestra
+          Política de privacidad.
+        </p>
+
+        <p>
+          Estos pueden incluir, entre otros, solicitudes de consulta,
+          actualización, rectificación, corrección o, cuando corresponda,
+          supresión de datos personales y revocatoria de la autorización
+          en los términos legalmente aplicables.
+        </p>
+
+        <p>
+          Para conocer el procedimiento específico, consulta:
+        </p>
+
+        <p>
+
+          <a
+            href="privacidad.html"
+            style="
+              color:#0F766E;
+              font-weight:700;
+            ">
+            → Política de privacidad
+          </a>
+
+        </p>
+
+      </section>
+
+
+      <!-- 7 -->
+
+      <section class="legal-card">
+
+        <h2>
+          7. Protección de la información
+        </h2>
+
+        <p>
+          La información proporcionada a través de una PQR será tratada
+          de acuerdo con nuestra Política de privacidad y con las normas
+          aplicables en materia de protección de datos personales.
+        </p>
+
+        <p>
+          Recomendamos no incluir información personal sensible,
+          contraseñas, datos bancarios, información financiera confidencial
+          o cualquier otra información que no sea necesaria para atender
+          la solicitud.
+        </p>
+
+      </section>
+
+
+      <!-- 8 -->
+
+      <section class="legal-card">
+
+        <h2>
+          8. Atención de solicitudes
+        </h2>
+
+        <p>
+          NOFEKI podrá solicitar aclaraciones o información adicional
+          cuando sea necesario para comprender adecuadamente la solicitud
+          y emitir una respuesta.
+        </p>
+
+        <p>
+          Cuando una solicitud no corresponda al ámbito de actuación de
+          NOFEKI, se informará al solicitante en la medida en que sea
+          posible y resulte pertinente.
+        </p>
+
+        <p>
+          Las respuestas serán enviadas, siempre que sea posible, al
+          medio de contacto suministrado por el solicitante.
+        </p>
+
+      </section>
+
+
+      <!-- 9 -->
+
+      <section class="legal-card">
+
+        <h2>
+          9. Marco legal
+        </h2>
+
+        <p>
+          Las solicitudes serán atendidas de conformidad con las normas
+          colombianas que resulten aplicables según la naturaleza de la
+          solicitud, del producto o servicio y de la relación existente
+          entre NOFEKI y el solicitante.
+        </p>
+
+        <p>
+          Entre las disposiciones que pueden resultar relevantes se
+          encuentran las normas colombianas sobre derecho de petición,
+          protección de datos personales, protección al consumidor y
+          comercio electrónico, cuando sean aplicables al caso concreto.
+        </p>
+
+        <p>
+          La aplicación de términos, procedimientos o efectos jurídicos
+          específicos dependerá de la naturaleza de cada solicitud y del
+          régimen legal que corresponda.
+        </p>
+
+      </section>
+
+
+      <!-- 10 -->
+
+      <section class="legal-card">
+
+        <h2>
+          10. Actualizaciones
+        </h2>
+
+        <p>
+          NOFEKI podrá actualizar este documento cuando cambien sus
+          productos, servicios, canales de atención, estructura jurídica
+          o las disposiciones legales aplicables.
+        </p>
+
+        <p>
+          La versión publicada en este sitio será la versión vigente.
+        </p>
+
+        <p>
+          <strong>
+            Versión: 1.1
+          </strong>
+          <br>
+          <strong>
+            Fecha de actualización: 6 de octubre de 2026
+          </strong>
+        </p>
+
+      </section>
+
+
+      <!-- CONTACTO -->
+
+      <section class="contact-box">
+
+        <h2>
+          ¿Necesitas presentar una solicitud?
+        </h2>
+
+        <p>
+          Escríbenos indicando claramente el motivo de tu comunicación
+          y los datos necesarios para poder responderte.
+        </p>
+
+        <a
+          class="contact-button"
+          href="mailto:nofeki07@gmail.com">
+          Contactar a NOFEKI
+        </a>
+
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <div class="brand">
+
+        <img
+          class="brand-logo"
+          src="assets/logo-blanco.png"
+          alt="NOFEKI"
+        >
+
+      </div>
+
+      <p>
+        Supply chain · Inventarios · Operaciones · Microapps
+      </p>
+
+
+      <div class="footer-links">
+
+        <a href="terminos.html">
+          Términos y condiciones
+        </a>
+
+        <a href="privacidad.html">
+          Política de privacidad
+        </a>
+
+        <a href="aviso-privacidad.html">
+          Aviso de privacidad
+        </a>
+
+        <a href="politica-cookies.html">
+          Política de cookies
+        </a>
+
+        <a href="propiedad-intelectual.html">
+          Propiedad intelectual
+        </a>
+
+        <a href="pqr.html">
+          PQR
+        </a>
+
+        <a href="mailto:nofeki07@gmail.com">
+          Contacto
+        </a>
+
+      </div>
+
+
+      <small>
+        © <span id="year"></span> NOFEKI. Todos los derechos reservados.
+      </small>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+  </script>
 
 </body>
 </html>
