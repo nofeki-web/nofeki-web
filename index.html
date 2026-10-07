@@ -427,8 +427,26 @@ a{
 
 .footer{
   background:var(--navy);
-  color:#fff;
+  color:white;
   padding:48px 0
+}
+
+.footer .legal-links{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:18px 0
+}
+
+.footer .legal-links a{
+  color:#D1D5DB;
+  font-size:13px;
+  font-weight:700
+}
+
+.footer .legal-links a:hover{
+  color:var(--turq)
 }
 
 .footer p{
@@ -1516,22 +1534,33 @@ a{
   <div class="container">
 
     <div class="brand">
-
       <img
         class="brand-logo"
         src="assets/logo-blanco.png"
-        alt="NOFEKI"
-      >
-
+        alt="NOFEKI">
     </div>
 
     <p>
       Supply chain · Inventarios · Operaciones · Microapps
     </p>
 
+    <div class="legal-links">
+
+      <a href="terminos.html">
+        Términos y condiciones
+      </a>
+
+      <span>·</span>
+
+      <a href="mailto:hola@nofeki.com">
+        Contacto
+      </a>
+
+    </div>
+
     <small>
-      © <span id="year"></span>
-      NOFEKI. Todos los derechos reservados.
+      © <span id="year"></span> NOFEKI.
+      Todos los derechos reservados.
     </small>
 
   </div>
