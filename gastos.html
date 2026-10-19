@@ -173,6 +173,16 @@ td{border-bottom-color:#eef2f6}
   .table-wrap td:nth-child(6) .cell-value{text-align:left}
 }
 
+/* Categories section */
+.categories-panel{margin:0 0 22px;scroll-margin-top:24px}
+.category-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.category-card{display:flex;flex-direction:column;align-items:flex-start;gap:7px;padding:16px;border:1px solid #e7edf2;border-radius:13px;background:#fbfdff;min-width:0}
+.category-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#e5f7f2;font-size:18px}
+.category-card strong{font-size:13px;color:#0e1726}
+.category-card>span:last-child{font-size:11px;color:#64748b;line-height:1.45}
+#categories{scroll-margin-top:24px}
+@media(max-width:1050px){.category-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.category-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.category-card{padding:12px}.categories-panel{padding:16px}}
 /* Product dashboard — implementation aligned with Figma frame 6:2 */
 body.dashboard-active{background:#f6f8fa}
 body.dashboard-active>.top,body.dashboard-active>.foot{display:none}
@@ -324,7 +334,7 @@ body.modal-open{overflow:hidden}
     <nav class="dash-nav" aria-label="Navegación financiera">
       <a class="active" href="#overview" data-nav="overview">◉ <span>Resumen</span></a>
       <a href="#recentMoves" data-nav="recentMoves">↔ <span>Movimientos</span></a>
-      <a href="#expenseFormPanel" data-nav="expenseFormPanel">▦ <span>Categorías</span></a>
+      <a href="#categories" data-nav="categories">▦ <span>Categorías</span></a>
       <a href="#analysis" data-nav="analysis">◷ <span>Análisis</span></a>
     </nav>
     <div class="dash-beta">BETA · Tu feedback importa</div>
@@ -347,7 +357,22 @@ body.modal-open{overflow:hidden}
         <article class="product-metric"><div class="label">MOVIMIENTOS DEL MES</div><strong id="mCount">0</strong><div class="sub">Registros guardados este mes</div></article>
         <article class="product-metric"><div class="label">CATEGORÍA PRINCIPAL</div><strong id="mTop">—</strong><div class="sub">Por valor acumulado este mes</div></article>
       </div>
-      <div class="analytics-grid"><section class="panel" id="analysis"><div class="panel-head"><h2>Evolución mensual</h2><span class="pill">Últimos 6 meses</span></div><div id="chart" class="chart"><div class="empty" style="width:100%">Cargando tus datos…</div></div>
+      <div class="analytics-grid"><section class="panel categories-panel" id="categories" aria-labelledby="categoriesTitle">
+  <div class="panel-head"><div><h2 id="categoriesTitle">Categorías de gasto</h2><p class="small" style="margin:6px 0 0">Clasifica tus movimientos para entender mejor en qué utilizas tu dinero.</p></div><span class="pill">9 categorías</span></div>
+  <div class="category-cards">
+    <div class="category-card"><span class="category-icon">🛒</span><strong>Alimentación</strong><span>Mercado y comidas</span></div>
+    <div class="category-card"><span class="category-icon">🚗</span><strong>Transporte</strong><span>Pasajes y movilidad</span></div>
+    <div class="category-card"><span class="category-icon">🏠</span><strong>Vivienda</strong><span>Arriendo y hogar</span></div>
+    <div class="category-card"><span class="category-icon">💡</span><strong>Servicios</strong><span>Servicios del hogar</span></div>
+    <div class="category-card"><span class="category-icon">💳</span><strong>Deudas</strong><span>Cuotas y obligaciones</span></div>
+    <div class="category-card"><span class="category-icon">🎟️</span><strong>Ocio</strong><span>Entretenimiento y salidas</span></div>
+    <div class="category-card"><span class="category-icon">🩺</span><strong>Salud</strong><span>Salud y bienestar</span></div>
+    <div class="category-card"><span class="category-icon">🛍️</span><strong>Compras</strong><span>Compras personales</span></div>
+    <div class="category-card"><span class="category-icon">📦</span><strong>Otros</strong><span>Gastos varios</span></div>
+  </div>
+  <p class="small" style="margin:16px 0 0">Estas son las categorías disponibles al registrar un gasto. La creación y edición de categorías personalizadas aún no está habilitada.</p>
+</section>
+<section class="panel" id="analysis"><div class="panel-head"><h2>Evolución mensual</h2><span class="pill">Últimos 6 meses</span></div><div id="chart" class="chart"><div class="empty" style="width:100%">Cargando tus datos…</div></div>
 <div class="modal-backdrop" id="onboardingModal" hidden role="presentation"><section class="panel modal-card onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle"><div class="modal-heading"><div><div class="eyebrow">TU PERFIL FINANCIERO · PASO 1 DE 6</div><h2 id="onboardingTitle">Empecemos por tus ingresos</h2><p class="small">Queremos conocer el dinero que realmente tienes disponible cada mes. Puedes guardar el progreso y continuar después.</p></div><button class="modal-close" id="closeOnboarding" type="button" aria-label="Cerrar cuestionario">×</button></div><div class="onboarding-progress"><span id="onboardingProgressText">Paso 1 de 6 · 17%</span><div><span></span></div></div><form id="onboardingForm"><div class="field"><label for="netIncome">¿Cuánto dinero recibes habitualmente? (COP)</label><input id="netIncome" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 3.500.000"><small class="small">Ingreso neto después de los descuentos de nómina.</small></div><div class="field"><label for="incomeFrequency">¿Con qué frecuencia recibes ese ingreso?</label><select id="incomeFrequency"><option value="monthly">Mensualmente</option><option value="biweekly">Quincenalmente</option><option value="weekly">Semanalmente</option><option value="variable">No tengo una frecuencia fija</option></select></div><div class="field"><label>¿Recibes ingresos adicionales?</label><div class="onboarding-options"><label><input type="radio" name="hasAdditionalIncome" value="no" checked> No, principalmente recibo este ingreso</label><label><input type="radio" name="hasAdditionalIncome" value="yes"> Sí, recibo bonos, comisiones u otros ingresos</label></div></div><div class="field" id="additionalIncomeWrap" hidden><label for="additionalIncome">Ingreso adicional promedio mensual (COP)</label><input id="additionalIncome" type="number" min="0" step="1" inputmode="numeric" placeholder="Ej. 300.000"></div><div class="field"><label for="incomeStability">¿Qué tan estables son tus ingresos?</label><select id="incomeStability"><option value="stable">Son estables y predecibles</option><option value="somewhat_variable">Varían un poco cada mes</option><option value="highly_variable">Cambian mucho de un mes a otro</option></select></div><div id="onboardingMessage" class="message" role="status"></div><div class="onboarding-actions"><button class="btn ghost" id="saveOnboardingDraft" type="button">Continuar después</button><button class="btn primary" id="saveOnboarding" type="submit">Guardar paso 1</button></div><p class="small onboarding-privacy">Tus respuestas se guardan de forma privada en tu perfil. Los campos vacíos no se reemplazan por datos de ejemplo.</p></form></section></div></section><section class="panel"><div class="panel-head"><h2>Gastos por categoría</h2><span class="pill">Distribución</span></div><div id="categoryPie" class="pie-layout"><div class="empty">Cargando datos…</div></div></section><section class="panel"><div class="panel-head"><h2>Gastos por medio de pago</h2><span class="pill">Distribución</span></div><div id="paymentPie" class="pie-layout"><div class="empty">Cargando datos…</div></div></section></div>
       <div class="dash-lower">
         
