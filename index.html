@@ -865,6 +865,25 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
  #app .app-head,#app .app-body{padding:18px}
 }
 
+
+/* Navigation actions and mobile menu */
+.nav-actions{display:flex;align-items:center;gap:10px}
+.menu-toggle{display:none;border:1px solid #DCE5EA;background:#fff;color:#111827;border-radius:9px;padding:10px 12px;font-weight:800;align-items:center;gap:8px}
+@media(max-width:800px){
+ .nav{height:auto;min-height:72px;padding:10px 0}
+ .nav>.container{gap:12px;flex-wrap:wrap}
+ .nav-actions{margin-left:auto}
+ .menu-toggle{display:inline-flex}
+ .nav .links{display:none;order:3;width:100%;flex-direction:column;gap:0;padding:8px 0 4px;border-top:1px solid #E5EAF0}
+ .nav .links.open{display:flex}
+ .nav .links a{padding:12px 8px;border-radius:8px}
+ .nav .links a:hover{background:#F0FDFA}
+ .nav .nav-cta{font-size:12px;padding:10px 12px}
+}
+@media(max-width:520px){
+ .nav .nav-cta{display:none}
+ .menu-toggle{padding:9px 11px}
+}
 </style>
 </head>
 
@@ -893,19 +912,16 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
       >
     </a>
 
-    <div class="links">
+    <div class="links" id="siteLinks">
       <a href="#soluciones">Soluciones</a>
       <a href="#microapps">Microapps</a>
       <a href="#ops">NOFEKI OPS</a>
-      <a href="#app">Probar app</a>
     </div>
 
-    <a
-      class="btn primary"
-      href="/gastos.html"
-    >
-      Abrir NOFEKI Gastos
-    </a>
+    <div class="nav-actions">
+      <a class="btn primary nav-cta" href="/gastos.html">Abrir NOFEKI Gastos</a>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">Menú <span aria-hidden="true">☰</span></button>
+    </div>
 
   </div>
 
@@ -927,7 +943,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
       </div>
 
       <h1>
-        Menos tiempo operando.<br><em>Más valor en cada decisión.</em>
+        Menos tiempo operando.<br><em>Más tiempo creando valor.</em>
       </h1>
 
       <p>
@@ -1785,6 +1801,21 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 ========================= -->
 
 <script>
+
+const menuToggle = document.getElementById("menuToggle");
+const siteLinks = document.getElementById("siteLinks");
+if(menuToggle && siteLinks){
+  menuToggle.addEventListener("click",()=>{
+    const open = siteLinks.classList.toggle("open");
+    menuToggle.setAttribute("aria-expanded",String(open));
+    menuToggle.innerHTML = open ? 'Cerrar <span aria-hidden="true">×</span>' : 'Menú <span aria-hidden="true">☰</span>';
+  });
+  siteLinks.querySelectorAll("a").forEach(link=>link.addEventListener("click",()=>{
+    siteLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded","false");
+    menuToggle.innerHTML='Menú <span aria-hidden="true">☰</span>';
+  }));
+}
 
 const KEY = "nofeki_gastos_v1";
 
