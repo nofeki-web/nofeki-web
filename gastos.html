@@ -348,13 +348,36 @@ body.dashboard-active #dashboardView.dashboard{display:grid}
 </section>
 </main>
 <footer class="foot">© <span id="year"></span> NOFEKI · Microapps simples, útiles y accionables. · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
 <script>
 "use strict";
 const SUPABASE_URL = "https://bxjgodhqseoxrnshqtfr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const LEGACY_KEY = "nofeki_gastos_v1";
-const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const authMessageEl = document.getElementById("authMessage");
+function showStartupError(text){
+  if(authMessageEl){authMessageEl.textContent=text;authMessageEl.className="message show error";}
+  const submit=document.getElementById("authSubmit");
+  if(submit){submit.disabled=true;submit.textContent="Servicio no disponible";}
+}
+if(!window.supabase || typeof window.supabase.createClient!=="function"){
+  showStartupError("No pudimos cargar el componente de inicio de sesión. Comprueba tu conexión, recarga la página e inténtalo de nuevo.");
+  throw new Error("Supabase JS client did not load.");
+}
+let client;
+try{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);}
+catch(initError){
+  showStartupError("No pudimos inicializar el inicio de sesión. Recarga la página; si el problema continúa, contacta al soporte de NOFEKI.");
+  throw initError;
+}
+window.addEventListener("error",event=>{
+  console.error("NOFEKI Gastos runtime error:",event.error||event.message);
+  const dashboard=document.getElementById("dashboardView");
+  if(dashboard && dashboard.style.display==="grid" && authMessageEl){
+    authMessageEl.textContent="Ocurrió un error al cargar tu espacio. Tus registros no se han borrado. Recarga la página e inténtalo de nuevo.";
+    authMessageEl.className="message show error";
+  }
+});
 let currentUser = null, expenses = [], authMode = "login";
 const $ = id => document.getElementById(id);
 const money = n => new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(Number(n)||0);
