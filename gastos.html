@@ -468,6 +468,17 @@ let currentUser = null, expenses = [], authMode = "login", recoveryMode = false;
 
 
 const $ = id => document.getElementById(id);
+// Activate password recovery immediately, before the rest of the app initializes.
+// This prevents later initialization/auth callbacks from leaving the login form visible.
+const initialAuthQuery = new URLSearchParams(location.search);
+const initialAuthHash = new URLSearchParams(location.hash.slice(1));
+recoveryMode = initialAuthQuery.get("mode") === "recovery" || initialAuthHash.get("type") === "recovery";
+if (recoveryMode) {
+  document.body.classList.remove("dashboard-active");
+  $("dashboardView").style.display = "none";
+  $("authView").style.display = "block";
+  setAuthMode("recovery");
+}
 const money = n => new Intl.NumberFormat("es-CO",{style:"currency",currency:"COP",maximumFractionDigits:0}).format(Number(n)||0);
 const today = () => { const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); };
 $("year").textContent = new Date().getFullYear(); $("expenseDate").value = today();
