@@ -87,6 +87,61 @@
   .metric{padding:11px 9px}
   .metric strong{font-size:15px}
 }
+
+/* NOFEKI Gastos visual refresh */
+:root{--ink:#111827;--muted:#64748b;--line:#e2e8f0;--paper:#f4f7fa;--teal:#14b8a6;--teal-dark:#0f766e;--shadow:0 24px 70px rgba(15,23,42,.09)}
+body{background:linear-gradient(180deg,#fff 0,#f4f7fa 340px);color:#111827}
+.top{height:78px;background:rgba(255,255,255,.92);border-bottom-color:#e8edf2;box-shadow:0 4px 22px rgba(15,23,42,.035)}
+.brand-logo{width:190px;max-height:48px}
+.brand-product{font-size:14px;font-weight:800;color:#0f766e}
+main{padding-top:52px}
+#authView{position:relative}
+#authView:before{content:"";position:absolute;z-index:-1;right:2%;top:0;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(20,184,166,.13),rgba(20,184,166,0) 70%)}
+#authView>.eyebrow{display:inline-flex;background:#ecfdf9;border:1px solid #c8f7ee;border-radius:999px;padding:7px 11px;letter-spacing:1.4px}
+#authView>h1{font-size:clamp(40px,5vw,58px);line-height:1.04;letter-spacing:-1.8px;margin:18px 0 14px;max-width:680px}
+.intro{font-size:16px;line-height:1.8;color:#64748b}
+.auth-wrap{max-width:490px;margin:34px auto 44px;border:1px solid #e1e8ef;border-radius:24px;padding:32px;background:rgba(255,255,255,.96);box-shadow:0 25px 70px rgba(15,23,42,.09)}
+.auth-wrap>h2{font-size:25px;letter-spacing:-.8px}
+.auth-tabs{background:#f1f5f9;border-radius:13px}
+.auth-tabs button{padding:12px}
+.auth-tabs button.active{color:#0f766e;box-shadow:0 3px 10px rgba(15,23,42,.07)}
+.field label{color:#334155}
+.field input,.field select{min-height:46px;border-color:#dbe4ec;border-radius:11px}
+.field input:focus,.field select:focus{border-color:#14b8a6;box-shadow:0 0 0 4px rgba(20,184,166,.12)}
+.btn{border-radius:10px;padding:13px 17px}
+.primary{background:#111827;box-shadow:0 7px 18px rgba(17,24,39,.12)}
+.secondary{background:#ccfbf1;color:#115e59}
+.metric,.panel{border-color:#e2e8f0;border-radius:18px;box-shadow:0 7px 24px rgba(15,23,42,.035)}
+.metric{padding:22px}
+.metric .label{font-size:12px;letter-spacing:.02em;color:#64748b}
+.metric strong{font-size:clamp(20px,2.4vw,28px);letter-spacing:-1px}
+.panel{padding:24px}
+.panel-head{padding-bottom:13px;border-bottom:1px solid #eef2f6}
+.panel h2{font-size:20px;letter-spacing:-.5px}
+.pill{background:#ccfbf1;color:#0f766e}
+.notice{background:#f0fdfa;border-color:#b8f3e7;color:#115e59}
+.table-wrap table{min-width:650px}
+th{border-bottom-color:#e2e8f0}
+td{border-bottom-color:#eef2f6}
+.foot{line-height:1.8}
+@media(max-width:850px){
+ main{padding-top:34px}
+ #authView>h1{font-size:42px}
+}
+@media(max-width:600px){
+ .top{min-height:66px;padding:10px 14px}
+ .brand-logo{width:105px}
+ main{padding:28px 13px 38px}
+ #authView>h1{font-size:36px;letter-spacing:-1.1px}
+ #authView>.eyebrow{font-size:10px}
+ .intro{font-size:14px}
+ .auth-wrap{margin:26px auto 32px;padding:23px 19px;border-radius:20px}
+ .auth-wrap>h2{font-size:22px}
+ .metric{border-radius:14px}
+ .panel{padding:16px}
+ .panel-head{border-bottom:1px solid #eef2f6}
+}
+
 </style>
 </head>
 <body>
