@@ -1,40 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100">
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1250" viewBox="0 0 2200 1250">
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#020711"/><stop offset=".52" stop-color="#06172a"/><stop offset="1" stop-color="#020813"/></linearGradient>
- <radialGradient id="glow"><stop stop-color="#16d9f4" stop-opacity=".72"/><stop offset=".42" stop-color="#0879b8" stop-opacity=".28"/><stop offset="1" stop-color="#00111f" stop-opacity="0"/></radialGradient>
- <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#d7ffff"/><stop offset=".25" stop-color="#28dff7"/><stop offset=".64" stop-color="#0878c9"/><stop offset="1" stop-color="#111d58"/></linearGradient>
- <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a1f8ff"/><stop offset=".3" stop-color="#287ddc"/><stop offset=".7" stop-color="#312c9c"/><stop offset="1" stop-color="#090f2d"/></linearGradient>
- <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".45" stop-color="#4eeaff" stop-opacity=".65"/><stop offset="1" stop-color="#2d72ff" stop-opacity=".05"/></linearGradient>
- <filter id="blur"><feGaussianBlur stdDeviation="38"/></filter>
- <filter id="soft"><feGaussianBlur stdDeviation="8"/></filter>
- <pattern id="stars" width="130" height="120" patternUnits="userSpaceOnUse"><circle cx="11" cy="23" r="1.4" fill="#a7f8ff" opacity=".55"/><circle cx="89" cy="68" r="1" fill="#fff" opacity=".48"/><circle cx="53" cy="102" r="1.6" fill="#1bc9ff" opacity=".42"/><circle cx="121" cy="15" r=".8" fill="#fff" opacity=".5"/></pattern>
+ <linearGradient id="space" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#02040d"/><stop offset=".38" stop-color="#050d25"/><stop offset=".7" stop-color="#100c31"/><stop offset="1" stop-color="#020716"/></linearGradient>
+ <radialGradient id="nebula"><stop stop-color="#2866ff" stop-opacity=".5"/><stop offset=".42" stop-color="#5634c9" stop-opacity=".2"/><stop offset="1" stop-color="#080a20" stop-opacity="0"/></radialGradient>
+ <radialGradient id="flare"><stop stop-color="#fff" stop-opacity="1"/><stop offset=".08" stop-color="#c8f8ff" stop-opacity=".9"/><stop offset=".28" stop-color="#4dbdff" stop-opacity=".28"/><stop offset="1" stop-color="#376dff" stop-opacity="0"/></radialGradient>
+ <linearGradient id="crystalA" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e9faff"/><stop offset=".17" stop-color="#6fe8ff"/><stop offset=".4" stop-color="#3978ff"/><stop offset=".68" stop-color="#552fbc"/><stop offset="1" stop-color="#090d2b"/></linearGradient>
+ <linearGradient id="crystalB" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#fff1ff"/><stop offset=".22" stop-color="#d28bff"/><stop offset=".48" stop-color="#4c61ff"/><stop offset=".76" stop-color="#09245e"/><stop offset="1" stop-color="#020817"/></linearGradient>
+ <linearGradient id="crystalC" x1="0" y1="0" x2="1" y2=".4"><stop stop-color="#a7f8ff"/><stop offset=".22" stop-color="#3caaff"/><stop offset=".5" stop-color="#6a39d4"/><stop offset=".78" stop-color="#17194b"/><stop offset="1" stop-color="#030817"/></linearGradient>
+ <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#8beaff" stop-opacity=".85"/><stop offset=".72" stop-color="#a56fff" stop-opacity=".5"/><stop offset="1" stop-color="#4d7fff" stop-opacity=".08"/></linearGradient>
+ <filter id="blur48"><feGaussianBlur stdDeviation="48"/></filter><filter id="blur18"><feGaussianBlur stdDeviation="18"/></filter><filter id="blur5"><feGaussianBlur stdDeviation="5"/></filter>
+ <pattern id="stars" width="157" height="139" patternUnits="userSpaceOnUse"><circle cx="13" cy="19" r="1.2" fill="#b7d9ff" opacity=".55"/><circle cx="84" cy="65" r=".8" fill="#fff" opacity=".6"/><circle cx="140" cy="111" r="1.4" fill="#75aaff" opacity=".5"/><circle cx="41" cy="126" r=".7" fill="#f1cfff" opacity=".5"/><circle cx="116" cy="28" r=".6" fill="#fff" opacity=".6"/></pattern>
 </defs>
-<rect width="1800" height="1100" fill="url(#bg)"/>
-<rect width="1800" height="1100" fill="url(#stars)" opacity=".85"/>
-<ellipse cx="1230" cy="510" rx="600" ry="520" fill="url(#glow)"/>
-<path d="M610 880 C860 680 1000 820 1180 575 S1500 350 1800 480" fill="none" stroke="#05d7ff" stroke-width="70" opacity=".12" filter="url(#blur)"/>
-<path d="M620 875 C870 710 1030 810 1210 570 S1530 365 1800 470" fill="none" stroke="#16d9f4" stroke-width="3" opacity=".8"/>
-<path d="M700 910 C950 735 1060 850 1270 620 S1540 430 1800 530" fill="none" stroke="#7c75ff" stroke-width="2" opacity=".55"/>
-<g opacity=".92">
- <path d="M1050 170 L1305 325 L1235 625 L1000 720 L850 475 Z" fill="url(#blue)" stroke="url(#edge)" stroke-width="2"/>
- <path d="M1050 170 L1115 435 L1305 325 Z" fill="#b9f8ff" fill-opacity=".68"/>
- <path d="M1115 435 L1235 625 L1305 325 Z" fill="#16c5f0" fill-opacity=".7"/>
- <path d="M1115 435 L1000 720 L1235 625 Z" fill="#1d5fc1" fill-opacity=".85"/>
- <path d="M1115 435 L850 475 L1000 720 Z" fill="#0b2c6d" fill-opacity=".9"/>
- <path d="M1050 170 L850 475 L1115 435 Z" fill="#6b8cff" fill-opacity=".6"/>
- <path d="M1050 170 L1115 435 L1305 325 L1235 625 L1000 720 L850 475 Z" fill="none" stroke="#d8ffff" stroke-opacity=".6" stroke-width="1.5"/>
+<rect width="2200" height="1250" fill="url(#space)"/>
+<rect width="2200" height="1250" fill="url(#stars)" opacity=".82"/>
+<ellipse cx="1570" cy="510" rx="820" ry="730" fill="url(#nebula)"/>
+<ellipse cx="1750" cy="300" rx="510" ry="390" fill="#2637d7" opacity=".12" filter="url(#blur48)"/>
+<ellipse cx="1430" cy="840" rx="650" ry="260" fill="#832dff" opacity=".12" filter="url(#blur48)"/>
+<!-- sweeping light ribbons integrated into the atmosphere -->
+<path d="M580 1050 C900 720 1120 1020 1370 690 S1810 330 2200 420" fill="none" stroke="#2778ff" stroke-width="100" opacity=".13" filter="url(#blur48)"/>
+<path d="M480 1060 C900 790 1130 1010 1410 680 S1830 380 2200 440" fill="none" stroke="#20d9ff" stroke-width="34" opacity=".16" filter="url(#blur18)"/>
+<path d="M450 1070 C900 810 1130 1010 1410 680 S1830 380 2200 440" fill="none" stroke="#66e9ff" stroke-width="2.5" opacity=".72"/>
+<path d="M530 1110 C950 870 1170 1040 1460 740 S1860 455 2200 505" fill="none" stroke="#b879ff" stroke-width="2" opacity=".55"/>
+<ellipse cx="1690" cy="420" rx="360" ry="360" fill="url(#flare)" opacity=".75"/>
+<!-- main fractured crystal cluster: many irregular glass planes, not a single geometric orb -->
+<g transform="translate(1420 535) rotate(-8)">
+ <path d="M-180 -260 L-25 -390 L150 -285 L235 -100 L145 145 L-30 260 L-225 95 L-285 -90 Z" fill="#237bff" opacity=".16" filter="url(#blur18)"/>
+ <path d="M-180 -260 L-25 -390 L150 -285 L235 -100 L145 145 L-30 260 L-225 95 L-285 -90 Z" fill="url(#crystalA)" stroke="url(#edge)" stroke-width="3"/>
+ <path d="M-180 -260 L-25 -390 L-45 -105 L-285 -90 Z" fill="#a6edff" fill-opacity=".42"/>
+ <path d="M-25 -390 L150 -285 L-45 -105 Z" fill="#f3dcff" fill-opacity=".62"/>
+ <path d="M150 -285 L235 -100 L-45 -105 Z" fill="#4c9eff" fill-opacity=".78"/>
+ <path d="M235 -100 L145 145 L-45 -105 Z" fill="#2929a2" fill-opacity=".8"/>
+ <path d="M145 145 L-30 260 L-45 -105 Z" fill="#0b1d5e" fill-opacity=".88"/>
+ <path d="M-30 260 L-225 95 L-45 -105 Z" fill="#2f59c8" fill-opacity=".82"/>
+ <path d="M-225 95 L-285 -90 L-45 -105 Z" fill="#0a1646" fill-opacity=".92"/>
+ <path d="M-180 -260 L-45 -105 L-25 -390" fill="none" stroke="#fff" stroke-opacity=".62" stroke-width="2"/>
+ <path d="M-45 -105 L150 -285 M-45 -105 L145 145 M-45 -105 L-30 260" fill="none" stroke="#bdf6ff" stroke-opacity=".42" stroke-width="1.6"/>
 </g>
-<g opacity=".7">
- <path d="M1430 190 L1515 285 L1455 400 L1395 300 Z" fill="url(#cyan)" stroke="#c9ffff" stroke-opacity=".7"/>
- <path d="M1535 600 L1680 665 L1605 795 L1480 710 Z" fill="url(#blue)" stroke="#9df7ff" stroke-opacity=".5"/>
- <path d="M830 265 L900 320 L855 405 L795 350 Z" fill="url(#blue)" stroke="#9df7ff" stroke-opacity=".55"/>
- <path d="M1345 775 L1410 835 L1360 900 L1295 850 Z" fill="url(#cyan)" stroke="#9df7ff" stroke-opacity=".5"/>
+<!-- long blade shard -->
+<g transform="translate(1775 340) rotate(19)">
+ <path d="M-95 -270 L40 -355 L100 -30 L18 170 L-55 40 Z" fill="url(#crystalB)" stroke="url(#edge)" stroke-width="2.5"/>
+ <path d="M-95 -270 L18 0 L40 -355 Z" fill="#e4c5ff" fill-opacity=".58"/>
+ <path d="M18 0 L100 -30 L18 170 Z" fill="#2c83ff" fill-opacity=".68"/>
+ <path d="M-95 -270 L18 0 L-55 40 Z" fill="#17185b" fill-opacity=".8"/>
 </g>
-<g fill="#b9faff">
- <circle cx="885" cy="215" r="3"/><circle cx="955" cy="310" r="2"/><circle cx="1400" cy="490" r="3"/><circle cx="1500" cy="385" r="2"/><circle cx="1180" cy="800" r="3"/><circle cx="1590" cy="260" r="2"/><circle cx="990" cy="840" r="2"/><circle cx="1700" cy="570" r="3"/><circle cx="1310" cy="180" r="2"/><circle cx="1465" cy="865" r="2"/>
+<!-- foreground crystal, softly cropped at right edge -->
+<g transform="translate(2020 820) rotate(-16)">
+ <path d="M-240 -120 L-30 -310 L205 -125 L165 120 L-30 260 L-210 95 Z" fill="url(#crystalB)" stroke="url(#edge)" stroke-width="3"/>
+ <path d="M-240 -120 L-30 -310 L-35 -40 Z" fill="#e0c4ff" fill-opacity=".62"/>
+ <path d="M-30 -310 L205 -125 L-35 -40 Z" fill="#63caff" fill-opacity=".64"/>
+ <path d="M205 -125 L165 120 L-35 -40 Z" fill="#2c42bd" fill-opacity=".82"/>
+ <path d="M165 120 L-30 260 L-35 -40 Z" fill="#11113f" fill-opacity=".88"/>
+ <path d="M-30 260 L-210 95 L-35 -40 Z" fill="#2146a2" fill-opacity=".8"/>
 </g>
-<g fill="#16d9f4" opacity=".65">
- <circle cx="780" cy="620" r="4"/><circle cx="930" cy="720" r="3"/><circle cx="1380" cy="240" r="4"/><circle cx="1625" cy="460" r="3"/><circle cx="1170" cy="300" r="2"/><circle cx="1520" cy="760" r="4"/>
-</g>
-<rect width="1800" height="1100" fill="url(#bg)" opacity=".08"/>
+<!-- smaller floating shards with distinct facets -->
+<g transform="translate(1070 325) rotate(17)"><path d="M-60 -90 L18 -145 L72 -40 L12 78 L-55 25 Z" fill="url(#crystalC)" stroke="#c4f8ff" stroke-opacity=".65" stroke-width="2"/><path d="M-60 -90 L12 -15 L18 -145 Z" fill="#e7fbff" fill-opacity=".62"/><path d="M12 -15 L72 -40 L12 78 Z" fill="#653ed0" fill-opacity=".72"/></g>
+<g transform="translate(1175 835) rotate(-24)"><path d="M-90 -35 L20 -125 L105 -20 L20 95 L-80 60 Z" fill="url(#crystalB)" stroke="#9eeaff" stroke-opacity=".65" stroke-width="2"/><path d="M-90 -35 L20 -15 L20 -125 Z" fill="#e2c8ff" fill-opacity=".55"/><path d="M20 -15 L105 -20 L20 95 Z" fill="#1744a4" fill-opacity=".8"/></g>
+<g transform="translate(1900 130) rotate(23)"><path d="M-45 -75 L35 -100 L80 -15 L5 75 L-50 20 Z" fill="url(#crystalA)" stroke="#c6faff" stroke-opacity=".7" stroke-width="2"/><path d="M-45 -75 L5 -10 L35 -100 Z" fill="#f2e5ff" fill-opacity=".7"/></g>
+<g transform="translate(1630 1010) rotate(11)"><path d="M-60 -70 L25 -95 L65 -10 L0 80 L-70 15 Z" fill="url(#crystalC)" stroke="#8ceeff" stroke-opacity=".55" stroke-width="2"/><path d="M-60 -70 L0 -10 L25 -95 Z" fill="#c5faff" fill-opacity=".58"/></g>
+<g transform="translate(2100 460) rotate(36)"><path d="M-75 -70 L15 -120 L75 -25 L15 95 L-65 30 Z" fill="url(#crystalA)" stroke="#9cf5ff" stroke-opacity=".5" stroke-width="2"/><path d="M-75 -70 L15 -20 L15 -120 Z" fill="#c0d7ff" fill-opacity=".65"/></g>
+<!-- glints, floating dust and depth points -->
+<g fill="#e8faff"><circle cx="1230" cy="190" r="2.4"/><circle cx="1550" cy="190" r="2"/><circle cx="1670" cy="610" r="2.5"/><circle cx="1870" cy="560" r="3"/><circle cx="1420" cy="880" r="2"/><circle cx="1960" cy="300" r="2.4"/><circle cx="1330" cy="360" r="1.8"/><circle cx="1740" cy="930" r="2.4"/><circle cx="1120" cy="680" r="1.6"/><circle cx="2040" cy="680" r="2.4"/><circle cx="1490" cy="1040" r="1.8"/><circle cx="1800" cy="240" r="1.7"/></g>
+<g fill="#8c9cff"><circle cx="1030" cy="480" r="3"/><circle cx="1300" cy="760" r="2.4"/><circle cx="1590" cy="270" r="3"/><circle cx="1830" cy="710" r="2.5"/><circle cx="2120" cy="930" r="3"/><circle cx="1440" cy="105" r="2.4"/><circle cx="1710" cy="510" r="1.8"/></g>
+<g fill="#f1baff"><circle cx="1190" cy="240" r="2.5"/><circle cx="1630" cy="390" r="2"/><circle cx="1900" cy="870" r="2.5"/><circle cx="1480" cy="680" r="1.6"/><circle cx="2080" cy="220" r="2.3"/></g>
+<circle cx="1590" cy="430" r="190" fill="url(#flare)" opacity=".36"/>
+<!-- subtle edge vignette; art remains a full-bleed scene -->
+<rect width="2200" height="1250" fill="none" stroke="#01030a" stroke-width="90" opacity=".35"/>
 </svg>
