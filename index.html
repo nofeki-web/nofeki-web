@@ -1052,6 +1052,41 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.card,.btn{transition:none}}
 
+
+/* Hero final sin ilustración: composición tipográfica protagonista */
+.hero{
+  min-height:clamp(640px,78vh,790px);
+  background:
+    radial-gradient(ellipse at 78% 42%,rgba(45,88,180,.22) 0%,rgba(15,34,76,.12) 27%,transparent 55%),
+    radial-gradient(ellipse at 92% 15%,rgba(54,211,232,.10) 0%,transparent 34%),
+    linear-gradient(125deg,#030713 0%,#071126 56%,#040916 100%);
+}
+.hero:before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;
+  background-image:radial-gradient(circle,rgba(188,216,255,.8) .65px,transparent .9px);
+  background-size:47px 47px;
+  mask-image:linear-gradient(100deg,transparent 8%,#000 65%,transparent 100%);
+}
+.hero-layout{grid-template-columns:minmax(0,900px);min-height:clamp(640px,78vh,790px);align-items:center;z-index:1}
+.hero-copy{max-width:900px;padding:clamp(92px,13vh,150px) 0}
+.hero h1{max-width:900px;font-size:clamp(56px,7.4vw,104px);line-height:.94;letter-spacing:-.085em;margin:26px 0 28px}
+.hero h1 em{color:#75eafa;background:linear-gradient(100deg,#f3f8ff 0%,#76eafa 52%,#a7a0ff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{max-width:590px;color:#c1cce0;font-size:18px;line-height:1.8}
+.hero-image{display:none!important}
+@media(max-width:800px){
+ .hero,.hero-layout{min-height:700px}
+ .hero-copy{padding:96px 0 78px}
+ .hero h1{font-size:clamp(48px,10vw,76px)}
+ .hero p{font-size:16px}
+}
+@media(max-width:520px){
+ .hero,.hero-layout{min-height:680px}
+ .hero-copy{padding:80px 0 66px}
+ .hero h1{font-size:clamp(43px,11.2vw,58px);line-height:.97}
+ .hero p{font-size:15px}
+ .hero-actions{flex-wrap:wrap}
+}
+
 </style>
 </head>
 
@@ -1137,18 +1172,6 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
         </a>
 
       </div>
-
-    </div>
-
-
-    <!-- IMAGEN REAL, SIN BACKGROUND-COVER -->
-
-    <div class="hero-image">
-
-      <img
-        src="assets/nofeki-cinematic-hero.svg"
-        alt="Operación moderna de supply chain, inventario y logística"
-      >
 
     </div>
 
