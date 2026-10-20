@@ -1189,6 +1189,23 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 }
 
 /* Cinematic image-led hero integration */
+/* Refinamiento visual: la imagen cinematográfica ya contiene sus propios paneles */
+.hero-product-visual{display:none!important}
+.hero-copy{position:relative;z-index:2;max-width:700px!important;padding:100px 0 110px!important}
+.hero h1{max-width:700px!important;text-shadow:0 2px 24px rgba(0,0,0,.18)}
+.hero p{max-width:540px!important}
+.hero-shade{background:linear-gradient(90deg,rgba(3,12,22,.97) 0%,rgba(3,12,22,.88) 31%,rgba(3,12,22,.55) 51%,rgba(3,12,22,.08) 100%),linear-gradient(0deg,rgba(3,12,22,.36),transparent 42%)!important}
+@media(max-width:800px){
+ .hero-copy{padding:76px 0 86px!important}
+ .hero-shade{background:linear-gradient(180deg,rgba(3,12,22,.92) 0%,rgba(3,12,22,.78) 60%,rgba(3,12,22,.38) 100%)!important}
+}
+@media(max-width:520px){
+ .hero-copy{padding:56px 0 64px!important}
+ .hero h1{font-size:clamp(36px,9.1vw,44px)!important}
+ .hero-actions{flex-direction:column;align-items:stretch}
+ .hero-actions .btn{width:100%;box-sizing:border-box;text-align:center}
+}
+
 .hero{position:relative;isolation:isolate;overflow:hidden;min-height:740px;background:#06121d;color:#fff}
 .hero-backdrop{position:absolute;inset:0;z-index:-2;background-image:url("/assets/hero-supply-chain-clean.jpg");background-size:cover;background-position:center 48%;transform:scale(1.02)}
 .hero-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,12,22,.98) 0%,rgba(3,12,22,.94) 29%,rgba(3,12,22,.72) 49%,rgba(3,12,22,.16) 100%),linear-gradient(0deg,rgba(3,12,22,.72),transparent 45%)}
