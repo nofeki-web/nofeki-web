@@ -1087,6 +1087,51 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
  .hero-actions{flex-wrap:wrap}
 }
 
+
+/* ===== NOFEKI hero impact · slogan + product composition ===== */
+.hero{min-height:clamp(700px,86vh,860px);background:radial-gradient(ellipse at 78% 43%,rgba(51,105,230,.18),transparent 39%),radial-gradient(ellipse at 85% 18%,rgba(67,232,244,.12),transparent 32%),linear-gradient(125deg,#030713 0%,#071126 57%,#040916 100%)}
+.hero-layout{width:min(1320px,92%);min-height:clamp(700px,86vh,860px);display:grid;grid-template-columns:minmax(0,1.03fr) minmax(380px,.97fr);align-items:center;gap:clamp(20px,4vw,60px);overflow:visible}
+.hero-copy{width:auto;max-width:720px;margin:0;padding:clamp(85px,11vh,125px) 0;z-index:4}
+.hero h1{font-size:clamp(54px,6.3vw,88px);max-width:790px;line-height:.94;letter-spacing:-.085em;margin:28px 0}
+.hero p{max-width:520px;font-size:17px;line-height:1.8}
+.hero-product-visual{position:relative;min-width:0;min-height:520px;display:flex;align-items:center;justify-content:center;isolation:isolate}
+.hero-product-visual:before{content:"";position:absolute;inset:12% 2%;border-radius:50%;background:radial-gradient(ellipse,rgba(55,115,255,.2),rgba(67,232,244,.06) 42%,transparent 70%);filter:blur(18px);z-index:-2}
+.visual-orbit{position:absolute;border:1px solid rgba(112,174,255,.15);border-radius:50%;transform:rotate(-24deg);pointer-events:none}
+.orbit-one{width:112%;height:48%}
+.orbit-two{width:100%;height:67%;transform:rotate(34deg);border-color:rgba(67,232,244,.12)}
+.visual-panel{position:relative;width:min(100%,510px);padding:25px;border:1px solid rgba(166,198,255,.24);border-radius:23px;background:linear-gradient(145deg,rgba(19,34,65,.94),rgba(5,12,28,.96) 72%);box-shadow:0 35px 100px rgba(0,0,0,.42),0 0 60px rgba(56,116,255,.12);backdrop-filter:blur(18px);transform:perspective(1200px) rotateY(-5deg) rotateX(2deg)}
+.visual-panel:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(67,232,244,.08),transparent 40%,rgba(125,110,255,.08))}
+.visual-panel-head,.visual-brand,.visual-live,.visual-panel-foot,.visual-chart-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.visual-panel-head{position:relative;padding-bottom:19px;border-bottom:1px solid rgba(170,200,255,.13)}
+.visual-brand{justify-content:flex-start;color:#f4f8ff;font-size:12px;font-weight:850;letter-spacing:.06em}
+.visual-brand small{display:block;color:#91a6c8;font-size:8px;font-weight:650;letter-spacing:.19em;margin-top:3px}
+.visual-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(140deg,#7cf3ff,#5d7cff);color:#04101d;font-size:20px;font-weight:950;box-shadow:0 0 24px rgba(67,232,244,.22)}
+.visual-live{font-size:8px;letter-spacing:.1em;color:#a7c2df}
+.visual-live i,.visual-panel-foot i{display:inline-block;width:6px;height:6px;border-radius:50%;background:#5cf0cf;box-shadow:0 0 12px rgba(92,240,207,.8)}
+.visual-greeting{position:relative;padding:25px 0 19px}
+.visual-greeting span,.visual-metrics span,.visual-float small{display:block;color:#7f9abb;font-size:8px;letter-spacing:.18em;font-weight:750}
+.visual-greeting b{display:block;margin-top:8px;color:#f3f7ff;font-size:25px;letter-spacing:-.055em}
+.visual-greeting small{display:block;margin-top:5px;color:#a4b4cd;font-size:11px}
+.visual-metrics{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.visual-metrics>div{padding:14px 12px;border-radius:12px;border:1px solid rgba(148,184,245,.14);background:rgba(179,207,255,.045)}
+.visual-metrics b{display:block;margin:8px 0 3px;font-size:27px;line-height:1;color:#8beefa;letter-spacing:-.06em}
+.visual-metrics small{color:#a6b6d0;font-size:10px}
+.visual-chart-head{position:relative;margin-top:23px;color:#dce9fb;font-size:10px}
+.visual-chart-head span+span{color:#7f94b5;font-size:8px;letter-spacing:.1em}
+.visual-chart{position:relative;height:88px;display:flex;align-items:end;gap:7px;padding:13px 0 0;margin-top:6px;background:repeating-linear-gradient(to bottom,transparent 0,transparent 21px,rgba(155,187,245,.09) 22px,transparent 23px)}
+.visual-chart i{display:block;flex:1;min-width:4px;height:var(--h,50%);border-radius:4px 4px 1px 1px;background:linear-gradient(180deg,#64eafa,#5478ed 85%,rgba(84,120,237,.35));box-shadow:0 0 15px rgba(77,178,255,.12)}
+.visual-chart i:nth-child(1){height:24%}.visual-chart i:nth-child(2){height:38%}.visual-chart i:nth-child(3){height:32%}.visual-chart i:nth-child(4){height:51%}.visual-chart i:nth-child(5){height:43%}.visual-chart i:nth-child(6){height:64%}.visual-chart i:nth-child(7){height:54%}.visual-chart i:nth-child(8){height:70%}.visual-chart i:nth-child(9){height:60%}.visual-chart i:nth-child(10){height:82%}.visual-chart i:nth-child(11){height:73%}.visual-chart i:nth-child(12){height:94%}
+.visual-panel-foot{position:relative;margin-top:18px;padding-top:15px;border-top:1px solid rgba(170,200,255,.13);font-size:9px;color:#9fb2ce}
+.visual-panel-foot span:first-child{display:flex;align-items:center;gap:7px}
+.visual-float{position:absolute;z-index:2;display:flex;align-items:center;gap:11px;padding:13px 16px;border-radius:13px;border:1px solid rgba(168,202,255,.23);background:rgba(7,17,38,.88);box-shadow:0 18px 50px rgba(0,0,0,.3);backdrop-filter:blur(16px)}
+.visual-float b{display:block;margin-top:4px;color:#f2f7ff;font-size:11px;white-space:nowrap}
+.float-icon{display:grid;place-items:center;width:31px;height:31px;border-radius:9px;background:rgba(67,232,244,.12);color:#72eff9;font-size:20px}
+.float-top{top:13%;right:-1%}
+.float-bottom{bottom:13%;left:-3%}
+@media(max-width:1000px){.hero-layout{grid-template-columns:minmax(0,1fr) minmax(320px,.9fr);gap:20px}.hero h1{font-size:clamp(48px,6vw,68px)}.hero-product-visual{min-height:460px}.visual-panel{padding:20px}.float-top{right:-2%}.float-bottom{left:-1%}}
+@media(max-width:800px){.hero,.hero-layout{min-height:auto}.hero-layout{width:90%;display:flex;flex-direction:column;align-items:stretch;gap:0}.hero-copy{width:100%;padding:80px 0 26px}.hero h1{font-size:clamp(49px,10vw,76px);max-width:700px}.hero p{font-size:16px}.hero-product-visual{min-height:450px;margin:0 0 50px}.visual-panel{width:min(100%,520px);transform:none}.float-top{top:2%;right:0}.float-bottom{bottom:1%;left:0}}
+@media(max-width:520px){.hero-copy{padding:64px 0 20px}.hero h1{font-size:clamp(43px,11.3vw,58px);line-height:.97}.hero p{font-size:15px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .btn{width:100%}.hero-product-visual{min-height:390px;margin-bottom:45px}.visual-panel{padding:16px;border-radius:18px}.visual-greeting b{font-size:21px}.visual-metrics{gap:6px}.visual-metrics>div{padding:11px 8px}.visual-metrics b{font-size:23px}.visual-float{padding:10px 12px}.visual-float b{font-size:10px}.float-top{top:0}.float-bottom{bottom:0}}
+
 </style>
 </head>
 
@@ -1146,7 +1191,7 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
       </div>
 
       <h1>
-        Menos tiempo operando.<br><em>Más tiempo creando valor.</em>
+        Menos tiempo operando.<br><em>Más tiempo generando valor.</em>
       </h1>
 
       <p>
@@ -1171,6 +1216,28 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
           Explorar microapps
         </a>
 
+      </div>
+
+      <div class="hero-product-visual" aria-label="Vista conceptual de la plataforma NOFEKI">
+        <div class="visual-orbit orbit-one"></div>
+        <div class="visual-orbit orbit-two"></div>
+        <div class="visual-panel">
+          <div class="visual-panel-head">
+            <div class="visual-brand"><span class="visual-mark">N</span><span>NOFEKI <small>INTELLIGENCE</small></span></div>
+            <span class="visual-live"><i></i> EN TIEMPO REAL</span>
+          </div>
+          <div class="visual-greeting"><span>VISIÓN GENERAL</span><b>Decisiones más claras.</b><small>Operaciones y finanzas, en una sola vista.</small></div>
+          <div class="visual-metrics">
+            <div><span>CONTROL</span><b>01</b><small>Visibilidad</small></div>
+            <div><span>ANÁLISIS</span><b>02</b><small>Perspectiva</small></div>
+            <div><span>ACCIÓN</span><b>03</b><small>Resultados</small></div>
+          </div>
+          <div class="visual-chart-head"><span>De información a acción</span><span>NOFEKI / 2026</span></div>
+          <div class="visual-chart" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="visual-panel-foot"><span><i></i> Datos organizados</span><span>Menos fricción. Más valor.</span></div>
+        </div>
+        <div class="visual-float float-top"><span class="float-icon">↗</span><span><small>ENFOQUE</small><b>Lo importante, primero.</b></span></div>
+        <div class="visual-float float-bottom"><span class="float-icon">✳</span><span><small>ECOSISTEMA</small><b>Herramientas conectadas.</b></span></div>
       </div>
 
     </div>
