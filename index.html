@@ -1163,6 +1163,13 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
   .hero h1 em{display:inline}
 }
 
+
+/* Optical safety margin for the headline's final glyph on iPhone */
+@media(max-width:520px){
+  .hero-layout{padding-left:22px!important;padding-right:26px!important}
+  .hero h1{font-size:clamp(36px,9.1vw,44px)!important;letter-spacing:-.035em!important;padding-right:5px!important}
+}
+
 </style>
 </head>
 
