@@ -1148,12 +1148,11 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 }
 
 
-/* Hard-fit the slogan on narrow phones: avoid glyph clipping at the right edge */
+/* Preserve the bold desktop/mobile headline; fix clipping through layout, not tiny type */
 @media(max-width:520px){
-  .hero-layout{width:100%!important;padding-left:18px;padding-right:18px;box-sizing:border-box}
+  .hero-layout{width:100%!important;padding-left:18px;padding-right:18px;box-sizing:border-box;overflow:visible!important}
   .hero-copy{width:100%!important;max-width:100%!important;box-sizing:border-box;overflow:visible!important}
-  .hero h1{box-sizing:border-box;width:100%!important;max-width:100%!important;font-size:clamp(32px,8.2vw,40px)!important;line-height:1.08!important;letter-spacing:-.035em!important;overflow:visible!important;white-space:normal!important;overflow-wrap:break-word!important;word-break:normal!important}
-  .hero h1 em{overflow-wrap:break-word}
+  .hero h1{box-sizing:border-box;width:100%!important;max-width:100%!important;font-size:clamp(43px,10.6vw,56px)!important;line-height:.98!important;letter-spacing:-.055em!important;overflow:visible!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;padding-right:.08em}
 }
 
 </style>
