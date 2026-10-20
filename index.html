@@ -1132,6 +1132,13 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 @media(max-width:800px){.hero,.hero-layout{min-height:auto}.hero-layout{width:90%;display:flex;flex-direction:column;align-items:stretch;gap:0}.hero-copy{width:100%;padding:80px 0 26px}.hero h1{font-size:clamp(49px,10vw,76px);max-width:700px}.hero p{font-size:16px}.hero-product-visual{min-height:450px;margin:0 0 50px}.visual-panel{width:min(100%,520px);transform:none}.float-top{top:2%;right:0}.float-bottom{bottom:1%;left:0}}
 @media(max-width:520px){.hero-copy{padding:64px 0 20px}.hero h1{font-size:clamp(43px,11.3vw,58px);line-height:.97}.hero p{font-size:15px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .btn{width:100%}.hero-product-visual{min-height:390px;margin-bottom:45px}.visual-panel{padding:16px;border-radius:18px}.visual-greeting b{font-size:21px}.visual-metrics{gap:6px}.visual-metrics>div{padding:11px 8px}.visual-metrics b{font-size:23px}.visual-float{padding:10px 12px}.visual-float b{font-size:10px}.float-top{top:0}.float-bottom{bottom:0}}
 
+
+/* Mobile headline safety: prevent the final glyph from clipping on narrow screens */
+@media(max-width:520px){
+  .hero-copy{min-width:0}
+  .hero h1{font-size:clamp(39px,10vw,52px);letter-spacing:-.065em;overflow-wrap:normal;word-break:normal;max-width:100%;padding-right:.04em}
+}
+
 </style>
 </head>
 
