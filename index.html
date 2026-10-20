@@ -1170,6 +1170,41 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
   .hero h1{font-size:clamp(36px,9.1vw,44px)!important;letter-spacing:-.035em!important;padding-right:5px!important}
 }
 
+
+/* Cinematic image-led hero integration */
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:740px;background:#06121d;color:#fff}
+.hero-backdrop{position:absolute;inset:0;z-index:-2;background-image:url("https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=2200&q=85");background-size:cover;background-position:center 48%;transform:scale(1.02)}
+.hero-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,12,22,.98) 0%,rgba(3,12,22,.94) 29%,rgba(3,12,22,.72) 49%,rgba(3,12,22,.16) 100%),linear-gradient(0deg,rgba(3,12,22,.72),transparent 45%)}
+.hero-layout{width:min(1320px,90%);min-height:740px;grid-template-columns:minmax(0,1fr);align-items:center}
+.hero-copy{max-width:760px;padding:100px 0 150px}
+.hero .eyebrow{background:rgba(4,25,38,.7);border:1px solid rgba(45,229,225,.36);color:#72f4ef}
+.hero h1{font-size:clamp(48px,6.2vw,82px);line-height:.98;letter-spacing:-.065em;max-width:780px;color:#fff;text-wrap:balance}
+.hero h1 em{color:#4ce9e1;background:linear-gradient(100deg,#57f1e8 0%,#74c8ff 68%,#b49aff 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{max-width:590px;color:#d2deea;font-size:19px;line-height:1.65}
+.hero .btn.primary{background:#25dce0;border-color:#25dce0;color:#041522;box-shadow:0 10px 34px rgba(37,220,224,.23)}
+.hero .btn:not(.primary){background:rgba(3,17,30,.46);border-color:rgba(221,240,255,.62);color:#f4fbff}
+.hero-product-visual{position:absolute;right:0;bottom:-145px;width:min(58%,720px);min-height:0;margin:0;opacity:.96;transform:perspective(1200px) rotateY(-7deg) rotateX(2deg);filter:drop-shadow(0 35px 55px rgba(0,0,0,.45))}
+.visual-panel{background:rgba(3,13,28,.9);border-color:rgba(112,228,255,.3);backdrop-filter:blur(18px)}
+.visual-greeting b{color:#f4fbff}.visual-metrics>div{background:rgba(95,205,255,.06)}
+@media(max-width:800px){
+ .hero{min-height:auto}
+ .hero-backdrop{background-position:58% center}
+ .hero-shade{background:linear-gradient(180deg,rgba(3,12,22,.91) 0%,rgba(3,12,22,.86) 55%,rgba(3,12,22,.48) 100%)}
+ .hero-layout{width:100%;min-height:auto;padding:0 22px;display:block}
+ .hero-copy{width:100%;padding:68px 0 300px;margin:0}
+ .hero h1{font-size:clamp(39px,9.4vw,58px)!important;line-height:1.02!important;letter-spacing:-.045em!important;max-width:100%;padding-right:4px}
+ .hero p{font-size:16px}
+ .hero-product-visual{width:105%;right:-2%;bottom:-30px;transform:none}
+ .visual-float{display:none}
+}
+@media(max-width:520px){
+ .hero-copy{padding:58px 0 245px}
+ .hero .eyebrow{font-size:9px;letter-spacing:.08em;max-width:100%;line-height:1.6}
+ .hero h1{font-size:clamp(36px,9.1vw,44px)!important;letter-spacing:-.035em!important;line-height:1.04!important}
+ .hero-actions{gap:10px}
+ .hero-product-visual{width:112%;right:-6%;bottom:-15px}
+}
+
 </style>
 </head>
 
@@ -1220,6 +1255,8 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 
 <header id="inicio" class="hero">
 
+  <div class="hero-backdrop" aria-hidden="true"></div>
+  <div class="hero-shade" aria-hidden="true"></div>
   <div class="hero-layout">
 
     <div class="hero-copy">
