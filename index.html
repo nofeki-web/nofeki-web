@@ -894,6 +894,46 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
  .nav .nav-cta{display:none}
  .menu-toggle{padding:9px 11px}
 }
+
+/* ===== NOFEKI cinematic hero integration · Oct 2026 ===== */
+.nav{background:rgba(3,10,22,.96);border-bottom:1px solid rgba(125,211,252,.12);box-shadow:0 8px 30px rgba(0,0,0,.18);color:#f8fafc}
+.nav .links{color:#dbeafe}
+.nav .links a:hover{color:#22d3ee}
+.nav .brand-logo{filter:brightness(0) invert(1)}
+.nav .btn.primary{background:#12d7ef;border-color:#12d7ef;color:#03121d}
+.hero{background:#020914;color:#f8fafc;min-height:700px}
+.hero-layout{width:100%;max-width:none;min-height:700px;display:block;position:relative;isolation:isolate;overflow:hidden}
+.hero-copy{width:min(1200px,92%);max-width:1200px;margin:0 auto;padding:150px 0 110px;z-index:5}
+.hero .eyebrow{color:#45e5f6;letter-spacing:.2em;font-size:11px}
+.hero h1{font-size:clamp(52px,7vw,88px);line-height:.96;letter-spacing:-.075em;max-width:720px;color:#f8fbff;text-shadow:0 5px 35px rgba(0,0,0,.25)}
+.hero h1 em{color:#32dff4;font-style:normal}
+.hero p{color:#d3e1ee;font-size:18px;line-height:1.75;max-width:570px}
+.hero .btn.primary{background:#12d7ef;border-color:#12d7ef;color:#03121d}
+.hero .btn:not(.primary){background:rgba(5,18,32,.35);border-color:rgba(180,220,245,.55);color:#f8fafc}
+.hero-image{position:absolute;z-index:-1;inset:0;top:0;right:0;width:100%;height:100%;border:0;border-radius:0;box-shadow:none;background:#020914;overflow:hidden}
+.hero-image img{width:100%;height:100%;max-height:none;object-fit:cover;object-position:center;transform:none;opacity:.96}
+.hero-image:before{background:linear-gradient(90deg,#020914 0%,rgba(2,9,20,.96) 25%,rgba(2,9,20,.72) 43%,rgba(2,9,20,.12) 72%,rgba(2,9,20,.15) 100%);opacity:1}
+.hero-image:after{background:linear-gradient(0deg,#020914 0%,rgba(2,9,20,.16) 26%,transparent 60%,rgba(2,9,20,.3) 100%)}
+@media(max-width:800px){
+ .nav{background:#030b17}
+ .hero{min-height:690px}
+ .hero-layout{min-height:690px;display:block}
+ .hero-copy{width:90%;padding:105px 0 70px}
+ .hero h1{font-size:clamp(44px,10vw,64px)}
+ .hero-image{position:absolute;inset:0;width:100%;height:100%;margin:0;min-height:0}
+ .hero-image img{height:100%;object-fit:cover;object-position:62% center}
+ .hero-image:before{background:linear-gradient(90deg,rgba(2,9,20,.97),rgba(2,9,20,.82) 38%,rgba(2,9,20,.28) 100%)}
+ .hero-image:after{background:linear-gradient(0deg,#020914 0%,transparent 45%,rgba(2,9,20,.25) 100%)}
+}
+@media(max-width:520px){
+ .hero{min-height:700px}
+ .hero-layout{min-height:700px}
+ .hero-copy{padding:100px 0 70px}
+ .hero h1{font-size:clamp(42px,11.5vw,56px)}
+ .hero p{font-size:16px}
+ .hero-image img{object-position:60% center}
+}
+
 </style>
 </head>
 
