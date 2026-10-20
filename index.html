@@ -1139,6 +1139,14 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
   .hero h1{font-size:clamp(39px,10vw,52px);letter-spacing:-.065em;overflow-wrap:normal;word-break:normal;max-width:100%;padding-right:.04em}
 }
 
+
+/* Final mobile fix: the copy wrapper was clipping the headline at its right edge */
+@media(max-width:520px){
+  .hero-layout{overflow:visible}
+  .hero-copy{overflow:visible!important;width:100%;max-width:none;padding-left:0;padding-right:0}
+  .hero h1{display:block;width:100%;max-width:100%;font-size:clamp(36px,9.3vw,48px);letter-spacing:-.055em;line-height:1.02;overflow:visible!important;padding:0;margin-right:0}
+}
+
 </style>
 </head>
 
