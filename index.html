@@ -1267,6 +1267,23 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 @media(max-width:800px){.hero,.hero-layout{min-height:690px}.hero:after{width:420px;right:-180px;top:auto;bottom:-100px;transform:rotate(-18deg)}.hero-shade{background:linear-gradient(180deg,rgba(3,7,19,.94),rgba(3,7,19,.82) 64%,rgba(3,7,19,.58))!important}.hero-layout{width:100%;padding:0 24px;box-sizing:border-box}.hero-copy{padding:74px 0 90px!important}.hero h1{font-size:clamp(42px,9vw,64px)!important}}
 @media(max-width:520px){.hero,.hero-layout{min-height:680px}.hero-layout{padding:0 22px}.hero-copy{padding:58px 0 72px!important}.hero h1{font-size:clamp(36px,9.3vw,46px)!important;line-height:1.04!important;letter-spacing:-.04em!important}.hero p{font-size:16px!important}.hero:after{width:340px;right:-190px;bottom:-90px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .btn{width:100%}}
 
+
+/* Hero composition correction v2: remove oversized orbital/target motif */
+.hero-backdrop{background-image:
+ radial-gradient(rgba(126,202,255,.17) .8px,transparent .8px),
+ radial-gradient(ellipse at 78% 46%,rgba(31,104,194,.18),transparent 36%),
+ linear-gradient(112deg,#030713 0%,#071429 54%,#030916 100%)!important;
+ background-size:22px 22px,auto,auto!important;background-position:0 0,center,center!important}
+.hero:after{content:"";position:absolute;z-index:0;pointer-events:none;right:clamp(18px,7vw,112px);top:50%;width:clamp(300px,34vw,490px);aspect-ratio:1;transform:translateY(-50%) rotate(-18deg);border:1px solid rgba(85,205,255,.3);border-radius:50%;box-shadow:0 0 0 24px rgba(68,202,255,.025),0 0 0 60px rgba(68,202,255,.018);background:transparent}
+.hero:before{content:"";position:absolute;z-index:0;pointer-events:none;right:clamp(150px,19vw,300px);top:50%;width:clamp(150px,18vw,250px);aspect-ratio:1;transform:translateY(-50%);border:1px solid rgba(125,153,255,.23);border-radius:50%;background:radial-gradient(circle,rgba(40,131,214,.13),transparent 68%)}
+.hero-layout{grid-template-columns:minmax(0,1fr)!important}
+.hero-copy{max-width:660px!important}
+.hero h1{max-width:650px!important}
+.hero-product-visual{display:none!important}
+#nofeki-scene{display:none!important;visibility:hidden!important;opacity:0!important}
+@media(max-width:800px){.hero:after{width:330px;right:-105px;top:auto;bottom:-68px;transform:rotate(-18deg)}.hero:before{width:180px;right:12px;top:auto;bottom:8px;transform:none}.hero-backdrop{background-size:20px 20px,auto,auto!important}}
+@media(max-width:520px){.hero:after{width:270px;right:-120px;bottom:-60px}.hero:before{width:140px;right:-4px;bottom:12px}}
+
 </style>
 </head>
 
