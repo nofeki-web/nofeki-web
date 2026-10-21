@@ -1189,6 +1189,12 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 }
 
 /* Cinematic image-led hero integration */
+/* NOFEKI abstract tech scene: lightweight responsive 3D background */
+#nofeki-scene{position:absolute;inset:0;width:100%;height:100%;z-index:-1;display:block;pointer-events:none}
+.hero-backdrop{background-image:radial-gradient(ellipse at 76% 42%,rgba(0,178,255,.16),transparent 36%),radial-gradient(ellipse at 65% 72%,rgba(83,70,255,.12),transparent 34%),linear-gradient(120deg,#030a14 0%,#071729 54%,#020711 100%)!important}
+.hero-shade{background:linear-gradient(90deg,rgba(3,10,20,.98) 0%,rgba(3,10,20,.9) 34%,rgba(3,10,20,.38) 68%,rgba(3,10,20,.22) 100%)!important}
+@media(max-width:800px){#nofeki-scene{opacity:.55}.hero-backdrop{background-position:center}.hero-shade{background:linear-gradient(180deg,rgba(3,10,20,.94),rgba(3,10,20,.72))!important}}
+@media(prefers-reduced-motion:reduce){#nofeki-scene{display:none}}
 /* Refinamiento visual: la imagen cinematográfica ya contiene sus propios paneles */
 .hero-product-visual{display:none!important}
 .hero-copy{position:relative;z-index:2;max-width:700px!important;padding:100px 0 110px!important}
@@ -1289,6 +1295,7 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 
 <header id="inicio" class="hero">
 
+  <canvas id="nofeki-scene" aria-hidden="true"></canvas>
   <div class="hero-backdrop" aria-hidden="true"></div>
   <div class="hero-shade" aria-hidden="true"></div>
   <div class="hero-layout">
@@ -2511,6 +2518,37 @@ date.value =
 
 render();
 
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+<script>
+(function(){
+ function init(){
+  const canvas=document.getElementById('nofeki-scene'),hero=canvas&&canvas.closest('.hero');
+  if(!canvas||!hero||!window.THREE||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const THREE=window.THREE,renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false,powerPreference:'low-power'});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(48,1,.1,100);
+  camera.position.set(0,0,15);
+  const group=new THREE.Group();scene.add(group);
+  const points=[],count=innerWidth<700?280:620;
+  for(let i=0;i<count;i++){points.push((Math.random()-.5)*25,(Math.random()-.5)*12,(Math.random()-.5)*8)}
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));
+  const material=new THREE.PointsMaterial({color:0x35dff5,size:.035,transparent:true,opacity:.72,depthWrite:false});
+  group.add(new THREE.Points(geometry,material));
+  const linesGeometry=new THREE.BufferGeometry(),linePositions=[];
+  for(let i=0;i<95;i++){const x=(Math.random()-.5)*19,y=(Math.random()-.5)*8,z=(Math.random()-.5)*3;linePositions.push(x,y,z,x+(Math.random()-.5)*2.3,y+(Math.random()-.5)*1.5,z)}
+  linesGeometry.setAttribute('position',new THREE.Float32BufferAttribute(linePositions,3));
+  group.add(new THREE.LineSegments(linesGeometry,new THREE.LineBasicMaterial({color:0x087dcb,transparent:true,opacity:.22})));
+  function resize(){const w=hero.clientWidth,h=hero.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.position.x=w<700?1.2:0;camera.updateProjectionMatrix()}
+  resize();let raf=0;
+  function frame(t){group.rotation.y=Math.sin(t*.00012)*.035;group.rotation.x=Math.cos(t*.0001)*.012;renderer.render(scene,camera);raf=requestAnimationFrame(frame)}
+  const observer=new ResizeObserver(resize);observer.observe(hero);frame(0);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else{cancelAnimationFrame(raf);frame(0)}});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0));else setTimeout(init,0);
+})();
 </script>
 
 </body>
