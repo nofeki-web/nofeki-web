@@ -1245,6 +1245,28 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
  .hero-product-visual{width:112%;right:-6%;bottom:-15px}
 }
 
+
+/* NOFEKI hero: composición abstracta estable, sin depender de WebGL/CDN */
+#nofeki-scene{display:none!important}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:clamp(650px,82vh,820px);background:#030916;color:#f5f8ff}
+.hero-backdrop{position:absolute;inset:0;z-index:-2;transform:none!important;background-color:#030916!important;background-image:
+ radial-gradient(ellipse at 76% 48%,rgba(15,111,190,.22),transparent 35%),
+ radial-gradient(ellipse at 83% 55%,rgba(94,61,210,.2),transparent 30%),
+ linear-gradient(112deg,#030713 0%,#071429 52%,#030916 100%)!important}
+.hero-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(3,7,19,.98) 0%,rgba(3,7,19,.9) 34%,rgba(3,7,19,.5) 58%,rgba(3,7,19,.16) 100%)!important}
+.hero:after{content:"";position:absolute;z-index:0;pointer-events:none;right:clamp(-100px,3vw,54px);top:50%;width:clamp(340px,46vw,650px);aspect-ratio:1;transform:translateY(-50%) rotate(-18deg);border:1px solid rgba(68,202,255,.35);border-radius:50%;box-shadow:0 0 0 34px rgba(68,202,255,.035),0 0 0 88px rgba(68,202,255,.025),inset 0 0 75px rgba(30,130,230,.08);background:radial-gradient(circle at 50% 50%,rgba(25,197,245,.16) 0 2%,transparent 3% 22%,rgba(79,110,255,.08) 23%,transparent 55%); 
+}
+.hero-layout{position:relative;z-index:2;width:min(1320px,90%);min-height:clamp(650px,82vh,820px);grid-template-columns:minmax(0,1fr);align-items:center}
+.hero-copy{max-width:700px!important;padding:90px 0 100px!important}
+.hero h1{max-width:700px!important;color:#f7faff;text-shadow:0 4px 35px rgba(0,0,0,.24)}
+.hero h1 em{background:linear-gradient(100deg,#f4f8ff 8%,#8be9ff 52%,#a7a0ff 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{max-width:560px!important;color:#c3cee2!important}
+.hero .eyebrow{color:#69e8f5}
+.hero .btn.primary{background:#62e8f4;border-color:#62e8f4;color:#041321}
+.hero .btn:not(.primary){background:rgba(4,17,34,.55);border-color:rgba(210,230,255,.4);color:#f4f8ff}
+@media(max-width:800px){.hero,.hero-layout{min-height:690px}.hero:after{width:420px;right:-180px;top:auto;bottom:-100px;transform:rotate(-18deg)}.hero-shade{background:linear-gradient(180deg,rgba(3,7,19,.94),rgba(3,7,19,.82) 64%,rgba(3,7,19,.58))!important}.hero-layout{width:100%;padding:0 24px;box-sizing:border-box}.hero-copy{padding:74px 0 90px!important}.hero h1{font-size:clamp(42px,9vw,64px)!important}}
+@media(max-width:520px){.hero,.hero-layout{min-height:680px}.hero-layout{padding:0 22px}.hero-copy{padding:58px 0 72px!important}.hero h1{font-size:clamp(36px,9.3vw,46px)!important;line-height:1.04!important;letter-spacing:-.04em!important}.hero p{font-size:16px!important}.hero:after{width:340px;right:-190px;bottom:-90px}.hero-actions{align-items:stretch;flex-direction:column}.hero-actions .btn{width:100%}}
+
 </style>
 </head>
 
@@ -2521,47 +2543,7 @@ render();
 </script>
 
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
-<script>
-(function(){
- function init(){
-  const canvas=document.getElementById('nofeki-scene'),hero=canvas&&canvas.closest('.hero');
-  if(!canvas||!hero||!window.THREE||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  const THREE=window.THREE,renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:false,powerPreference:'low-power'});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
-  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(48,1,.1,100);
-  camera.position.set(0,0,15);
-  const group=new THREE.Group();scene.add(group);
-  const points=[],count=innerWidth<700?280:620;
-  for(let i=0;i<count;i++){points.push((Math.random()-.5)*25,(Math.random()-.5)*12,(Math.random()-.5)*8)}
-  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));
-  const material=new THREE.PointsMaterial({color:0x55eaff,size:.045,transparent:true,opacity:.56,depthWrite:false});
-  group.add(new THREE.Points(geometry,material));
-  const linesGeometry=new THREE.BufferGeometry(),linePositions=[];
-  for(let i=0;i<95;i++){const x=(Math.random()-.5)*19,y=(Math.random()-.5)*8,z=(Math.random()-.5)*3;linePositions.push(x,y,z,x+(Math.random()-.5)*2.3,y+(Math.random()-.5)*1.5,z)}
-  linesGeometry.setAttribute('position',new THREE.Float32BufferAttribute(linePositions,3));
-  group.add(new THREE.LineSegments(linesGeometry,new THREE.LineBasicMaterial({color:0x169fe8,transparent:true,opacity:.38})));
-  // Abstract focal sculpture: orbital rings and floating wireframe geometry on the right.
-  const sculpture=new THREE.Group();sculpture.position.set(innerWidth<700?1.0:5.0,.05,-1.2);sculpture.scale.setScalar(innerWidth<700?.72:1.28);group.add(sculpture);
-  const cyan=new THREE.MeshBasicMaterial({color:0x35e7ff,wireframe:true,transparent:true,opacity:.9});
-  const violet=new THREE.MeshBasicMaterial({color:0x7968ff,wireframe:true,transparent:true,opacity:.68});
-  const cubeA=new THREE.Mesh(new THREE.IcosahedronGeometry(2.0,1),cyan);sculpture.add(cubeA);
-  const cubeB=new THREE.Mesh(new THREE.OctahedronGeometry(2.65,0),violet);sculpture.add(cubeB);
-  const ring1=new THREE.Mesh(new THREE.TorusGeometry(3.05,.012,4,120),new THREE.MeshBasicMaterial({color:0x25bfff,transparent:true,opacity:.92}));ring1.rotation.set(.82,.18,.4);sculpture.add(ring1);
-  const ring2=new THREE.Mesh(new THREE.TorusGeometry(3.55,.008,4,120),new THREE.MeshBasicMaterial({color:0x8c70ff,transparent:true,opacity:.7}));ring2.rotation.set(1.1,.6,-.25);sculpture.add(ring2);
-  const core=new THREE.Mesh(new THREE.SphereGeometry(.62,20,16),new THREE.MeshBasicMaterial({color:0x1ac9f4,transparent:true,opacity:.3}));sculpture.add(core);
-  const nodes=new THREE.Group();
-  for(let i=0;i<18;i++){const a=i/18*Math.PI*2,rad=3.15;const node=new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),new THREE.MeshBasicMaterial({color:i%3===0?0x9c8cff:0x64f3ff,transparent:true,opacity:.9}));node.position.set(Math.cos(a)*rad,Math.sin(a)*rad*.55,(Math.sin(a*2))*.28);nodes.add(node)}
-  sculpture.add(nodes);
-  function resize(){const w=hero.clientWidth,h=hero.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.position.x=w<700?0.2:0;camera.position.z=w<700?17:15;camera.updateProjectionMatrix();sculpture.position.x=w<700?1.0:Math.min(5.0,w*.31);sculpture.scale.setScalar(w<700?.78:1.28)}
-  resize();let raf=0;
-  function frame(t){group.rotation.y=Math.sin(t*.00012)*.035;group.rotation.x=Math.cos(t*.0001)*.012;sculpture.rotation.y=Math.sin(t*.00022)*.11;sculpture.rotation.x=Math.cos(t*.00017)*.035;ring1.rotation.z=.4+Math.sin(t*.00016)*.12;ring2.rotation.y=.6+Math.cos(t*.00013)*.1;renderer.render(scene,camera);raf=requestAnimationFrame(frame)}
-  const observer=new ResizeObserver(resize);observer.observe(hero);frame(0);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(raf)}else{cancelAnimationFrame(raf);frame(0)}});
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0));else setTimeout(init,0);
-})();
-</script>
+
 
 </body>
 </html>
