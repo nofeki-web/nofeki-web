@@ -1339,6 +1339,66 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 }
 @media(max-width:800px){.hero-layout:after,.hero-layout:before{width:85vw;height:300px;right:-16vw;top:auto;bottom:0;transform:none;opacity:.55}}
 
+
+/* Product-led hero layout: replace decorative geometry with an actual interface concept */
+.hero{min-height:clamp(690px,86vh,850px)!important;background:#030916!important;overflow:hidden!important}
+.hero:before,.hero:after,.hero-layout:before,.hero-layout:after{content:none!important;display:none!important}
+.hero-backdrop{background:
+ radial-gradient(ellipse at 76% 42%,rgba(24,92,194,.23),transparent 39%),
+ radial-gradient(ellipse at 88% 72%,rgba(105,72,221,.12),transparent 32%),
+ linear-gradient(112deg,#050916 0%,#071426 58%,#030916 100%)!important}
+.hero-shade{background:linear-gradient(90deg,rgba(3,7,19,.1),rgba(3,7,19,.05))!important}
+.hero-layout{width:min(1320px,91%)!important;min-height:clamp(690px,86vh,850px)!important;margin:auto;display:grid!important;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr)!important;gap:clamp(22px,4vw,64px)!important;align-items:center!important;isolation:isolate}
+.hero-copy{grid-column:1;grid-row:1;max-width:100%!important;padding:64px 0!important;z-index:4!important}
+.hero h1{font-size:clamp(44px,5.3vw,72px)!important;line-height:.98!important;letter-spacing:-.065em!important;max-width:650px!important}
+.hero p{font-size:clamp(16px,1.25vw,19px)!important;line-height:1.75!important;color:#b7c6dc!important;max-width:510px!important}
+.hero .eyebrow{font-size:11px!important;letter-spacing:.15em!important;color:#70e7f4!important}
+.hero-product-visual{grid-column:2;grid-row:1;position:relative!important;display:flex!important;visibility:visible!important;opacity:1!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:0!important;width:100%!important;height:auto!important;z-index:3!important;overflow:visible!important;isolation:isolate!important}
+.hero-product-visual:before{content:""!important;display:block!important;position:absolute!important;inset:12% 2%!important;border-radius:48%!important;background:radial-gradient(ellipse,rgba(55,115,255,.19),rgba(67,232,244,.05) 44%,transparent 72%)!important;filter:blur(24px)!important;z-index:-2!important}
+.visual-orbit{display:none!important}
+.visual-panel{width:min(100%,540px)!important;padding:clamp(17px,2vw,26px)!important;border-radius:20px!important;background:linear-gradient(145deg,rgba(20,37,70,.96),rgba(5,12,28,.98) 72%)!important;border:1px solid rgba(141,191,255,.3)!important;box-shadow:0 38px 100px rgba(0,0,0,.45),0 0 80px rgba(56,116,255,.14)!important;backdrop-filter:blur(20px)!important;transform:perspective(1200px) rotateY(-5deg) rotateX(2deg)!important}
+.visual-panel-head{padding-bottom:16px!important}
+.visual-brand{font-size:12px!important}
+.visual-mark{display:inline-grid!important;place-items:center!important;width:29px!important;height:29px!important;border-radius:9px!important;background:linear-gradient(145deg,#64e9f5,#557dff)!important;color:#041321!important;font-weight:900!important}
+.visual-live{font-size:8px!important;color:#87f3d5!important}
+.visual-greeting{padding:24px 0 18px!important}
+.visual-greeting b{font-size:clamp(21px,2.2vw,28px)!important}
+.visual-metrics>div{background:linear-gradient(145deg,rgba(104,152,220,.11),rgba(8,18,37,.55))!important;border-color:rgba(148,184,245,.19)!important}
+.visual-metrics b{font-size:clamp(22px,2.4vw,30px)!important}
+.visual-chart{height:92px!important;overflow:hidden!important}
+.visual-panel-foot{font-size:9px!important}
+.visual-float{position:absolute!important;z-index:4!important;padding:12px 15px!important;border-radius:12px!important;border:1px solid rgba(155,194,255,.22)!important;background:rgba(7,18,39,.9)!important;box-shadow:0 14px 40px rgba(0,0,0,.28)!important;backdrop-filter:blur(12px)!important}
+.float-top{top:10%!important;right:-2%!important}
+.float-bottom{bottom:8%!important;left:-3%!important}
+.visual-float b{color:#e8f3ff!important;font-size:10px!important}
+.hero-actions{gap:12px!important}
+@media(max-width:900px){
+ .hero-layout{grid-template-columns:minmax(0,1fr)!important;gap:0!important;padding:0 24px!important;width:100%!important;box-sizing:border-box!important}
+ .hero-copy{grid-column:1;grid-row:1;padding:66px 0 18px!important}
+ .hero-product-visual{grid-column:1;grid-row:2;max-width:600px;margin:0 auto 55px!important;width:100%!important}
+ .hero{min-height:0!important}
+ .hero-layout{min-height:0!important}
+ .visual-panel{transform:none!important}
+ .float-top{right:0!important;top:2%!important}
+ .float-bottom{left:0!important;bottom:0!important}
+}
+@media(max-width:520px){
+ .hero-layout{padding:0 21px!important}
+ .hero-copy{padding:54px 0 14px!important}
+ .hero h1{font-size:clamp(38px,10vw,48px)!important;line-height:1.02!important}
+ .hero p{font-size:16px!important}
+ .hero-actions{flex-direction:column!important;align-items:stretch!important}
+ .hero-actions .btn{width:100%!important;justify-content:center!important}
+ .hero-product-visual{margin:8px auto 55px!important}
+ .visual-panel{padding:16px!important;border-radius:16px!important}
+ .visual-greeting b{font-size:21px!important}
+ .visual-metrics{gap:6px!important}
+ .visual-metrics>div{padding:10px 8px!important}
+ .visual-metrics b{font-size:23px!important}
+ .visual-float{padding:9px 10px!important}
+ .visual-float b{font-size:9px!important}
+}
+
 </style>
 </head>
 
@@ -1428,7 +1488,11 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 
       </div>
 
-      <div class="hero-product-visual" aria-label="Vista conceptual de la plataforma NOFEKI">
+      
+
+    </div>
+
+    <div class="hero-product-visual" aria-label="Vista conceptual de la plataforma NOFEKI">
         <div class="visual-orbit orbit-one"></div>
         <div class="visual-orbit orbit-two"></div>
         <div class="visual-panel">
@@ -1450,7 +1514,7 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
         <div class="visual-float float-bottom"><span class="float-icon">✳</span><span><small>ECOSISTEMA</small><b>Herramientas conectadas.</b></span></div>
       </div>
 
-    </div>
+  
 
   </div>
 
