@@ -2535,25 +2535,25 @@ render();
   const points=[],count=innerWidth<700?280:620;
   for(let i=0;i<count;i++){points.push((Math.random()-.5)*25,(Math.random()-.5)*12,(Math.random()-.5)*8)}
   const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));
-  const material=new THREE.PointsMaterial({color:0x35dff5,size:.035,transparent:true,opacity:.72,depthWrite:false});
+  const material=new THREE.PointsMaterial({color:0x55eaff,size:.045,transparent:true,opacity:.56,depthWrite:false});
   group.add(new THREE.Points(geometry,material));
   const linesGeometry=new THREE.BufferGeometry(),linePositions=[];
   for(let i=0;i<95;i++){const x=(Math.random()-.5)*19,y=(Math.random()-.5)*8,z=(Math.random()-.5)*3;linePositions.push(x,y,z,x+(Math.random()-.5)*2.3,y+(Math.random()-.5)*1.5,z)}
   linesGeometry.setAttribute('position',new THREE.Float32BufferAttribute(linePositions,3));
-  group.add(new THREE.LineSegments(linesGeometry,new THREE.LineBasicMaterial({color:0x087dcb,transparent:true,opacity:.22})));
+  group.add(new THREE.LineSegments(linesGeometry,new THREE.LineBasicMaterial({color:0x169fe8,transparent:true,opacity:.38})));
   // Abstract focal sculpture: orbital rings and floating wireframe geometry on the right.
-  const sculpture=new THREE.Group();sculpture.position.set(innerWidth<700?2.2:5.1,.05,-1.2);group.add(sculpture);
-  const cyan=new THREE.MeshBasicMaterial({color:0x35e7ff,wireframe:true,transparent:true,opacity:.52});
-  const violet=new THREE.MeshBasicMaterial({color:0x7968ff,wireframe:true,transparent:true,opacity:.34});
+  const sculpture=new THREE.Group();sculpture.position.set(innerWidth<700?1.0:5.0,.05,-1.2);sculpture.scale.setScalar(innerWidth<700?.72:1.28);group.add(sculpture);
+  const cyan=new THREE.MeshBasicMaterial({color:0x35e7ff,wireframe:true,transparent:true,opacity:.9});
+  const violet=new THREE.MeshBasicMaterial({color:0x7968ff,wireframe:true,transparent:true,opacity:.68});
   const cubeA=new THREE.Mesh(new THREE.IcosahedronGeometry(2.0,1),cyan);sculpture.add(cubeA);
   const cubeB=new THREE.Mesh(new THREE.OctahedronGeometry(2.65,0),violet);sculpture.add(cubeB);
-  const ring1=new THREE.Mesh(new THREE.TorusGeometry(3.05,.012,4,120),new THREE.MeshBasicMaterial({color:0x25bfff,transparent:true,opacity:.62}));ring1.rotation.set(.82,.18,.4);sculpture.add(ring1);
-  const ring2=new THREE.Mesh(new THREE.TorusGeometry(3.55,.008,4,120),new THREE.MeshBasicMaterial({color:0x8c70ff,transparent:true,opacity:.4}));ring2.rotation.set(1.1,.6,-.25);sculpture.add(ring2);
-  const core=new THREE.Mesh(new THREE.SphereGeometry(.62,20,16),new THREE.MeshBasicMaterial({color:0x1ac9f4,transparent:true,opacity:.14}));sculpture.add(core);
+  const ring1=new THREE.Mesh(new THREE.TorusGeometry(3.05,.012,4,120),new THREE.MeshBasicMaterial({color:0x25bfff,transparent:true,opacity:.92}));ring1.rotation.set(.82,.18,.4);sculpture.add(ring1);
+  const ring2=new THREE.Mesh(new THREE.TorusGeometry(3.55,.008,4,120),new THREE.MeshBasicMaterial({color:0x8c70ff,transparent:true,opacity:.7}));ring2.rotation.set(1.1,.6,-.25);sculpture.add(ring2);
+  const core=new THREE.Mesh(new THREE.SphereGeometry(.62,20,16),new THREE.MeshBasicMaterial({color:0x1ac9f4,transparent:true,opacity:.3}));sculpture.add(core);
   const nodes=new THREE.Group();
   for(let i=0;i<18;i++){const a=i/18*Math.PI*2,rad=3.15;const node=new THREE.Mesh(new THREE.SphereGeometry(.035,8,8),new THREE.MeshBasicMaterial({color:i%3===0?0x9c8cff:0x64f3ff,transparent:true,opacity:.9}));node.position.set(Math.cos(a)*rad,Math.sin(a)*rad*.55,(Math.sin(a*2))*.28);nodes.add(node)}
   sculpture.add(nodes);
-  function resize(){const w=hero.clientWidth,h=hero.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.position.x=w<700?1.2:0;camera.updateProjectionMatrix()}
+  function resize(){const w=hero.clientWidth,h=hero.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.position.x=w<700?0.2:0;camera.position.z=w<700?17:15;camera.updateProjectionMatrix();sculpture.position.x=w<700?1.0:Math.min(5.0,w*.31);sculpture.scale.setScalar(w<700?.78:1.28)}
   resize();let raf=0;
   function frame(t){group.rotation.y=Math.sin(t*.00012)*.035;group.rotation.x=Math.cos(t*.0001)*.012;sculpture.rotation.y=Math.sin(t*.00022)*.11;sculpture.rotation.x=Math.cos(t*.00017)*.035;ring1.rotation.z=.4+Math.sin(t*.00016)*.12;ring2.rotation.y=.6+Math.cos(t*.00013)*.1;renderer.render(scene,camera);raf=requestAnimationFrame(frame)}
   const observer=new ResizeObserver(resize);observer.observe(hero);frame(0);
