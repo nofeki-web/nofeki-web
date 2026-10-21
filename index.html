@@ -1313,6 +1313,32 @@ body{background:var(--noir);color:var(--ink);letter-spacing:-.02em}
 #nofeki-scene,.hero-product-visual{display:none!important;visibility:hidden!important;opacity:0!important}
 @media(max-width:800px){.hero-layout:after{width:85vw;height:330px;right:-23vw;top:auto;bottom:0;transform:none;opacity:.65}.hero-layout:before{width:80vw;height:300px;right:-15vw;top:auto;bottom:0;transform:none;opacity:.6}}
 
+
+/* NOFEKI hero v3: intentional geometric monogram, not random crossing lines */
+.hero-layout:after{content:"";position:absolute;z-index:1;pointer-events:none;right:1%;top:50%;width:min(44vw,560px);height:min(56vh,440px);transform:translateY(-50%);opacity:.96;
+ background:
+ linear-gradient(135deg,transparent 0 49.7%,rgba(82,213,255,.78) 49.8% 50%,transparent 50.1%) 0 0/100% 100%,
+ linear-gradient(45deg,transparent 0 49.7%,rgba(102,139,255,.46) 49.8% 50%,transparent 50.1%) 0 0/100% 100%;
+ clip-path:polygon(28% 0,78% 0,100% 24%,100% 72%,73% 100%,22% 100%,0 77%,0 29%);
+}
+.hero-layout:before{content:"";position:absolute;z-index:1;pointer-events:none;right:1%;top:50%;width:min(44vw,560px);height:min(56vh,440px);transform:translateY(-50%);opacity:.9;
+ background:
+ linear-gradient(90deg,transparent 0 19.8%,rgba(96,181,255,.5) 19.9% 20%,transparent 20.1%) 0 0/100% 100%,
+ linear-gradient(0deg,transparent 0 23.8%,rgba(96,181,255,.38) 23.9% 24%,transparent 24.1%) 0 0/100% 100%,
+ linear-gradient(90deg,transparent 0 79.8%,rgba(96,181,255,.5) 79.9% 80%,transparent 80.1%) 0 0/100% 100%,
+ linear-gradient(0deg,transparent 0 75.8%,rgba(96,181,255,.38) 75.9% 76%,transparent 76.1%) 0 0/100% 100%;
+ clip-path:polygon(28% 0,78% 0,100% 24%,100% 72%,73% 100%,22% 100%,0 77%,0 29%);
+}
+.hero-layout:after{background:
+ linear-gradient(135deg,transparent 49.65%,rgba(82,213,255,.72) 49.8% 50%,transparent 50.15%),
+ linear-gradient(45deg,transparent 49.65%,rgba(102,139,255,.32) 49.8% 50%,transparent 50.15%),
+ radial-gradient(circle at 20% 24%,#72edff 0 3px,rgba(76,196,255,.22) 4px 10px,transparent 11px),
+ radial-gradient(circle at 80% 24%,#72edff 0 3px,rgba(76,196,255,.18) 4px 10px,transparent 11px),
+ radial-gradient(circle at 80% 76%,#72edff 0 3px,rgba(76,196,255,.18) 4px 10px,transparent 11px),
+ radial-gradient(circle at 20% 76%,#72edff 0 3px,rgba(76,196,255,.18) 4px 10px,transparent 11px);
+}
+@media(max-width:800px){.hero-layout:after,.hero-layout:before{width:85vw;height:300px;right:-16vw;top:auto;bottom:0;transform:none;opacity:.55}}
+
 </style>
 </head>
 
