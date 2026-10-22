@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vincular Atajo | NOFEKI Gastos</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#eef3fa;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;display:grid;place-items:center;padding:20px}.card{width:min(100%,520px);background:#121d2d;border:1px solid #29384c;border-radius:20px;padding:28px;box-shadow:0 20px 60px #0004}h1{font-size:26px;margin:0 0 8px}p{color:#b9c6d7;line-height:1.55}.btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-weight:700;font-size:16px;cursor:pointer;background:#10b8a6;color:#06201e}.btn:disabled{opacity:.55}.status{margin-top:14px;min-height:28px;overflow-wrap:anywhere}.token{width:100%;padding:12px;border-radius:8px;background:#0a1320;border:1px solid #3a4a60;color:white;margin:8px 0;font-size:13px}.muted{font-size:13px;color:#91a3b8}a{color:#72ddd2} [hidden]{display:none!important}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
+</head><body><main class="card">
+<h1>Vincular Atajo de iOS</h1>
+<p>Autoriza tu cuenta de NOFEKI Gastos para registrar gastos desde el iPhone. Esta pantalla independiente muestra el resultado de cada paso.</p>
+<button id="connect" class="btn" type="button">Crear autorización personal</button>
+<p id="status" class="status" role="status" aria-live="polite">Preparado. Pulsa el botón para comenzar.</p>
+<section id="tokenPanel" hidden><label for="token">Token personal — solo se muestra una vez</label><input id="token" class="token" readonly><button id="copy" class="btn" type="button">Copiar token</button><p class="muted">No compartas este token. Pégalo en la acción de autorización de tu Atajo.</p></section>
+<p class="muted"><a href="/gastos.html">Volver a NOFEKI Gastos</a></p>
+</main>
+<script>
+(function(){
+const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
+const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
+const status=document.getElementById("status"), button=document.getElementById("connect");
+function say(s){status.textContent=s;}
+button.addEventListener("click",async function(){
+ button.disabled=true;document.getElementById("tokenPanel").hidden=true;say("1/3 Comprobando que la sesión está disponible…");
+ try{
+  if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro de sesión. Recarga esta página.");
+  const client=window.supabase.createClient(URL,KEY);
+  const {data,error}=await client.auth.getSession();if(error)throw error;
+  const access=data&&data.session&&data.session.access_token;
+  if(!access)throw new Error("No hay una sesión activa. Abre NOFEKI Gastos, inicia sesión y luego vuelve aquí.");
+  say("2/3 Solicitando token seguro…");
+  const headers={"Content-Type":"application/json","apikey":KEY};headers["Authorization"]="Bearer "+access;
+  const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error||("El servidor respondió "+response.status+"."));
+  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;say("3/3 ¡Autorización creada! Copia el token ahora; no volverá a mostrarse.");
+ }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)));}
+ finally{button.disabled=false;}
+});
+document.getElementById("copy").addEventListener("click",async function(){
+ const field=document.getElementById("token");
+ try{await navigator.clipboard.writeText(field.value);say("Token copiado. No lo compartas.");}
+ catch(e){field.focus();field.select();say("Selecciona el token y usa Copiar.");}
+});
+})();
+</script></body></html>
