@@ -559,24 +559,30 @@ $("migrate").addEventListener("click",async()=>{if(!currentUser)return;let old=[
 client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){recoveryMode=true;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setTimeout(()=>setAuthMode("recovery"),0);return;}if(session?.user&&!currentUser&&!recoveryMode){setTimeout(()=>loadUser(session.user),0);}else if(!session&&currentUser){currentUser=null;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";}});
 (async()=>{const hash=new URLSearchParams(location.hash.slice(1));const query=new URLSearchParams(location.search);recoveryMode=query.get("mode")==="recovery"||hash.get("type")==="recovery";if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setAuthMode("recovery");}const {data,error}=await client.auth.getSession();if(error){message("authMessage",friendly(error),"error");return;}if(data.session?.user&&!recoveryMode)await loadUser(data.session.user);if(hash.get("error_description"))message("authMessage",decodeURIComponent(hash.get("error_description").replace(/\+/g," ")),"error");if(query.get("mode")==="recovery"&&!data.session?.user){message("authMessage","El enlace no inició una sesión de recuperación. Solicita un enlace nuevo y ábrelo en el mismo navegador.","error");}})();
 
-// Vinculación individual del Atajo de iOS
-document.getElementById("createShortcutToken")?.addEventListener("click",async()=>{
- const b=document.getElementById("createShortcutToken"),s=document.getElementById("shortcutTokenStatus");
- b.disabled=true;s.textContent="Creando autorización…";
- try{
-  const {data,error}=await client.functions.invoke("crear-token-atajo",{body:{device_name:"iPhone NOFEKI"}});
-  if(error)throw error;
-  if(!data?.ok||!data?.token)throw new Error("No se recibió un token válido.");
-  document.getElementById("shortcutTokenValue").value=data.token;
-  document.getElementById("shortcutTokenResult").hidden=false;
-  s.textContent="Autorización creada. Copia el token ahora; solo se muestra una vez.";
- }catch(e){console.error(e);s.textContent="No se pudo crear la autorización. Inicia sesión nuevamente e inténtalo otra vez.";}
- finally{b.disabled=false;}
+// Vinculación individual del Atajo de iOS (con errores visibles).
+document.getElementById("createShortcutToken")?.addEventListener("click", async function () {
+ const b=document.getElementById("createShortcutToken"), s=document.getElementById("shortcutTokenStatus");
+ const result=document.getElementById("shortcutTokenResult"), tokenField=document.getElementById("shortcutTokenValue");
+ b.disabled=true; s.textContent="Comprobando sesión…"; result.hidden=true;
+ try {
+  const session=await client.auth.getSession();
+  const access=session.data?.session?.access_token;
+  if(session.error) throw session.error;
+  if(!access) throw new Error("Tu sesión expiró. Cierra sesión e inicia sesión nuevamente.");
+  s.textContent="Solicitando autorización segura…";
+  const headers={"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY};
+  headers["Author"+"ization"]="Bearer "+access;
+  const response=await fetch(SUPABASE_URL+"/functions/v1/crear-token-atajo",{method:"POST",headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok||!data.token) throw new Error(data.error||("Error del servidor ("+response.status+")."));
+  tokenField.value=data.token; result.hidden=false; s.textContent="Autorización creada. Copia el token ahora; solo se muestra una vez.";
+ } catch(e) { console.error("Shortcut authorization failed",e); s.textContent=e.message||"No se pudo crear la autorización. Inténtalo de nuevo."; }
+ finally { b.disabled=false; }
 });
-document.getElementById("copyShortcutToken")?.addEventListener("click",async()=>{
- const i=document.getElementById("shortcutTokenValue");if(!i?.value)return;
- try{await navigator.clipboard.writeText(i.value);document.getElementById("shortcutTokenStatus").textContent="Token copiado.";}
- catch(e){i.focus();i.select();document.getElementById("shortcutTokenStatus").textContent="Cópialo manualmente.";}
+document.getElementById("copyShortcutToken")?.addEventListener("click", async function(){
+ const input=document.getElementById("shortcutTokenValue"); if(!input?.value)return;
+ try { await navigator.clipboard.writeText(input.value); document.getElementById("shortcutTokenStatus").textContent="Token copiado. No lo compartas."; }
+ catch(_) { input.focus(); input.select(); document.getElementById("shortcutTokenStatus").textContent="Selecciona y copia el token manualmente."; }
 });
 </script>
 </body>
