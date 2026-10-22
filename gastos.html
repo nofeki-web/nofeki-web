@@ -582,27 +582,36 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+(active>1?'<div class="notice" style="margin:0 0 10px">Tienes varias autorizaciones activas. Conserva la que usa tu atajo actual hasta identificarla con certeza.</div>':'')+rows.map(a=>{
    const st=state(a),label=st==="active"?"Activa":st==="revoked"?"Revocada":"Vencida",expiry=a.expires_at?fmt(a.expires_at):"No registrada (autorización antigua)",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" data-revoke-shortcut="'+safe(a.id)+'" type="button">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" onclick="window.nofekiRevokeShortcut(&quot;'+safe(a.id)+'&quot;)">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
  finally{host.removeAttribute("aria-busy");if(refresh){refresh.disabled=false;refresh.textContent="Actualizar estado";}}
 }
-$("refreshShortcutAuthorizations")?.addEventListener("click",()=>{loadShortcutAuthorizations();});
-$("shortcutAuthorizations")?.addEventListener("click",async e=>{
- const b=e.target.closest("[data-revoke-shortcut]");if(!b)return;
+
+window.nofekiLoadShortcutAuthorizations=loadShortcutAuthorizations;
+window.nofekiRevokeShortcut=async function(id){
+ if(!id)return;
  if(!confirm("¿Revocar esta autorización? El atajo asociado dejará de registrar gastos. Esta acción no se puede deshacer."))return;
- b.disabled=true;b.textContent="Revocando…";
  const host=$("shortcutAuthorizations");
  try{
-  const s=await client.auth.getSession(),token=s.data?.session?.access_token;if(!token)throw Error("Tu sesión expiró. Inicia sesión de nuevo.");
-  const r=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"POST",headers:{"Content-Type":"application/json",apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+token},body:JSON.stringify({id:b.dataset.revokeShortcut})});
-  const d=await r.json().catch(()=>({}));
-  if(!r.ok||!d.ok)throw Error(({authorization_revoke_failed:"El servidor no pudo revocar la autorización.",authorization_not_found_or_already_revoked:"La autorización ya fue revocada o no pertenece a tu cuenta.",invalid_authorization_id:"No se pudo identificar esta autorización."})[d.error]||d.error||"No se pudo revocar la autorización.");
-  message("shortcutTokenStatus","Autorización revocada correctamente. El atajo asociado ya no podrá registrar gastos.","ok");
+  const s=await client.auth.getSession();
+  const token=s.data&&s.data.session&&s.data.session.access_token;
+  if(!token)throw new Error("Tu sesión expiró. Inicia sesión de nuevo.");
+  message("shortcutTokenStatus","Revocando autorización…","ok");
+  const response=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token},body:JSON.stringify({id:id})});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok||!data.ok)throw new Error(data.error||"El servidor no pudo revocar la autorización.");
+  message("shortcutTokenStatus","Autorización revocada correctamente.","ok");
   await loadShortcutAuthorizations();
- }catch(e){message("shortcutTokenStatus",e.message||"No se pudo revocar la autorización.","error");if(host)host.insertAdjacentHTML("afterbegin",'<div class="message show error">'+safe(e.message||"No se pudo revocar la autorización.")+'</div>');b.disabled=false;b.textContent="Revocar autorización";}
-});
+ }catch(error){
+  message("shortcutTokenStatus",error.message||"No se pudo revocar la autorización.","error");
+  if(host)host.insertAdjacentHTML("afterbegin",'<div class="message show error">'+safe(error.message||"No se pudo revocar la autorización.")+'</div>');
+ }
+};
+const refreshShortcutButton=$("refreshShortcutAuthorizations");
+if(refreshShortcutButton)refreshShortcutButton.onclick=function(){window.nofekiLoadShortcutAuthorizations();};
+
 </script>
 </body>
 </html>
