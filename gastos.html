@@ -602,12 +602,17 @@ window.nofekiRevokeShortcut=async function(id){
   const token=data?.session?.access_token;
   if(!token)throw new Error("La sesión expiró. Inicia sesión de nuevo.");
   message("shortcutTokenStatus","Enviando solicitud de revocación…");
-  const response=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token},body:JSON.stringify({id})});
-  const result=await response.json().catch(()=>({}));
-  if(!response.ok||!result.ok)throw new Error(result.error||("Error HTTP "+response.status));
-  message("shortcutTokenStatus","Autorización revocada. Actualizando lista…");
+  const response=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"POST",cache:"no-store",headers:{"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+token},body:JSON.stringify({id})});
+  const raw=await response.text();
+  let result={};try{result=JSON.parse(raw)}catch{}
+  if(!response.ok||!result.ok)throw new Error(result.error||("La solicitud falló (HTTP "+response.status+")."));
+  message("shortcutTokenStatus","Autorización revocada correctamente.","ok");
   await loadShortcutAuthorizations();
- }catch(e){message("shortcutTokenStatus","No se pudo revocar: "+(e.message||String(e)),"error");if(btn){btn.disabled=false;btn.textContent="Revocar autorización";}}
+ }catch(e){
+  const detail=e&&e.message?e.message:"Error de conexión";
+  message("shortcutTokenStatus","No se pudo revocar: "+detail,"error");
+  if(btn){btn.disabled=false;btn.textContent="Revocar autorización";}
+ }
 };
 document.addEventListener("click",function(event){
  const refresh=event.target.closest("#refreshShortcutAuthorizations");
