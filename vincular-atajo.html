@@ -9,10 +9,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
 </head><body><main class="card">
 <h1>Vincular Atajo de iOS</h1>
-<p>Autoriza tu cuenta de NOFEKI Gastos para registrar gastos desde el iPhone. Esta pantalla independiente muestra el resultado de cada paso.</p>
+<p>Vincula este iPhone con tu cuenta de NOFEKI Gastos. Cada autorización es personal y permite registrar gastos únicamente en tu cuenta.</p>
 <button id="connect" class="btn" type="button">Crear autorización personal</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado. Pulsa el botón para comenzar.</p>
-<section id="tokenPanel" hidden><label for="token">Token personal — solo se muestra una vez</label><input id="token" class="token" readonly><button id="copy" class="btn" type="button">Copiar token</button><p class="muted">No compartas este token. Pégalo en la acción de autorización de tu Atajo.</p></section>
+<section id="tokenPanel" hidden><label for="token">Token personal — solo se muestra una vez</label><input id="token" class="token" readonly><button id="copy" class="btn" type="button">Copiar token</button><p class="muted">Este token es privado. Para completar la configuración, abre Atajo_NOFEKI_GASTOS, entra en la acción «Obtener contenido de URL» y reemplaza TOKEN_PENDIENTE en el encabezado Authorization por este token, conservando la palabra Bearer y un espacio antes del token. No compartas el atajo después de pegar tu token.</p></section>
 <p class="muted"><a href="/gastos.html">Volver a NOFEKI Gastos</a></p>
 </main>
 <script>
@@ -34,13 +34,13 @@ button.addEventListener("click",async function(){
   const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error||("El servidor respondió "+response.status+"."));
-  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;say("3/3 ¡Autorización creada! Copia el token ahora; no volverá a mostrarse.");
+  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;say("3/3 ¡Autorización creada correctamente! Copia el token ahora; solo se muestra esta vez. No vuelvas a crear otro salvo que necesites una autorización nueva.");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)));}
  finally{button.disabled=false;}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);say("Token copiado. No lo compartas.");}
+ try{await navigator.clipboard.writeText(field.value);say("Token copiado correctamente. Pégalo en tu atajo y no lo compartas.");}
  catch(e){field.focus();field.select();say("Selecciona el token y usa Copiar.");}
 });
 })();
