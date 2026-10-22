@@ -20,9 +20,11 @@
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const status=document.getElementById("status"), button=document.getElementById("connect");
+let authorizationCreated=false;
 function say(s){status.textContent=s;}
 button.addEventListener("click",async function(){
- button.disabled=true;document.getElementById("tokenPanel").hidden=true;say("1/3 Comprobando que la sesión está disponible…");
+ if(authorizationCreated)return;
+ button.disabled=true;button.textContent="Creando autorización…";document.getElementById("tokenPanel").hidden=true;say("1/3 Comprobando que la sesión está disponible…");
  try{
   if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro de sesión. Recarga esta página.");
   const client=window.supabase.createClient(URL,KEY);
@@ -34,9 +36,9 @@ button.addEventListener("click",async function(){
   const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error||("El servidor respondió "+response.status+"."));
-  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;say("3/3 ¡Autorización creada correctamente! Copia el token ahora; solo se muestra esta vez. No vuelvas a crear otro salvo que necesites una autorización nueva.");
+  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;authorizationCreated=true;button.textContent="Autorización creada";say("3/3 ¡Autorización creada correctamente! Copia el token ahora; solo se muestra esta vez. Para evitar autorizaciones duplicadas, este botón quedó desactivado.");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)));}
- finally{button.disabled=false;}
+ finally{if(!authorizationCreated){button.disabled=false;button.textContent="Crear autorización personal";}}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
