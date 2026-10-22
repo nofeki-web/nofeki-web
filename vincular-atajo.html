@@ -12,7 +12,7 @@
 <p>Vincula este iPhone con tu cuenta de NOFEKI Gastos. Cada autorización es personal y permite registrar gastos únicamente en tu cuenta.</p>
 <button id="connect" class="btn" type="button">Crear autorización personal</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado. Pulsa el botón para comenzar.</p>
-<section id="tokenPanel" hidden><label for="token">Token personal — solo se muestra una vez</label><input id="token" class="token" readonly><button id="copy" class="btn" type="button">Copiar token</button><p class="muted">Este token es privado. Para completar la configuración, abre Atajo_NOFEKI_GASTOS, entra en la acción «Obtener contenido de URL» y reemplaza TOKEN_PENDIENTE en el encabezado Authorization por este token, conservando la palabra Bearer y un espacio antes del token. No compartas el atajo después de pegar tu token.</p></section>
+<section id="tokenPanel" hidden><label for="token">Autorización personal</label><input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false"><button id="copy" class="btn" type="button">Copiar autorización</button><p id="expiry" class="muted"></p><p class="muted">Último paso: abre tu atajo personal, edita «Obtener contenido de URL» y pega la autorización en el valor del encabezado Authorization después de «Bearer » (con un espacio). No compartas ese atajo ni capturas donde aparezca la autorización. Si crees que se expuso, revócala desde NOFEKI.</p></section>
 <p class="muted"><a href="/gastos.html">Volver a NOFEKI Gastos</a></p>
 </main>
 <script>
@@ -20,7 +20,7 @@
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const status=document.getElementById("status"), button=document.getElementById("connect");
-let authorizationCreated=false;
+let authorizationCreated=false;\nlet tokenCopied=false;
 function say(s){status.textContent=s;}
 button.addEventListener("click",async function(){
  if(authorizationCreated)return;
@@ -36,14 +36,14 @@ button.addEventListener("click",async function(){
   const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error||("El servidor respondió "+response.status+"."));
-  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;authorizationCreated=true;button.textContent="Autorización creada";say("3/3 ¡Autorización creada correctamente! Copia el token ahora; solo se muestra esta vez. Para evitar autorizaciones duplicadas, este botón quedó desactivado.");
+  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;document.getElementById("expiry").textContent="Vence: "+(payload.expires_at?new Date(payload.expires_at).toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"}):"12 meses después de su creación")+". El token completo no se podrá recuperar después de salir de esta página.";authorizationCreated=true;button.textContent="Autorización creada";say("Autorización creada. Cópiala ahora y guárdala únicamente dentro de tu atajo personal.");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)));}
  finally{if(!authorizationCreated){button.disabled=false;button.textContent="Crear autorización personal";}}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);say("Token copiado correctamente. Pégalo en tu atajo y no lo compartas.");}
- catch(e){field.focus();field.select();say("Selecciona el token y usa Copiar.");}
+ try{await navigator.clipboard.writeText(field.value);tokenCopied=true;field.value="";field.placeholder="Copiado al portapapeles";say("Autorización copiada. Ya no se muestra en pantalla; pégala en tu atajo personal.");}
+ catch(e){field.focus();field.select();say("No se pudo copiar automáticamente. Selecciona la autorización y usa Copiar.");}
 });
 })();
 </script></body></html>
