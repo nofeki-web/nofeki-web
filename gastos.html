@@ -398,10 +398,12 @@ html,body{max-width:100%}
     <div class="dash-content" id="overview">
       <div class="dash-heading"><div class="dash-title"><h1>Tus gastos, bajo control.</h1><p>Una vista simple para entender tus movimientos y tomar mejores decisiones.</p></div><section class="heading-insight"><span class="insight-icon">✦</span><div><h2>Un hábito pequeño cambia la perspectiva.</h2><p>Registra tus gastos con constancia y descubre patrones con información organizada.</p></div></section><div class="dashboard-actions"><label class="period-filter-label"><span class="sr-only">Filtrar periodo</span><select id="periodFilter" class="period-chip" aria-label="Filtrar periodo"><option value="current">Este mes</option><option value="previous">Mes anterior</option><option value="six">Últimos 6 meses</option><option value="all">Todo el historial</option></select></label><button class="btn teal-btn register-expense" type="button">+ Agregar gasto</button></div></div>
 <section class="panel" style="margin-top:18px;padding:20px" id="shortcutConnectPanel">
-<h2>Atajo de iOS</h2><p class="small">Vincula tu cuenta de NOFEKI Gastos con una autorización personal para registrar gastos desde Atajos.</p>
-<a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular Atajo de iOS</a>
-<p class="small" id="shortcutTokenStatus" role="status"></p>
-<div id="shortcutTokenResult" hidden><label for="shortcutTokenValue">Token personal (se muestra una sola vez)</label><input id="shortcutTokenValue" readonly style="width:100%;font-family:monospace"><button class="btn ghost" id="copyShortcutToken" type="button">Copiar token</button><p class="small">Pégalo en el campo de autorización de tu atajo. No lo compartas.</p></div>
+<div class="panel-head"><div><h2>Atajo de iOS</h2><p class="small" style="margin:6px 0 0">Registra gastos desde tu iPhone y administra aquí las autorizaciones de tus dispositivos.</p></div><span class="pill">Privado y revocable</span></div>
+<div class="notice" style="margin:0 0 16px">El token se muestra una sola vez. Consulta el último uso y revoca cualquier autorización que ya no necesites. Nunca compartas tu token.</div>
+<p class="message" id="shortcutTokenStatus" role="status" aria-live="polite"></p>
+<div id="shortcutAuthorizations" aria-live="polite"><div class="empty" style="padding:18px">Cargando autorizaciones…</div></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular un iPhone</a><button class="btn ghost" id="refreshShortcutAuthorizations" type="button">Actualizar estado</button></div>
+<p class="small" style="margin:12px 0 0">Al revocar una autorización, el atajo asociado dejará de registrar gastos. Tendrás que vincularlo nuevamente para volver a usarlo.</p>
 </section>
       <div class="modal-backdrop" id="expenseModal" hidden role="presentation"><section class="panel modal-card" id="expenseFormPanel" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle"><div class="modal-heading"><div><div class="eyebrow">NUEVO MOVIMIENTO</div><h2 id="expenseModalTitle">Registrar un gasto</h2><p class="small">Completa los datos para guardar el movimiento en tu cuenta.</p></div><button class="modal-close" id="closeExpenseModal" type="button" aria-label="Cerrar ventana">×</button></div><form id="expenseForm"><div class="formgrid">
             <div class="field"><label for="expenseDate">Fecha</label><input id="expenseDate" type="date" required></div>
@@ -513,7 +515,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("expenseModal").
 document.querySelectorAll(".register-expense").forEach(btn=>btn.addEventListener("click",openExpenseForm));
 document.querySelectorAll(".dash-nav [data-nav]").forEach(link=>link.addEventListener("click",e=>{e.preventDefault();const id=link.dataset.nav;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a===link));const content=document.querySelector(".dash-content");if(id==="categories"){content.classList.add("categories-only");$("categories").hidden=false;loadUserCategories();return;}content.classList.remove("categories-only");$("categories").hidden=true;if(id==="overview"){window.scrollTo({top:0,behavior:"smooth"});return;}const target=$(id);if(target)target.scrollIntoView({behavior:"smooth",block:"start"});}));
 function friendly(err){const m=String(err?.message||"Ocurrió un error.");if(/Invalid login credentials/i.test(m))return "Correo o contraseña incorrectos.";if(/Email not confirmed/i.test(m))return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";if(/already registered/i.test(m))return "Este correo ya tiene una cuenta. Inicia sesión.";if(/fetch/i.test(m))return "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";return m;}
-async function loadUser(user){if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";return;}currentUser=user;document.body.classList.add("dashboard-active");$("authView").style.display="none";$("dashboardView").style.display="grid";const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();await loadExpenses();await loadUserCategories();checkLegacy();await loadFinancialProfile();}
+async function loadUser(user){if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";return;}currentUser=user;document.body.classList.add("dashboard-active");$("authView").style.display="none";$("dashboardView").style.display="grid";const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();await loadExpenses();await loadUserCategories();checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}
 async function loadFinancialProfile(){const {data,error}=await client.from("financial_profiles").select("net_income_amount,income_frequency,has_additional_income,additional_income_monthly,income_stability,onboarding_step,onboarding_status").eq("user_id",currentUser.id).maybeSingle();if(error){console.warn("No se pudo consultar el perfil financiero:",error.message);return;}if(data){$("netIncome").value=data.net_income_amount??"";$("incomeFrequency").value=data.income_frequency||"monthly";const yes=data.has_additional_income===true;$("onboardingForm").querySelector('input[name="hasAdditionalIncome"][value="'+(yes?"yes":"no")+'"]').checked=true;$("additionalIncome").value=data.additional_income_monthly||"";$("incomeStability").value=data.income_stability||"stable";toggleAdditionalIncome();}if(!data||data.onboarding_step===1){openOnboarding();}}
 function openOnboarding(){if(!currentUser)return;$("onboardingModal").hidden=false;document.body.classList.add("modal-open");setTimeout(()=>$("netIncome").focus({preventScroll:true}),80);}
 function closeOnboarding(){ $("onboardingModal").hidden=true;if($("expenseModal").hidden)document.body.classList.remove("modal-open");}
@@ -559,34 +561,21 @@ $("migrate").addEventListener("click",async()=>{if(!currentUser)return;let old=[
 client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){recoveryMode=true;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setTimeout(()=>setAuthMode("recovery"),0);return;}if(session?.user&&!currentUser&&!recoveryMode){setTimeout(()=>loadUser(session.user),0);}else if(!session&&currentUser){currentUser=null;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";}});
 (async()=>{const hash=new URLSearchParams(location.hash.slice(1));const query=new URLSearchParams(location.search);recoveryMode=query.get("mode")==="recovery"||hash.get("type")==="recovery";if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setAuthMode("recovery");}const {data,error}=await client.auth.getSession();if(error){message("authMessage",friendly(error),"error");return;}if(data.session?.user&&!recoveryMode)await loadUser(data.session.user);if(hash.get("error_description"))message("authMessage",decodeURIComponent(hash.get("error_description").replace(/\+/g," ")),"error");if(query.get("mode")==="recovery"&&!data.session?.user){message("authMessage","El enlace no inició una sesión de recuperación. Solicita un enlace nuevo y ábrelo en el mismo navegador.","error");}})();
 
-window.nofekiVincularAtajo = async function () {
- const status=document.getElementById("shortcutTokenStatus");
- const button=document.getElementById("createShortcutToken");
- const result=document.getElementById("shortcutTokenResult");
- const field=document.getElementById("shortcutTokenValue");
- status.textContent="Botón activo. Comprobando sesión…";
- button.disabled=true; result.hidden=true;
- try {
-  const sessionResult=await client.auth.getSession();
-  if(sessionResult.error) throw sessionResult.error;
-  const access=sessionResult.data?.session?.access_token;
-  if(!access) throw new Error("Tu sesión expiró. Vuelve a iniciar sesión.");
-  status.textContent="Solicitando autorización a Supabase…";
-  const h={"Content-Type":"application/json","apikey":SUPABASE_PUBLISHABLE_KEY};
-  h["Authorization"]="Bearer "+access;
-  const response=await fetch(SUPABASE_URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:h,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
-  const data=await response.json();
-  if(!response.ok||!data.ok||!data.token) throw new Error(data.error||"Error del servidor: "+response.status);
-  field.value=data.token; result.hidden=false;
-  status.textContent="Autorización creada. Copia el token ahora; solo se muestra una vez.";
- } catch(e) { status.textContent="No se pudo vincular: "+(e.message||"error desconocido"); console.error(e); }
- finally { button.disabled=false; }
-};
-document.getElementById("copyShortcutToken")?.addEventListener("click",async function(){
- const field=document.getElementById("shortcutTokenValue");
- try { await navigator.clipboard.writeText(field.value); document.getElementById("shortcutTokenStatus").textContent="Token copiado."; }
- catch(e) { field.focus(); field.select(); document.getElementById("shortcutTokenStatus").textContent="Cópialo manualmente."; }
-});
+async function loadShortcutAuthorizations(){
+ const host=$("shortcutAuthorizations");if(!host||!currentUser)return;
+ host.innerHTML='<div class="empty" style="padding:18px">Consultando autorizaciones…</div>';
+ try{
+  const s=await client.auth.getSession(),token=s.data?.session?.access_token;if(!token)throw Error("Tu sesión expiró. Inicia sesión de nuevo.");
+  const r=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+token}});
+  const d=await r.json();if(!r.ok||!d.ok)throw Error("No fue posible consultar las autorizaciones.");
+  const rows=Array.isArray(d.authorizations)?d.authorizations:[];
+  if(!rows.length){host.innerHTML='<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';return;}
+  const fmt=v=>v?new Date(v).toLocaleString("es-CO",{dateStyle:"medium",timeStyle:"short"}):"Sin registros";
+  host.innerHTML=rows.map(a=>{const active=!a.revoked_at&&(!a.expires_at||Date.parse(a.expires_at)>Date.now());const state=a.revoked_at?"Revocada":active?"Activa":"Vencida";return '<article style="padding:14px 0;border-bottom:1px solid #eef2f6"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(a.device_name||"iPhone")+'</strong> · '+state+'<p class="small">Vinculado: '+safe(fmt(a.created_at))+'</p><p class="small">Último uso: '+safe(fmt(a.last_used_at))+' · Vence: '+safe(fmt(a.expires_at))+'</p></div>'+(active?'<button class="btn danger" data-revoke-shortcut="'+safe(a.id)+'" type="button">Revocar</button>':'')+'</div></article>';}).join("");
+ }catch(e){host.innerHTML='<div class="message show error">No pudimos consultar los atajos. '+safe(e.message)+'</div>';}
+}
+$("refreshShortcutAuthorizations")?.addEventListener("click",loadShortcutAuthorizations);
+$("shortcutAuthorizations")?.addEventListener("click",async e=>{const b=e.target.closest("[data-revoke-shortcut]");if(!b)return;if(!confirm("¿Revocar este atajo? Dejará de registrar gastos."))return;b.disabled=true;b.textContent="Revocando…";try{const s=await client.auth.getSession(),token=s.data?.session?.access_token;if(!token)throw Error("Inicia sesión de nuevo.");const r=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"POST",headers:{"Content-Type":"application/json",apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+token},body:JSON.stringify({id:b.dataset.revokeShortcut})});const d=await r.json();if(!r.ok||!d.ok)throw Error("No se pudo revocar.");message("shortcutTokenStatus","Autorización revocada. El atajo ya no puede registrar gastos.","ok");await loadShortcutAuthorizations();}catch(e){message("shortcutTokenStatus",e.message,"error");b.disabled=false;b.textContent="Revocar";}});
 </script>
 </body>
 </html>
