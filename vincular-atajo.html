@@ -20,7 +20,8 @@
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const status=document.getElementById("status"), button=document.getElementById("connect");
-let authorizationCreated=false;\nlet tokenCopied=false;
+let authorizationCreated=false;
+let tokenCopied=false;
 function say(s){status.textContent=s;}
 button.addEventListener("click",async function(){
  if(authorizationCreated)return;
