@@ -589,7 +589,7 @@ async function loadShortcutAuthorizations(){
  const host=$("shortcutAuthorizations"),status=$("shortcutTokenStatus");
  if(!host){message("shortcutTokenStatus","No se encontró el panel de autorizaciones. Recarga la página.","error");return;}
  if(!currentUser){message("shortcutTokenStatus","Inicia sesión para administrar el atajo.","error");return;}
- if(refresh){refresh.disabled=true;refresh.textContent="Actualizando…";}
+
  host.setAttribute("aria-busy","true");
  host.innerHTML='<div class="empty" style="padding:18px">Consultando autorizaciones…</div>';
  try{
@@ -611,7 +611,7 @@ async function loadShortcutAuthorizations(){
   host.querySelectorAll("[data-revoke-shortcut]").forEach(btn=>btn.addEventListener("click",window.nofekiRevokeShortcutFromButton));
   message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
- finally{host.removeAttribute("aria-busy");if(refresh){refresh.disabled=false;refresh.textContent="Actualizar estado";}}
+ finally{host.removeAttribute("aria-busy");}
 }
 
 
@@ -663,12 +663,7 @@ window.nofekiRevokeShortcut=async function(id){
 };
 
 // Acciones directas desde los propios controles: no dependen de delegación de eventos.
-window.nofekiRefreshShortcutAuthorizations=function(event){
- if(event){event.preventDefault();event.stopPropagation();}
- const btn=document.getElementById("refreshShortcutAuthorizations");
- if(btn&&btn.disabled)return;
- void loadShortcutAuthorizations();
-};
+window.nofekiRefreshShortcutAuthorizations=function(){void loadShortcutAuthorizations();};
 window.nofekiRevokeShortcutFromButton=function(event){
  if(event){event.preventDefault();event.stopPropagation();}
  const button=event&&event.currentTarget;
