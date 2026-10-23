@@ -602,7 +602,7 @@ async function loadShortcutAuthorizations(){
 // Acciones directas en cada botón, con confirmación y errores visibles en pantalla.
 window.nofekiDeleteExpenseFromButton=async function(event){
  if(event){event.preventDefault();event.stopPropagation();}
- const btn=event&&event.currentTarget,id=btn&&btn.getAttribute("data-delete");
+ const target=event&&event.target instanceof Element?event.target:null;const btn=target&&target.closest("[data-delete]"),id=btn&&btn.getAttribute("data-delete");
  if(!currentUser||!id){message("listMessage","No se pudo identificar el gasto o la sesión expiró.","error");return;}
  if(!window.confirm("¿Eliminar este gasto de tu cuenta? Esta acción no se puede deshacer.")){message("listMessage","Eliminación cancelada.");return;}
  btn.disabled=true;btn.textContent="Eliminando…";
@@ -649,7 +649,8 @@ window.nofekiRevokeShortcut=async function(id){
 window.nofekiRefreshShortcutAuthorizations=function(){void loadShortcutAuthorizations();};
 window.nofekiRevokeShortcutFromButton=function(event){
  if(event){event.preventDefault();event.stopPropagation();}
- const button=event&&event.currentTarget;
+ const target=event&&event.target instanceof Element?event.target:null;
+ const button=target&&target.closest("[data-revoke-shortcut]");
  const id=button&&button.getAttribute("data-revoke-shortcut");
  if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
  void window.nofekiRevokeShortcut(id);
