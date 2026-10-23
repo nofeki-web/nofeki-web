@@ -617,6 +617,14 @@ window.nofekiRevokeShortcut=async function(id){
 
 // Manejo de acciones de atajos en fase de captura para evitar que otros listeners o
 // componentes móviles impidan que el toque llegue al botón.
+document.addEventListener("pointerup",function(event){
+ const target=event.target instanceof Element?event.target:null;
+ const button=target?.closest("button[data-nofeki-action]");
+ if(!button)return;
+ const action=button.getAttribute("data-nofeki-action");
+ if(action==="refresh-shortcut-authorizations"){event.preventDefault();if(typeof window.nofekiLoadShortcutAuthorizations==="function")void window.nofekiLoadShortcutAuthorizations();}
+ else if(action==="revoke-shortcut"){event.preventDefault();const id=button.getAttribute("data-revoke-shortcut");if(typeof window.nofekiRevokeShortcut==="function")void window.nofekiRevokeShortcut(id);}
+},true);
 document.addEventListener("click",function(event){
  const target=event.target instanceof Element?event.target:null;
  const button=target?.closest("button[data-nofeki-action]");
