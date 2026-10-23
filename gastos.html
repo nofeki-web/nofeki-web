@@ -476,6 +476,29 @@ let currentUser = null, expenses = [], authMode = "login", recoveryMode = false;
 
 
 const $ = id => document.getElementById(id);
+document.addEventListener("click",function(event){
+ const button=event.target&&event.target.closest?event.target.closest("button"):null;
+ if(!button)return;
+ if(button.id==="refreshShortcutAuthorizations"){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiRefreshShortcutAuthorizations==="function")window.nofekiRefreshShortcutAuthorizations(event);
+  return;
+ }
+ if(button.hasAttribute("data-delete")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiDeleteExpenseFromButton==="function")window.nofekiDeleteExpenseFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+  return;
+ }
+ if(button.hasAttribute("data-delete-category")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiDeleteCategoryFromButton==="function")window.nofekiDeleteCategoryFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+  return;
+ }
+ if(button.hasAttribute("data-revoke-shortcut")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiRevokeShortcutFromButton==="function")window.nofekiRevokeShortcutFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+ }
+},true);
 // Activate password recovery immediately, before the rest of the app initializes.
 // This prevents later initialization/auth callbacks from leaving the login form visible.
 const initialAuthQuery = new URLSearchParams(location.search);
@@ -655,29 +678,7 @@ window.nofekiRevokeShortcutFromButton=function(event){
 };
 
 // Único punto de entrada para acciones: delegación global compatible con botones que se vuelven a renderizar.
-document.addEventListener("click",function(event){
- const button=event.target&&event.target.closest?event.target.closest("button"):null;
- if(!button)return;
- if(button.id==="refreshShortcutAuthorizations"){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiRefreshShortcutAuthorizations==="function")window.nofekiRefreshShortcutAuthorizations(event);
-  return;
- }
- if(button.hasAttribute("data-delete")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiDeleteExpenseFromButton==="function")window.nofekiDeleteExpenseFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
-  return;
- }
- if(button.hasAttribute("data-delete-category")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiDeleteCategoryFromButton==="function")window.nofekiDeleteCategoryFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
-  return;
- }
- if(button.hasAttribute("data-revoke-shortcut")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiRevokeShortcutFromButton==="function")window.nofekiRevokeShortcutFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
- }
-},true);
+
 </script>
 </body>
 </html>
