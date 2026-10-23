@@ -476,25 +476,7 @@ let currentUser = null, expenses = [], authMode = "login", recoveryMode = false;
 
 
 const $ = id => document.getElementById(id);
-document.addEventListener("click",function(event){
- const button=event.target&&event.target.closest?event.target.closest("button"):null;
- if(!button)return;
- 
- if(button.hasAttribute("data-delete")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiDeleteExpenseFromButton==="function")window.nofekiDeleteExpenseFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
-  return;
- }
- if(button.hasAttribute("data-delete-category")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiDeleteCategoryFromButton==="function")window.nofekiDeleteCategoryFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
-  return;
- }
- if(button.hasAttribute("data-revoke-shortcut")){
-  event.preventDefault();event.stopPropagation();
-  if(typeof window.nofekiRevokeShortcutFromButton==="function")window.nofekiRevokeShortcutFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
- }
-},true);
+// Los botones usan manejadores directos; se evita interceptar clicks en captura.
 // Activate password recovery immediately, before the rest of the app initializes.
 // This prevents later initialization/auth callbacks from leaving the login form visible.
 const initialAuthQuery = new URLSearchParams(location.search);
@@ -577,6 +559,7 @@ function render(){
  drawPie("categoryPie",categoryTotals,"Registra gastos para ver la distribución por categoría.");
  drawPie("paymentPie",paymentTotals,"Registra el medio de pago de tus gastos para ver la distribución.");
  $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
+ $("rows").querySelectorAll("[data-delete]").forEach(btn=>btn.addEventListener("click",window.nofekiDeleteExpenseFromButton));
 }
 $("expenseForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return;const btn=$("saveExpense");btn.disabled=true;btn.textContent="Guardando en la nube…";clearMessage("expenseMessage");const payload={user_id:currentUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};try{if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");const {error}=await client.from("gastos").insert(payload);if(error)throw error;e.target.reset();$("expenseDate").value=today();await loadExpenses();message("expenseMessage","Gasto guardado correctamente en tu cuenta.");setTimeout(closeExpenseForm,650);}catch(err){message("expenseMessage","No confirmamos el guardado. No cierres ni repitas aún si sospechas que se registró: "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent="Guardar gasto";}});
 // La eliminación se ejecuta desde el botón de cada fila mediante nofekiDeleteExpenseFromButton.
