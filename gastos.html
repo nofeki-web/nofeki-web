@@ -494,7 +494,6 @@ const DEFAULT_CATEGORIES=[{name:"Alimentación",icon:"🛒",description:"Mercado
 function categoryOptions(){const sel=$("expenseCategory");if(!sel)return;const previous=sel.value;sel.innerHTML=DEFAULT_CATEGORIES.map(c=>'<option value="'+safe(c.name)+'">'+safe(c.name)+'</option>').concat(userCategories.map(c=>'<option value="'+safe(c.name)+'">'+safe(c.name)+'</option>')).join("");if([...sel.options].some(o=>o.value===previous))sel.value=previous;}
 async function loadUserCategories(){if(!currentUser)return;const {data,error}=await client.from("user_expense_categories").select("id,name,icon,description,created_at").eq("user_id",currentUser.id).order("name");if(error){message("categoryMessage","No pudimos cargar tus categorías. "+friendly(error),"error");return;}userCategories=data||[];renderCategories();categoryOptions();}
 function renderCategories(){const el=$("categoryCards");if(!el)return;const all=DEFAULT_CATEGORIES.map(c=>({...c,custom:false})).concat(userCategories.map(c=>({...c,custom:true})));$("categoryCount").textContent=all.length+" categorías";el.innerHTML=all.map(c=>'<article class="category-card '+(c.custom?'custom-category':'')+'"><span class="category-icon">'+safe(c.icon)+'</span><strong>'+safe(c.name)+'</strong><span>'+safe(c.description||"Categoría personalizada")+'</span><span class="category-kind">'+(c.custom?"Personalizada":"Predeterminada")+'</span>'+(c.custom?'<div class="category-tools"><button type="button" class="btn ghost" data-edit-category="'+safe(c.id)+'">Editar</button><button type="button" class="btn danger" data-delete-category="'+safe(c.id)+'">Eliminar</button></div>':"")+'</article>').join("");
- el.querySelectorAll("[data-delete-category]").forEach(btn=>btn.addEventListener("click",window.nofekiDeleteCategoryFromButton));
 }
 function resetCategoryForm(){editingCategoryId=null;$("categoryForm").reset();$("customCategoryIcon").value="🏷️";$("saveCategory").textContent="+ Crear categoría";$("cancelCategoryEdit").hidden=true;}
 $("categoryForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return;const name=$("customCategoryName").value.trim(),icon=$("customCategoryIcon").value.trim()||"🏷️",description=$("customCategoryDescription").value.trim()||"Categoría personalizada";if(name.length<2){message("categoryMessage","El nombre debe tener al menos 2 caracteres.","error");return;}if(DEFAULT_CATEGORIES.some(c=>c.name.toLocaleLowerCase("es")===name.toLocaleLowerCase("es"))){message("categoryMessage","Ese nombre ya corresponde a una categoría predeterminada.","error");return;}const btn=$("saveCategory");btn.disabled=true;const payload={user_id:currentUser.id,name,icon,description,updated_at:new Date().toISOString()};try{const q=editingCategoryId?await client.from("user_expense_categories").update(payload).eq("id",editingCategoryId).eq("user_id",currentUser.id):await client.from("user_expense_categories").insert(payload);if(q.error)throw q.error;message("categoryMessage",editingCategoryId?"Categoría actualizada.":"Categoría creada.");resetCategoryForm();await loadUserCategories();}catch(err){const msg=/duplicate key|unique constraint/i.test(String(err.message))?"Ya existe una categoría con ese nombre.":friendly(err);message("categoryMessage",msg,"error");}finally{btn.disabled=false;}});
@@ -555,7 +554,6 @@ function render(){
  drawPie("categoryPie",categoryTotals,"Registra gastos para ver la distribución por categoría.");
  drawPie("paymentPie",paymentTotals,"Registra el medio de pago de tus gastos para ver la distribución.");
  $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
- $("rows").querySelectorAll("[data-delete]").forEach(btn=>{btn.onclick=null;btn.addEventListener("click",window.nofekiDeleteExpenseFromButton);});
 }
 $("expenseForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return;const btn=$("saveExpense");btn.disabled=true;btn.textContent="Guardando en la nube…";clearMessage("expenseMessage");const payload={user_id:currentUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};try{if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");const {error}=await client.from("gastos").insert(payload);if(error)throw error;e.target.reset();$("expenseDate").value=today();await loadExpenses();message("expenseMessage","Gasto guardado correctamente en tu cuenta.");setTimeout(closeExpenseForm,650);}catch(err){message("expenseMessage","No confirmamos el guardado. No cierres ni repitas aún si sospechas que se registró: "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent="Guardar gasto";}});
 // La eliminación se ejecuta desde el botón de cada fila mediante nofekiDeleteExpenseFromButton.
@@ -655,7 +653,31 @@ window.nofekiRevokeShortcutFromButton=function(event){
  if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
  void window.nofekiRevokeShortcut(id);
 };
-$("refreshShortcutAuthorizations").addEventListener("click",window.nofekiRefreshShortcutAuthorizations);
+
+// Único punto de entrada para acciones: delegación global compatible con botones que se vuelven a renderizar.
+document.addEventListener("click",function(event){
+ const button=event.target&&event.target.closest?event.target.closest("button"):null;
+ if(!button)return;
+ if(button.id==="refreshShortcutAuthorizations"){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiRefreshShortcutAuthorizations==="function")window.nofekiRefreshShortcutAuthorizations(event);
+  return;
+ }
+ if(button.hasAttribute("data-delete")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiDeleteExpenseFromButton==="function")window.nofekiDeleteExpenseFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+  return;
+ }
+ if(button.hasAttribute("data-delete-category")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiDeleteCategoryFromButton==="function")window.nofekiDeleteCategoryFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+  return;
+ }
+ if(button.hasAttribute("data-revoke-shortcut")){
+  event.preventDefault();event.stopPropagation();
+  if(typeof window.nofekiRevokeShortcutFromButton==="function")window.nofekiRevokeShortcutFromButton({preventDefault(){},stopPropagation(){},currentTarget:button});
+ }
+},true);
 </script>
 </body>
 </html>
