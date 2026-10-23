@@ -402,7 +402,7 @@ html,body{max-width:100%}
 <div class="notice" style="margin:0 0 16px">El token se muestra una sola vez. Consulta el último uso y revoca cualquier autorización que ya no necesites. Nunca compartas tu token.</div>
 <p class="message" id="shortcutTokenStatus" role="status" aria-live="polite"></p>
 <div id="shortcutAuthorizations" aria-live="polite"><div class="empty" style="padding:18px">Cargando autorizaciones…</div></div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular un iPhone</a><button class="btn ghost" id="refreshShortcutAuthorizations" type="button" >Actualizar estado</button></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular un iPhone</a></div>
 <p class="small" style="margin:12px 0 0">Al revocar una autorización, el atajo asociado dejará de registrar gastos. Tendrás que vincularlo nuevamente para volver a usarlo.</p>
 </section>
       <div class="modal-backdrop" id="expenseModal" hidden role="presentation"><section class="panel modal-card" id="expenseFormPanel" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle"><div class="modal-heading"><div><div class="eyebrow">NUEVO MOVIMIENTO</div><h2 id="expenseModalTitle">Registrar un gasto</h2><p class="small">Completa los datos para guardar el movimiento en tu cuenta.</p></div><button class="modal-close" id="closeExpenseModal" type="button" aria-label="Cerrar ventana">×</button></div><form id="expenseForm"><div class="formgrid">
@@ -590,7 +590,7 @@ client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){
 (async()=>{const hash=new URLSearchParams(location.hash.slice(1));const query=new URLSearchParams(location.search);recoveryMode=query.get("mode")==="recovery"||hash.get("type")==="recovery";if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setAuthMode("recovery");}const {data,error}=await client.auth.getSession();if(error){message("authMessage",friendly(error),"error");return;}if(data.session?.user&&!recoveryMode)await loadUser(data.session.user);if(hash.get("error_description"))message("authMessage",decodeURIComponent(hash.get("error_description").replace(/\+/g," ")),"error");if(query.get("mode")==="recovery"&&!data.session?.user){message("authMessage","El enlace no inició una sesión de recuperación. Solicita un enlace nuevo y ábrelo en el mismo navegador.","error");}})();
 
 async function loadShortcutAuthorizations(){
- const host=$("shortcutAuthorizations"),refresh=$("refreshShortcutAuthorizations"),status=$("shortcutTokenStatus");
+ const host=$("shortcutAuthorizations"),status=$("shortcutTokenStatus");
  if(!host){message("shortcutTokenStatus","No se encontró el panel de autorizaciones. Recarga la página.","error");return;}
  if(!currentUser){message("shortcutTokenStatus","Inicia sesión para administrar el atajo.","error");return;}
  if(refresh){refresh.disabled=true;refresh.textContent="Actualizando…";}
