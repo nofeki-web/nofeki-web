@@ -402,7 +402,7 @@ html,body{max-width:100%}
 <div class="notice" style="margin:0 0 16px">El token se muestra una sola vez. Consulta el último uso y revoca cualquier autorización que ya no necesites. Nunca compartas tu token.</div>
 <p class="message" id="shortcutTokenStatus" role="status" aria-live="polite"></p>
 <div id="shortcutAuthorizations" aria-live="polite"><div class="empty" style="padding:18px">Cargando autorizaciones…</div></div>
-<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular un iPhone</a><button class="btn ghost" id="refreshShortcutAuthorizations" type="button" data-nofeki-action="refresh-shortcut-authorizations">Actualizar estado</button></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><a class="btn teal-btn" id="createShortcutToken" href="/vincular-atajo.html" style="display:inline-block;text-decoration:none">Vincular un iPhone</a><button class="btn ghost" id="refreshShortcutAuthorizations" type="button" onclick="window.nofekiRefreshShortcutAuthorizations(event)">Actualizar estado</button></div>
 <p class="small" style="margin:12px 0 0">Al revocar una autorización, el atajo asociado dejará de registrar gastos. Tendrás que vincularlo nuevamente para volver a usarlo.</p>
 </section>
       <div class="modal-backdrop" id="expenseModal" hidden role="presentation"><section class="panel modal-card" id="expenseFormPanel" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle"><div class="modal-heading"><div><div class="eyebrow">NUEVO MOVIMIENTO</div><h2 id="expenseModalTitle">Registrar un gasto</h2><p class="small">Completa los datos para guardar el movimiento en tu cuenta.</p></div><button class="modal-close" id="closeExpenseModal" type="button" aria-label="Cerrar ventana">×</button></div><form id="expenseForm"><div class="formgrid">
@@ -582,7 +582,7 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+(active>1?'<div class="notice" style="margin:0 0 10px">Tienes varias autorizaciones activas. Conserva la que usa tu atajo actual hasta identificarla con certeza.</div>':'')+rows.map(a=>{
    const st=state(a),label=st==="active"?"Activa":st==="revoked"?"Revocada":"Vencida",expiry=a.expires_at?fmt(a.expires_at):"No registrada (autorización antigua)",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-nofeki-action="revoke-shortcut" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" onclick="window.nofekiRevokeShortcutFromButton(event)" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
@@ -615,25 +615,20 @@ window.nofekiRevokeShortcut=async function(id){
  }
 };
 
-// Delegación única para los controles de autorización. Evitar pointerup + click
-// porque Safari en iOS puede cancelar el click sintético si pointerup hace preventDefault.
-document.addEventListener("click",function(event){
- const target=event.target instanceof Element?event.target:null;
- const button=target?.closest("button[data-nofeki-action]");
- if(!button)return;
- const action=button.getAttribute("data-nofeki-action");
- if(action!=="refresh-shortcut-authorizations"&&action!=="revoke-shortcut")return;
- event.preventDefault();
- event.stopImmediatePropagation();
- if(action==="refresh-shortcut-authorizations"){
-  if(typeof window.nofekiLoadShortcutAuthorizations==="function")void window.nofekiLoadShortcutAuthorizations();
-  else message("shortcutTokenStatus","No se pudo iniciar la actualización. Recarga NOFEKI Gastos.","error");
- }else{
-  const id=button.getAttribute("data-revoke-shortcut");
-  if(typeof window.nofekiRevokeShortcut==="function")void window.nofekiRevokeShortcut(id);
-  else message("shortcutTokenStatus","No se pudo iniciar la revocación. Recarga NOFEKI Gastos.","error");
- }
-},true);
+// Acciones directas desde los propios controles: no dependen de delegación de eventos.
+window.nofekiRefreshShortcutAuthorizations=function(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ const btn=document.getElementById("refreshShortcutAuthorizations");
+ if(btn&&btn.disabled)return;
+ void loadShortcutAuthorizations();
+};
+window.nofekiRevokeShortcutFromButton=function(event){
+ if(event){event.preventDefault();event.stopPropagation();}
+ const button=event&&event.currentTarget;
+ const id=button&&button.getAttribute("data-revoke-shortcut");
+ if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
+ void window.nofekiRevokeShortcut(id);
+};
 </script>
 </body>
 </html>
