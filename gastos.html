@@ -615,45 +615,22 @@ window.nofekiRevokeShortcut=async function(id){
  }
 };
 
-// Manejo de acciones de atajos en fase de captura para evitar que otros listeners o
-// componentes móviles impidan que el toque llegue al botón.
-document.addEventListener("pointerup",function(event){
+// Delegación única para los controles de autorización. Evitar pointerup + click
+// porque Safari en iOS puede cancelar el click sintético si pointerup hace preventDefault.
+document.addEventListener("click",function(event){
  const target=event.target instanceof Element?event.target:null;
  const button=target?.closest("button[data-nofeki-action]");
- if(!button||button.disabled)return;
+ if(!button)return;
  const action=button.getAttribute("data-nofeki-action");
  if(action!=="refresh-shortcut-authorizations"&&action!=="revoke-shortcut")return;
- // El toque inicia la acción una sola vez; el click sintético posterior se descarta.
- button.dataset.nofekiPointerHandled="1";
  event.preventDefault();
+ event.stopImmediatePropagation();
  if(action==="refresh-shortcut-authorizations"){
   if(typeof window.nofekiLoadShortcutAuthorizations==="function")void window.nofekiLoadShortcutAuthorizations();
   else message("shortcutTokenStatus","No se pudo iniciar la actualización. Recarga NOFEKI Gastos.","error");
  }else{
   const id=button.getAttribute("data-revoke-shortcut");
   if(typeof window.nofekiRevokeShortcut==="function")void window.nofekiRevokeShortcut(id);
-  else message("shortcutTokenStatus","No se pudo iniciar la revocación. Recarga NOFEKI Gastos.","error");
- }
-},true);
-document.addEventListener("click",function(event){
- const target=event.target instanceof Element?event.target:null;
- const button=target?.closest("button[data-nofeki-action]");
- if(!button)return;
- if(button.dataset.nofekiPointerHandled==="1"){
-  delete button.dataset.nofekiPointerHandled;
-  event.preventDefault();
-  event.stopImmediatePropagation();
-  return;
- }
- const action=button.getAttribute("data-nofeki-action");
- if(action==="refresh-shortcut-authorizations"){
-  event.preventDefault();event.stopImmediatePropagation();
-  if(typeof window.nofekiLoadShortcutAuthorizations==="function")window.nofekiLoadShortcutAuthorizations();
-  else message("shortcutTokenStatus","No se pudo iniciar la actualización. Recarga NOFEKI Gastos.","error");
- }else if(action==="revoke-shortcut"){
-  event.preventDefault();event.stopImmediatePropagation();
-  const id=button.getAttribute("data-revoke-shortcut");
-  if(typeof window.nofekiRevokeShortcut==="function")window.nofekiRevokeShortcut(id);
   else message("shortcutTokenStatus","No se pudo iniciar la revocación. Recarga NOFEKI Gastos.","error");
  }
 },true);
