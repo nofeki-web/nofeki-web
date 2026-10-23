@@ -623,7 +623,7 @@ window.nofekiDeleteExpenseFromButton=async function(event){
  if(!currentUser||!id){message("listMessage","No se pudo identificar el gasto o la sesión expiró.","error");return;}
  if(!confirm("¿Eliminar este gasto de tu cuenta? Esta acción no se puede deshacer."))return;
  btn.disabled=true;btn.textContent="Eliminando…";
- try{const {error}=await client.from("gastos").delete().eq("id",id).eq("user_id",currentUser.id);if(error)throw error;await loadExpenses();message("listMessage","Gasto eliminado.");}
+ try{const {data,error}=await client.from("gastos").delete().eq("id",id).eq("user_id",currentUser.id).select("id");if(error)throw error;if(!Array.isArray(data)||data.length===0)throw new Error("El servidor no confirmó la eliminación. Puede ser un permiso de la cuenta o el registro no coincide.");await loadExpenses();message("listMessage","Gasto eliminado correctamente.");}
  catch(err){btn.disabled=false;btn.textContent="Eliminar";message("listMessage","No pudimos eliminar el gasto. "+friendly(err),"error");}
 };
 window.nofekiDeleteCategoryFromButton=async function(event){
