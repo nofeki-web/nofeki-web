@@ -614,13 +614,25 @@ window.nofekiRevokeShortcut=async function(id){
   if(btn){btn.disabled=false;btn.textContent="Revocar autorización";}
  }
 };
-document.addEventListener("click",function(event){
- const refresh=event.target.closest("#refreshShortcutAuthorizations");
- if(refresh){event.preventDefault();loadShortcutAuthorizations();return;}
- const revoke=event.target.closest("[data-revoke-shortcut]");
- if(revoke){event.preventDefault();window.nofekiRevokeShortcut(revoke.getAttribute("data-revoke-shortcut"));}
-});
-
+// Bind controls directly to avoid delegated-click issues on mobile Safari.
+const refreshControl=$("refreshShortcutAuthorizations");
+if(refreshControl){
+ refreshControl.addEventListener("click",function(event){
+  event.preventDefault();
+  message("shortcutTokenStatus","Botón detectado. Consultando Supabase…");
+  loadShortcutAuthorizations();
+ });
+}
+const authorizationList=$("shortcutAuthorizations");
+if(authorizationList){
+ authorizationList.addEventListener("click",function(event){
+  const target=event.target instanceof Element?event.target:null;
+  const revoke=target?target.closest("[data-revoke-shortcut]"):null;
+  if(!revoke)return;
+  event.preventDefault();
+  window.nofekiRevokeShortcut(revoke.getAttribute("data-revoke-shortcut"));
+ });
+}
 </script>
 </body>
 </html>
