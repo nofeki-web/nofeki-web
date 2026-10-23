@@ -620,15 +620,31 @@ window.nofekiRevokeShortcut=async function(id){
 document.addEventListener("pointerup",function(event){
  const target=event.target instanceof Element?event.target:null;
  const button=target?.closest("button[data-nofeki-action]");
- if(!button)return;
+ if(!button||button.disabled)return;
  const action=button.getAttribute("data-nofeki-action");
- if(action==="refresh-shortcut-authorizations"){event.preventDefault();if(typeof window.nofekiLoadShortcutAuthorizations==="function")void window.nofekiLoadShortcutAuthorizations();}
- else if(action==="revoke-shortcut"){event.preventDefault();const id=button.getAttribute("data-revoke-shortcut");if(typeof window.nofekiRevokeShortcut==="function")void window.nofekiRevokeShortcut(id);}
+ if(action!=="refresh-shortcut-authorizations"&&action!=="revoke-shortcut")return;
+ // El toque inicia la acción una sola vez; el click sintético posterior se descarta.
+ button.dataset.nofekiPointerHandled="1";
+ event.preventDefault();
+ if(action==="refresh-shortcut-authorizations"){
+  if(typeof window.nofekiLoadShortcutAuthorizations==="function")void window.nofekiLoadShortcutAuthorizations();
+  else message("shortcutTokenStatus","No se pudo iniciar la actualización. Recarga NOFEKI Gastos.","error");
+ }else{
+  const id=button.getAttribute("data-revoke-shortcut");
+  if(typeof window.nofekiRevokeShortcut==="function")void window.nofekiRevokeShortcut(id);
+  else message("shortcutTokenStatus","No se pudo iniciar la revocación. Recarga NOFEKI Gastos.","error");
+ }
 },true);
 document.addEventListener("click",function(event){
  const target=event.target instanceof Element?event.target:null;
  const button=target?.closest("button[data-nofeki-action]");
  if(!button)return;
+ if(button.dataset.nofekiPointerHandled==="1"){
+  delete button.dataset.nofekiPointerHandled;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  return;
+ }
  const action=button.getAttribute("data-nofeki-action");
  if(action==="refresh-shortcut-authorizations"){
   event.preventDefault();event.stopImmediatePropagation();
