@@ -28,7 +28,7 @@ button.addEventListener("click",async function(){
  button.disabled=true;button.textContent="Creando autorización…";document.getElementById("tokenPanel").hidden=true;say("1/3 Comprobando que la sesión está disponible…");
  try{
   if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro de sesión. Recarga esta página.");
-  const client=window.supabase.createClient(URL,KEY);
+  const client=window.supabase.createClient(URL,KEY,{auth:{storage:window.localStorage,storageKey:"nofeki-gastos-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});
   const {data,error}=await client.auth.getSession();if(error)throw error;
   const access=data&&data.session&&data.session.access_token;
   if(!access)throw new Error("No hay una sesión activa. Abre NOFEKI Gastos, inicia sesión y luego vuelve aquí.");
