@@ -591,7 +591,40 @@ function render(){
  $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
  // El control invoca el manejador directamente desde onclick.
 }
-$("expenseForm").addEventListener("submit",async e=>{e.preventDefault();if(!currentUser)return;const btn=$("saveExpense");btn.disabled=true;btn.textContent="Guardando en la nube…";clearMessage("expenseMessage");const payload={user_id:currentUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};try{if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");const {error}=await client.from("gastos").insert(payload);if(error)throw error;e.target.reset();$("expenseDate").value=today();await loadExpenses();message("expenseMessage","Gasto guardado correctamente en tu cuenta.");setTimeout(closeExpenseForm,650);}catch(err){message("expenseMessage","No confirmamos el guardado. No cierres ni repitas aún si sospechas que se registró: "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent="Guardar gasto";}});
+$("expenseForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const btn=$("saveExpense");
+ if(btn.disabled)return;
+ btn.disabled=true;btn.textContent="Verificando sesión…";clearMessage("expenseMessage");
+ try{
+  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  if(sessionError)throw sessionError;
+  const sessionUser=sessionData?.session?.user;
+  if(!sessionUser){
+   currentUser=null;
+   document.body.classList.remove("dashboard-active");
+   $("dashboardView").hidden=true;$("dashboardView").style.display="none";
+   $("authView").hidden=false;$("authView").style.display="block";
+   message("expenseMessage","Tu sesión no está activa. Inicia sesión de nuevo; no se envió ningún gasto.","error");
+   message("authMessage","Tu sesión no está activa. Inicia sesión para continuar.","error");
+   return;
+  }
+  currentUser=sessionUser;
+  const payload={user_id:sessionUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};
+  if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");
+  btn.textContent="Guardando en la nube…";
+  const {data,error}=await client.from("gastos").insert(payload).select("id").single();
+  if(error)throw error;
+  if(!data?.id)throw new Error("El servidor no confirmó el registro del gasto.");
+  e.target.reset();$("expenseDate").value=today();
+  await loadExpenses();
+  message("expenseMessage","Gasto guardado correctamente en tu cuenta.");
+  setTimeout(closeExpenseForm,650);
+ }catch(err){
+  console.error("NOFEKI: error al guardar gasto",err);
+  message("expenseMessage","No pudimos confirmar el guardado. "+friendly(err),"error");
+ }finally{btn.disabled=false;btn.textContent="Guardar gasto";}
+});
 // La eliminación se ejecuta desde el botón de cada fila mediante nofekiDeleteExpenseFromButton.
 function checkLegacy(){try{const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");if(Array.isArray(old)&&old.length){$("migrationPanel").style.display="block";$("migrate").textContent="Importar "+old.length+" registro"+(old.length===1?"":"s")+" antiguos";}}catch{}}
 $("migrate").addEventListener("click",async()=>{if(!currentUser)return;let old=[];try{old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");}catch{}if(!Array.isArray(old)||!old.length){message("migrationMessage","No encontramos registros antiguos para importar.","error");return;}const btn=$("migrate");btn.disabled=true;btn.textContent="Importando…";let done=0,failed=0;try{for(let i=0;i<old.length;i+=50){const batch=old.slice(i,i+50).map((e,j)=>({user_id:currentUser.id,expense_date:e.date||today(),description:String(e.desc||"Gasto importado").slice(0,160),category:["Alimentación","Transporte","Vivienda","Servicios","Deudas","Ocio","Salud","Compras","Otros"].includes(e.cat)?e.cat:"Otros",amount:Number(e.amount),expense_type:["Necesario","Discrecional","Deuda"].includes(e.type)?e.type:"Necesario",payment_method:e.pay||null,note:e.note||null,source:"import",idempotency_key:"legacy-"+String(e.id||i+j)})).filter(e=>Number.isFinite(e.amount)&&e.amount>0);if(!batch.length)continue;const {data,error}=await client.from("gastos").upsert(batch,{onConflict:"user_id,idempotency_key",ignoreDuplicates:true}).select("id");if(error)throw error;done+=data?.length||0;}await loadExpenses();message("migrationMessage","Proceso terminado. "+done+" registros importados o confirmados. Los datos originales siguen en este navegador.");}catch(err){failed++;message("migrationMessage","La importación se detuvo por un error: "+friendly(err)+". Tus datos originales no se borraron; puedes reintentar.","error");}finally{btn.disabled=false;checkLegacy();}});
@@ -632,12 +665,28 @@ async function loadShortcutAuthorizations(){
 // Acciones directas en cada botón, con confirmación y errores visibles en pantalla.
 window.nofekiDeleteExpenseFromButton=async function(event){
  if(event){event.preventDefault();event.stopPropagation();}
- const target=event&&event.target instanceof Element?event.target:null;const btn=target&&target.closest("[data-delete]"),id=btn&&btn.getAttribute("data-delete");
- if(!currentUser||!id){message("listMessage","No se pudo identificar el gasto o la sesión expiró.","error");return;}
+ const target=event&&event.target instanceof Element?event.target:null;
+ const btn=target&&target.closest("button[data-delete]");
+ const id=btn&&btn.getAttribute("data-delete");
+ if(!id){message("listMessage","No se pudo identificar el gasto seleccionado.","error");return;}
  if(!window.confirm("¿Eliminar este gasto de tu cuenta? Esta acción no se puede deshacer.")){message("listMessage","Eliminación cancelada.");return;}
- btn.disabled=true;btn.textContent="Eliminando…";
- try{const {data,error}=await client.from("gastos").delete().eq("id",id).eq("user_id",currentUser.id).select("id");if(error)throw error;if(!Array.isArray(data)||data.length===0)throw new Error("El servidor no confirmó la eliminación. Puede ser un permiso de la cuenta o el registro no coincide.");await loadExpenses();message("listMessage","Gasto eliminado correctamente.");}
- catch(err){btn.disabled=false;btn.textContent="Eliminar";message("listMessage","No pudimos eliminar el gasto. "+friendly(err),"error");}
+ if(btn){btn.disabled=true;btn.textContent="Verificando…";}
+ try{
+  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  if(sessionError)throw sessionError;
+  const user=sessionData?.session?.user;
+  if(!user)throw new Error("Tu sesión no está activa. Inicia sesión de nuevo.");
+  currentUser=user;
+  if(btn)btn.textContent="Eliminando…";
+  const {data,error}=await client.from("gastos").delete().eq("id",id).eq("user_id",user.id).select("id");
+  if(error)throw error;
+  if(!Array.isArray(data)||data.length===0)throw new Error("El servidor no confirmó la eliminación. El gasto puede no pertenecer a esta cuenta o las políticas de acceso impidieron borrarlo.");
+  await loadExpenses();message("listMessage","Gasto eliminado correctamente.");
+ }catch(err){
+  console.error("NOFEKI: error al eliminar gasto",err);
+  if(btn){btn.disabled=false;btn.textContent="Eliminar";}
+  message("listMessage","No pudimos eliminar el gasto. "+friendly(err),"error");
+ }
 };
 window.nofekiDeleteCategoryFromButton=async function(event){
  if(event){event.preventDefault();event.stopPropagation();}
@@ -680,9 +729,9 @@ window.nofekiRefreshShortcutAuthorizations=function(){void loadShortcutAuthoriza
 window.nofekiRevokeShortcutFromButton=function(event){
  if(event){event.preventDefault();event.stopPropagation();}
  const target=event&&event.target instanceof Element?event.target:null;
- const button=target&&target.closest("[data-revoke-shortcut]");
+ const button=target&&target.closest("button[data-revoke-shortcut]");
  const id=button&&button.getAttribute("data-revoke-shortcut");
- if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
+ if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return;}
  void window.nofekiRevokeShortcut(id);
 };
 
