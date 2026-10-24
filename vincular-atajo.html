@@ -2,49 +2,76 @@
 <html lang="es">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Vincular Atajo | NOFEKI Gastos</title>
+<meta name="theme-color" content="#f4f7fa">
+<title>Vincular tu iPhone | NOFEKI Gastos</title>
 <style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b1220;color:#eef3fa;font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;display:grid;place-items:center;padding:20px}.card{width:min(100%,520px);background:#121d2d;border:1px solid #29384c;border-radius:20px;padding:28px;box-shadow:0 20px 60px #0004}h1{font-size:26px;margin:0 0 8px}p{color:#b9c6d7;line-height:1.55}.btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-weight:700;font-size:16px;cursor:pointer;background:#10b8a6;color:#06201e}.btn:disabled{opacity:.55}.status{margin-top:14px;min-height:28px;overflow-wrap:anywhere}.token{width:100%;padding:12px;border-radius:8px;background:#0a1320;border:1px solid #3a4a60;color:white;margin:8px 0;font-size:13px}.muted{font-size:13px;color:#91a3b8}a{color:#72ddd2} [hidden]{display:none!important}
+:root{color-scheme:light;--ink:#111827;--muted:#64748b;--line:#e2e8f0;--teal:#0f766e;--teal-bg:#ccfbf1;--paper:#f4f7fa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0,#d8fbf3 0,transparent 28%),var(--paper);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh;padding:24px;display:grid;place-items:center}
+.card{width:min(100%,560px);background:#fff;border:1px solid var(--line);border-radius:24px;padding:clamp(22px,5vw,34px);box-shadow:0 24px 70px #0f172a12}
+.brand{font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--teal);text-transform:uppercase;margin-bottom:18px}
+h1{font-size:clamp(27px,6vw,34px);line-height:1.12;letter-spacing:-1px;margin:0 0 12px}
+p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
+.steps{display:grid;gap:12px;margin:22px 0}.step{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:start;padding:13px;background:#f8fafc;border:1px solid #edf1f5;border-radius:14px}.num{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--teal-bg);color:var(--teal);font-weight:800}.step strong{display:block;font-size:14px;margin:1px 0 4px}.step span{display:block;color:var(--muted);font-size:13px;line-height:1.5}
+.btn{display:block;width:100%;border:0;border-radius:12px;padding:15px 18px;font-weight:750;font-size:15px;cursor:pointer;background:var(--ink);color:#fff;transition:opacity .15s}.btn:disabled{opacity:.55;cursor:wait}.btn.secondary{background:var(--teal-bg);color:#115e59;margin-top:8px}
+.status{padding:12px 14px;border-radius:12px;background:#f1f5f9;color:#475569;font-size:13px;overflow-wrap:anywhere;margin:14px 0 0}.status.error{background:#fff1f2;color:#be123c}.status.ok{background:#ecfdf5;color:#047857}
+.token{display:block;width:100%;padding:13px;border-radius:10px;background:#f8fafc;border:1px solid #cbd5e1;color:var(--ink);margin:8px 0 12px;font-size:13px}
+.security{padding:12px 14px;border:1px solid #fde68a;background:#fffbeb;border-radius:12px;color:#92400e;font-size:12px;line-height:1.55;margin-top:14px}
+.note{font-size:12px;margin-top:14px}.back{display:inline-block;color:var(--teal);font-size:13px;font-weight:700;margin-top:20px;text-decoration:none}
+[hidden]{display:none!important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
-</head><body><main class="card">
-<h1>Vincular Atajo de iOS</h1>
-<p>Vincula este iPhone con tu cuenta de NOFEKI Gastos. Cada autorización es personal y permite registrar gastos únicamente en tu cuenta.</p>
+</head>
+<body><main class="card">
+<div class="brand">NOFEKI · Gastos</div>
+<h1>Conecta tu iPhone</h1>
+<p class="intro">Vincula tu Atajo de iOS para registrar gastos en tu cuenta sin abrir la aplicación cada vez. La autorización pertenece únicamente a tu usuario y puedes revocarla cuando quieras.</p>
+<div class="steps" id="steps">
+<div class="step"><div class="num">1</div><div><strong>Confirma tu sesión</strong><span>Debes haber iniciado sesión en NOFEKI Gastos en este navegador.</span></div></div>
+<div class="step"><div class="num">2</div><div><strong>Crea tu autorización personal</strong><span>Generaremos una clave segura para este Atajo. Solo se mostrará una vez.</span></div></div>
+<div class="step"><div class="num">3</div><div><strong>Guárdala en el Atajo</strong><span>Copia la clave y pégala en el encabezado Authorization después de la palabra <b>Bearer</b> y un espacio.</span></div></div>
+</div>
 <button id="connect" class="btn" type="button">Crear autorización personal</button>
-<p id="status" class="status" role="status" aria-live="polite">Preparado. Pulsa el botón para comenzar.</p>
-<section id="tokenPanel" hidden><label for="token">Autorización personal</label><input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false"><button id="copy" class="btn" type="button">Copiar autorización</button><p id="expiry" class="muted"></p><p class="muted">Último paso: abre tu atajo personal, edita «Obtener contenido de URL» y pega la autorización en el valor del encabezado Authorization después de «Bearer » (con un espacio). No compartas ese atajo ni capturas donde aparezca la autorización. Si crees que se expuso, revócala desde NOFEKI.</p></section>
-<p class="muted"><a href="/gastos.html">Volver a NOFEKI Gastos</a></p>
+<p id="status" class="status" role="status" aria-live="polite">Preparado para vincular.</p>
+<section id="tokenPanel" hidden>
+<label for="token"><strong>Tu autorización personal</strong></label>
+<input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false">
+<button id="copy" class="btn secondary" type="button">Copiar autorización</button>
+<p id="expiry" class="note"></p>
+<div class="security"><strong>Importante:</strong> no compartas esta clave ni capturas donde aparezca. Si se expone, revócala desde NOFEKI Gastos y crea una nueva.</div>
+</section>
+<div class="step" style="margin-top:18px"><div class="num">✦</div><div><strong>Tus categorías son personales</strong><span>Las categorías que crees en NOFEKI pertenecen a tu cuenta. Estamos preparando el flujo del Atajo para que pueda consultar esa lista personalizada, además de las categorías predeterminadas.</span></div></div>
+<a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
 <script>
 (function(){
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
-const status=document.getElementById("status"), button=document.getElementById("connect");
+const status=document.getElementById("status"),button=document.getElementById("connect");
 let authorizationCreated=false;
-let tokenCopied=false;
-function say(s){status.textContent=s;}
+function say(s,kind){status.textContent=s;status.className="status"+(kind?" "+kind:"");}
 button.addEventListener("click",async function(){
  if(authorizationCreated)return;
- button.disabled=true;button.textContent="Creando autorización…";document.getElementById("tokenPanel").hidden=true;say("1/3 Comprobando que la sesión está disponible…");
+ button.disabled=true;button.textContent="Creando autorización…";document.getElementById("tokenPanel").hidden=true;say("Paso 1 de 2 · Comprobando tu sesión…");
  try{
-  if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro de sesión. Recarga esta página.");
+  if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro. Comprueba tu conexión y recarga la página.");
   const client=window.supabase.createClient(URL,KEY,{auth:{storage:window.localStorage,storageKey:"nofeki-gastos-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});
   const {data,error}=await client.auth.getSession();if(error)throw error;
   const access=data&&data.session&&data.session.access_token;
-  if(!access)throw new Error("No hay una sesión activa. Abre NOFEKI Gastos, inicia sesión y luego vuelve aquí.");
-  say("2/3 Solicitando token seguro…");
-  const headers={"Content-Type":"application/json","apikey":KEY};headers["Authorization"]="Bearer "+access;
-  const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:headers,body:JSON.stringify({device_name:"iPhone NOFEKI"})});
+  if(!access)throw new Error("Tu sesión no está activa. Vuelve a NOFEKI Gastos, inicia sesión y regresa aquí.");
+  say("Paso 2 de 2 · Creando autorización segura…");
+  const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+access},body:JSON.stringify({device_name:"iPhone NOFEKI"})});
   const payload=await response.json().catch(()=>({}));
-  if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error||("El servidor respondió "+response.status+"."));
-  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;document.getElementById("expiry").textContent="Vence: "+(payload.expires_at?new Date(payload.expires_at).toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"}):"12 meses después de su creación")+". El token completo no se podrá recuperar después de salir de esta página.";authorizationCreated=true;button.textContent="Autorización creada";say("Autorización creada. Cópiala ahora y guárdala únicamente dentro de tu atajo personal.");
- }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)));}
- finally{if(!authorizationCreated){button.disabled=false;button.textContent="Crear autorización personal";}}
+  if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error==="active_authorization_exists"?"Este usuario ya tiene una autorización activa. Adminístrala desde NOFEKI Gastos.":(payload.error||("El servidor respondió "+response.status+".")));
+  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;
+  document.getElementById("expiry").textContent="Vence: "+(payload.expires_at?new Date(payload.expires_at).toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"}):"12 meses después de su creación")+". Si sales de esta página, no podrás volver a consultar el token completo.";
+  authorizationCreated=true;button.textContent="Autorización creada";say("Autorización creada. Cópiala y pégala en tu Atajo personal.","ok");
+ }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
+ finally{if(!authorizationCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);tokenCopied=true;field.value="";field.placeholder="Copiado al portapapeles";say("Autorización copiada. Ya no se muestra en pantalla; pégala en tu atajo personal.");}
- catch(e){field.focus();field.select();say("No se pudo copiar automáticamente. Selecciona la autorización y usa Copiar.");}
+ try{await navigator.clipboard.writeText(field.value);field.value="";field.placeholder="Autorización copiada al portapapeles";say("Copiada. Ahora pégala en el encabezado Authorization de tu Atajo.","ok");}
+ catch(e){field.focus();field.select();say("No se pudo copiar automáticamente. Mantén pulsado el texto seleccionado y elige Copiar.","error");}
 });
 })();
 </script></body></html>
