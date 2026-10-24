@@ -527,7 +527,7 @@ async function loadFinancialProfile(){const {data,error}=await client.from("fina
 function openOnboarding(){if(!currentUser)return;$("onboardingModal").hidden=false;document.body.classList.add("modal-open");setTimeout(()=>$("netIncome").focus({preventScroll:true}),80);}
 function closeOnboarding(){ $("onboardingModal").hidden=true;if($("expenseModal").hidden)document.body.classList.remove("modal-open");}
 function toggleAdditionalIncome(){const yes=$('input[name="hasAdditionalIncome"]:checked')?.value==="yes";$("additionalIncomeWrap").hidden=!yes;$("additionalIncome").required=yes;}
-$('input[name="hasAdditionalIncome"]').addEventListener("change",toggleAdditionalIncome);
+document.querySelectorAll('input[name="hasAdditionalIncome"]').forEach(input=>input.addEventListener("change",toggleAdditionalIncome));
 $("closeOnboarding").addEventListener("click",closeOnboarding);
 $("onboardingModal").addEventListener("click",e=>{if(e.target===$("onboardingModal"))closeOnboarding();});
 $("saveOnboardingDraft").addEventListener("click",()=>saveFinancialProfile(false));
