@@ -623,14 +623,15 @@ async function loadShortcutAuthorizations(){
   const r=await fetch(SUPABASE_URL+"/functions/v1/gestionar-atajos",{method:"GET",cache:"no-store",headers:{apikey:SUPABASE_PUBLISHABLE_KEY,Authorization:"Bearer "+token}});
   const d=await r.json().catch(()=>({}));
   if(!r.ok||!d.ok)throw Error(({login_required:"Inicia sesión para consultar las autorizaciones.",invalid_session:"Tu sesión expiró. Inicia sesión de nuevo.",authorization_list_failed:"El servidor no pudo consultar las autorizaciones.",server_configuration_error:"El servicio de autorizaciones requiere revisión técnica."})[d.error]||d.error||"No fue posible consultar las autorizaciones.");
-  const rows=Array.isArray(d.authorizations)?d.authorizations:[],now=Date.now();
+  const allRows=Array.isArray(d.authorizations)?d.authorizations:[],now=Date.now();
   const state=a=>a.revoked_at?"revoked":a.expires_at&&Date.parse(a.expires_at)<=now?"expired":"active";
-  const active=rows.filter(a=>state(a)==="active").length,expired=rows.filter(a=>state(a)==="expired").length,revoked=rows.filter(a=>state(a)==="revoked").length;
+  // El Dashboard muestra únicamente autorizaciones vigentes; las históricas se conservan en la base de datos.
+  const rows=allRows.filter(a=>state(a)==="active"),active=rows.length;
   const fmt=v=>v?new Date(v).toLocaleString("es-CO",{dateStyle:"medium",timeStyle:"short"}):"No disponible";
-  const summary='<div class="shortcut-summary"><div class="shortcut-stat"><strong>'+active+'</strong>Activas</div><div class="shortcut-stat"><strong>'+expired+'</strong>Vencidas</div><div class="shortcut-stat"><strong>'+revoked+'</strong>Revocadas</div></div>';
-  if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
-  host.innerHTML=summary+(active>1?'<div class="notice" style="margin:0 0 10px">Tienes varias autorizaciones activas. Conserva la que usa tu atajo actual hasta identificarla con certeza.</div>':'')+rows.map(a=>{
-   const st=state(a),label=st==="active"?"Activa":st==="revoked"?"Revocada":"Vencida",expiry=a.expires_at?fmt(a.expires_at):"No registrada (autorización antigua)",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
+  const summary='<div class="shortcut-summary"><div class="shortcut-stat"><strong>'+active+'</strong>Conexión activa</div></div>';
+  if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes una conexión activa. Pulsa “Vincular un iPhone” para conectar tu atajo.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
+  host.innerHTML=summary+rows.map(a=>{
+   const st=state(a),label="Activa",expiry=a.expires_at?fmt(a.expires_at):"No registrada",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
    return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   // El control invoca el manejador directamente desde onclick.
