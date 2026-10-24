@@ -477,36 +477,7 @@ let currentUser = null, expenses = [], authMode = "login", recoveryMode = false;
 
 const $ = id => document.getElementById(id);
 
-// Delegación global instalada al inicio. Se pasa el evento real del navegador
-// y se muestra cualquier fallo en pantalla para no dejar botones silenciosos.
-document.addEventListener("click", function(event) {
-  const target = event.target instanceof Element ? event.target : null;
-  if (!target) return;
-  const deleteButton = target.closest("button[data-delete]");
-  if (deleteButton) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (typeof window.nofekiDeleteExpenseFromButton === "function") {
-      void window.nofekiDeleteExpenseFromButton(event);
-    } else {
-      const status = document.getElementById("listMessage");
-      if (status) { status.textContent = "La acción de eliminación no se inicializó. Recarga la página."; status.className = "message show error"; }
-    }
-    return;
-  }
-  const revokeButton = target.closest("button[data-revoke-shortcut]");
-  if (revokeButton) {
-    event.preventDefault();
-    event.stopPropagation();
-    if (typeof window.nofekiRevokeShortcutFromButton === "function") {
-      void window.nofekiRevokeShortcutFromButton(event);
-    } else {
-      const status = document.getElementById("shortcutTokenStatus");
-      if (status) { status.textContent = "La acción de revocación no se inicializó. Recarga la página."; status.className = "message show error"; }
-    }
-  }
-}, true);
-// Los botones usan manejadores directos; se evita interceptar clicks en captura.
+// La delegación se instala al final del script, después de definir todos los manejadores.
 // Activate password recovery immediately, before the rest of the app initializes.
 // This prevents later initialization/auth callbacks from leaving the login form visible.
 const initialAuthQuery = new URLSearchParams(location.search);
@@ -725,6 +696,32 @@ window.nofekiRevokeShortcut=async function(id){
 };
 
 window.nofekiRefreshShortcutAuthorizations=function(){void loadShortcutAuthorizations();};
+
+// Delegación final: solo se activa cuando las funciones de acción ya están definidas.
+document.addEventListener("click", function(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target) return;
+  const deleteButton = target.closest("button[data-delete]");
+  if (deleteButton) {
+    event.preventDefault();
+    if (typeof window.nofekiDeleteExpenseFromButton === "function") {
+      void window.nofekiDeleteExpenseFromButton(event);
+    } else {
+      message("listMessage", "No se pudo inicializar la acción de eliminación. Recarga la página e inténtalo de nuevo.", "error");
+    }
+    return;
+  }
+  const revokeButton = target.closest("button[data-revoke-shortcut]");
+  if (revokeButton) {
+    event.preventDefault();
+    if (typeof window.nofekiRevokeShortcutFromButton === "function") {
+      void window.nofekiRevokeShortcutFromButton(event);
+    } else {
+      message("shortcutTokenStatus", "No se pudo inicializar la acción de revocación. Recarga la página e inténtalo de nuevo.", "error");
+    }
+  }
+}, false);
+
 
 window.nofekiRevokeShortcutFromButton=function(event){
  if(event){event.preventDefault();event.stopPropagation();}
