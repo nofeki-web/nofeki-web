@@ -568,16 +568,25 @@ $("expenseForm").addEventListener("submit",async e=>{
  if(btn.disabled)return;
  btn.disabled=true;btn.textContent="Verificando sesión…";clearMessage("expenseMessage");
  try{
-  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  let {data:sessionData,error:sessionError}=await client.auth.getSession();
   if(sessionError)throw sessionError;
-  const sessionUser=sessionData?.session?.user;
+  // Safari móvil puede tener una carrera al leer la sesión persistida.
+  // Intenta restaurarla antes de interrumpir el registro.
+  if(!sessionData?.session){
+   const refreshed=await client.auth.refreshSession();
+   if(!refreshed.error)sessionData=refreshed.data;
+  }
+  let sessionUser=sessionData?.session?.user||null;
   if(!sessionUser){
-   currentUser=null;
-   document.body.classList.remove("dashboard-active");
-   $("dashboardView").hidden=true;$("dashboardView").style.display="none";
-   $("authView").hidden=false;$("authView").style.display="block";
-   message("expenseMessage","Tu sesión no está activa. Inicia sesión de nuevo; no se envió ningún gasto.","error");
-   message("authMessage","Tu sesión no está activa. Inicia sesión para continuar.","error");
+   const {data:userData,error:userError}=await client.auth.getUser();
+   if(!userError&&userData?.user){
+    const refreshed=await client.auth.refreshSession();
+    if(!refreshed.error)sessionUser=refreshed.data?.session?.user||null;
+   }
+  }
+  if(!sessionUser){
+   console.error("NOFEKI: no session available during expense save",{sessionError:sessionError?.message,hasCurrentUser:!!currentUser});
+   message("expenseMessage","No pudimos recuperar tu sesión en este intento. El gasto no se envió. Recarga la página e inténtalo de nuevo; si continúa, revisaremos el diagnóstico de autenticación.","error");
    return;
   }
   currentUser=sessionUser;
