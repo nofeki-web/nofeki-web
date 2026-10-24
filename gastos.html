@@ -459,7 +459,7 @@ if(!window.supabase || typeof window.supabase.createClient!=="function"){
   throw new Error("Supabase JS client did not load.");
 }
 let client;
-try{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);}
+try{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{storage:window.localStorage,storageKey:"nofeki-gastos-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});}
 catch(initError){
   showStartupError("No pudimos inicializar el inicio de sesión. Recarga la página; si el problema continúa, contacta al soporte de NOFEKI.");
   throw initError;
@@ -559,7 +559,7 @@ function render(){
  visible.forEach(e=>{categoryTotals[e.cat||"Sin categoría"]=(categoryTotals[e.cat||"Sin categoría"]||0)+e.amount;paymentTotals[e.pay||"Sin especificar"]=(paymentTotals[e.pay||"Sin especificar"]||0)+e.amount;});
  drawPie("categoryPie",categoryTotals,"Registra gastos para ver la distribución por categoría.");
  drawPie("paymentPie",paymentTotals,"Registra el medio de pago de tus gastos para ver la distribución.");
- $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" onclick="return window.nofekiDeleteExpenseInline(this)" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
+ $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
  // El control invoca el manejador directamente desde onclick.
 }
 $("expenseForm").addEventListener("submit",async e=>{
@@ -623,7 +623,7 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+(active>1?'<div class="notice" style="margin:0 0 10px">Tienes varias autorizaciones activas. Conserva la que usa tu atajo actual hasta identificarla con certeza.</div>':'')+rows.map(a=>{
    const st=state(a),label=st==="active"?"Activa":st==="revoked"?"Revocada":"Vencida",expiry=a.expires_at?fmt(a.expires_at):"No registrada (autorización antigua)",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" onclick="return window.nofekiRevokeShortcutInline(this)" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   // El control invoca el manejador directamente desde onclick.
   message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
@@ -728,31 +728,22 @@ window.nofekiRevokeShortcut=async function(id){
 
 window.nofekiRefreshShortcutAuthorizations=function(){void loadShortcutAuthorizations();};
 
-// Delegación final: solo se activa cuando las funciones de acción ya están definidas.
+// Único punto de entrada para las acciones de fila: delegación de eventos.
 document.addEventListener("click", function(event) {
   const target = event.target instanceof Element ? event.target : null;
   if (!target) return;
   const deleteButton = target.closest("button[data-delete]");
   if (deleteButton) {
     event.preventDefault();
-    if (typeof window.nofekiDeleteExpenseFromButton === "function") {
-      void window.nofekiDeleteExpenseFromButton(event);
-    } else {
-      message("listMessage", "No se pudo inicializar la acción de eliminación. Recarga la página e inténtalo de nuevo.", "error");
-    }
+    void window.nofekiDeleteExpenseFromButton(event);
     return;
   }
   const revokeButton = target.closest("button[data-revoke-shortcut]");
   if (revokeButton) {
     event.preventDefault();
-    if (typeof window.nofekiRevokeShortcutFromButton === "function") {
-      void window.nofekiRevokeShortcutFromButton(event);
-    } else {
-      message("shortcutTokenStatus", "No se pudo inicializar la acción de revocación. Recarga la página e inténtalo de nuevo.", "error");
-    }
+    void window.nofekiRevokeShortcutFromButton(event);
   }
 }, false);
-
 
 window.nofekiRevokeShortcutFromButton=function(event){
  if(event){event.preventDefault();event.stopPropagation();}
