@@ -458,8 +458,11 @@ if(!window.supabase || typeof window.supabase.createClient!=="function"){
   showStartupError("No pudimos cargar el componente de inicio de sesión. Comprueba tu conexión, recarga la página e inténtalo de nuevo.");
   throw new Error("Supabase JS client did not load.");
 }
+/* Preserve sessions from the previous Supabase default storage key. */
+const NOFEKI_AUTH_STORAGE_KEY="nofeki-gastos-auth-v1";
+try{const projectRef=new URL(SUPABASE_URL).hostname.split(".")[0];const legacyKey="sb-"+projectRef+"-auth-token";if(!localStorage.getItem(NOFEKI_AUTH_STORAGE_KEY)){const legacySession=localStorage.getItem(legacyKey);if(legacySession)localStorage.setItem(NOFEKI_AUTH_STORAGE_KEY,legacySession);}}catch(storageMigrationError){console.warn("NOFEKI: no se pudo migrar la sesión anterior.",storageMigrationError);}
 let client;
-try{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{storage:window.localStorage,storageKey:"nofeki-gastos-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});}
+try{client=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{storage:window.localStorage,storageKey:NOFEKI_AUTH_STORAGE_KEY,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});}
 catch(initError){
   showStartupError("No pudimos inicializar el inicio de sesión. Recarga la página; si el problema continúa, contacta al soporte de NOFEKI.");
   throw initError;
@@ -735,13 +738,15 @@ document.addEventListener("click", function(event) {
   const deleteButton = target.closest("button[data-delete]");
   if (deleteButton) {
     event.preventDefault();
-    void window.nofekiDeleteExpenseFromButton(event);
+    event.stopPropagation();
+    void window.nofekiDeleteExpenseInline(deleteButton);
     return;
   }
   const revokeButton = target.closest("button[data-revoke-shortcut]");
   if (revokeButton) {
     event.preventDefault();
-    void window.nofekiRevokeShortcutFromButton(event);
+    event.stopPropagation();
+    void window.nofekiRevokeShortcutInline(revokeButton);
   }
 }, false);
 
