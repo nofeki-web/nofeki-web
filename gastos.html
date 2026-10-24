@@ -626,7 +626,7 @@ async function loadShortcutAuthorizations(){
   const allRows=Array.isArray(d.authorizations)?d.authorizations:[],now=Date.now();
   const state=a=>a.revoked_at?"revoked":a.expires_at&&Date.parse(a.expires_at)<=now?"expired":"active";
   // El Dashboard muestra únicamente autorizaciones vigentes; las históricas se conservan en la base de datos.
-  const rows=allRows.filter(a=>state(a)==="active"),active=rows.length;
+  const rows=allRows.filter(a=>state(a)==="active"),active=rows.length;const createButton=$("createShortcutToken");if(createButton){createButton.hidden=active>0;createButton.setAttribute("aria-hidden",active>0?"true":"false");}
   const fmt=v=>v?new Date(v).toLocaleString("es-CO",{dateStyle:"medium",timeStyle:"short"}):"No disponible";
   const summary='<div class="shortcut-summary"><div class="shortcut-stat"><strong>'+active+'</strong>Conexión activa</div></div>';
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes una conexión activa. Pulsa “Vincular un iPhone” para conectar tu atajo.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
