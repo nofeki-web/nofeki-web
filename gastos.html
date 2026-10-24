@@ -580,17 +580,21 @@ $("expenseForm").addEventListener("submit",async e=>{
  if(btn.disabled)return;
  btn.disabled=true;btn.textContent="Verificando sesión…";clearMessage("expenseMessage");
  try{
-  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  let {data:sessionData,error:sessionError}=await client.auth.getSession();
   if(sessionError)throw sessionError;
-  const sessionUser=sessionData?.session?.user;
-  if(!sessionUser){
-   currentUser=null;
-   document.body.classList.remove("dashboard-active");
-   $("dashboardView").hidden=true;$("dashboardView").style.display="none";
-   $("authView").hidden=false;$("authView").style.display="block";
-   message("expenseMessage","Tu sesión no está activa. Inicia sesión de nuevo; no se envió ningún gasto.","error");
-   message("authMessage","Tu sesión no está activa. Inicia sesión para continuar.","error");
-   return;
+  let session= sessionData?.session || null;
+  // Safari/iOS private browsing can leave the in-memory user and persisted
+  // session temporarily out of sync. Try a refresh before deciding the session
+  // is invalid; never redirect away from the form without a diagnostic.
+  if(!session){
+   const refreshed=await client.auth.refreshSession();
+   if(!refreshed.error)session=refreshed.data?.session||null;
+   else console.warn("NOFEKI: refresh de sesión falló al guardar:",refreshed.error.message);
+  }
+  const sessionUser=session?.user || currentUser;
+  if(!sessionUser || !session?.access_token){
+   message("expenseMessage","No se pudo validar tu sesión para guardar. El gasto no se envió. Recarga la página e inicia sesión de nuevo; si vuelve a ocurrir, revisaremos el diagnóstico de autenticación.","error");
+   throw new Error("Sesión no disponible al guardar (sin access token).");
   }
   currentUser=sessionUser;
   const payload={user_id:sessionUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};
