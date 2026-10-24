@@ -640,18 +640,29 @@ client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){console
   $("authView").style.display="block";
   setAuthMode("recovery");
  }
- // Supabase PKCE devuelve ?code=...; intercambiarlo crea la sesión de recuperación.
+ // Compatibilidad con ambos formatos que Supabase puede devolver:
+ // PKCE (?code=...) e implicit flow (#access_token=...&refresh_token=...).
  const authCode=query.get("code");
- if(authCode&&recoveryMode){
+ const accessToken=hash.get("access_token");
+ const refreshToken=hash.get("refresh_token");
+ if(recoveryMode&&authCode){
   const {error:exchangeError}=await client.auth.exchangeCodeForSession(authCode);
   if(exchangeError){
-   console.error("NOFEKI recovery exchange failed",exchangeError);
-   message("authMessage","No pudimos validar este enlace de recuperación. Solicita uno nuevo y ábrelo una sola vez desde el mismo navegador.","error");
+   console.error("NOFEKI recovery code exchange failed",exchangeError);
+   message("authMessage","No pudimos validar este enlace. Solicita uno nuevo desde esta página y ábrelo directamente desde el correo.","error");
    return;
   }
   query.delete("code");
   const remaining=query.toString();
   history.replaceState(null,"",location.pathname+(remaining?"?"+remaining:""));
+ }else if(recoveryMode&&accessToken&&refreshToken){
+  const {error:sessionError}=await client.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+  if(sessionError){
+   console.error("NOFEKI recovery token session failed",sessionError);
+   message("authMessage","El enlace de recuperación no es válido o ya fue utilizado. Solicita uno nuevo.","error");
+   return;
+  }
+  history.replaceState(null,"",location.pathname+"?mode=recovery");
  }
  const {data,error}=await client.auth.getSession();
  if(error){message("authMessage",friendly(error),"error");return;}
@@ -659,7 +670,7 @@ client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){console
  if(data.session?.user&&!recoveryMode)await loadUser(data.session.user);
  if(hash.get("error_description"))message("authMessage",decodeURIComponent(hash.get("error_description").replace(/\\+/g," ")), "error");
  if(recoveryMode&&!data.session?.user){
-  message("authMessage","El enlace no inició una sesión de recuperación. Solicita uno nuevo y ábrelo en el mismo navegador.","error");
+  message("authMessage","No se pudo iniciar la sesión segura de recuperación. Solicita un enlace nuevo y ábrelo directamente desde el correo en el navegador donde solicitaste el enlace.","error");
  }
 })();
 
