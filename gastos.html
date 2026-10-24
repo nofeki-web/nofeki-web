@@ -635,7 +635,7 @@ async function loadShortcutAuthorizations(){
    return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   // El control invoca el manejador directamente desde onclick.
-  message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
+  message("shortcutTokenStatus",active>0?"Conexión exitosa: tu iPhone está vinculado y listo para registrar gastos.":"No hay una conexión activa.",active>0?"ok":"");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
  finally{host.removeAttribute("aria-busy");}
 }
