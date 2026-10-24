@@ -562,53 +562,51 @@ function render(){
  $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
  // El control invoca el manejador directamente desde onclick.
 }
+let expenseSaveInProgress=false;
+let expenseSaveStage="idle";
 $("expenseForm").addEventListener("submit",async e=>{
  e.preventDefault();
  const btn=$("saveExpense");
  if(btn.disabled)return;
+ expenseSaveInProgress=true;expenseSaveStage="start";
  btn.disabled=true;btn.textContent="Verificando sesión…";clearMessage("expenseMessage");
+ const diag=(stage,details={})=>{expenseSaveStage=stage;console.info("NOFEKI_SAVE_DIAG",JSON.stringify({stage,at:new Date().toISOString(),hasCurrentUser:!!currentUser,...details}));};
  try{
-  let {data:sessionData,error:sessionError}=await client.auth.getSession();
+  diag("before_getSession");
+  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  diag("after_getSession",{hasSession:!!sessionData?.session,sessionError:sessionError?.message||null});
   if(sessionError)throw sessionError;
-  // Safari móvil puede tener una carrera al leer la sesión persistida.
-  // Intenta restaurarla antes de interrumpir el registro.
-  if(!sessionData?.session){
-   const refreshed=await client.auth.refreshSession();
-   if(!refreshed.error)sessionData=refreshed.data;
-  }
-  let sessionUser=sessionData?.session?.user||null;
+  // No renovamos la sesión durante el guardado: un refresh fallido puede
+  // emitir SIGNED_OUT y ocultar el formulario antes de diagnosticar el fallo.
+  const sessionUser=sessionData?.session?.user||currentUser||null;
   if(!sessionUser){
-   const {data:userData,error:userError}=await client.auth.getUser();
-   if(!userError&&userData?.user){
-    const refreshed=await client.auth.refreshSession();
-    if(!refreshed.error)sessionUser=refreshed.data?.session?.user||null;
-   }
-  }
-  if(!sessionUser){
-   console.error("NOFEKI: no session available during expense save",{sessionError:sessionError?.message,hasCurrentUser:!!currentUser});
-   message("expenseMessage","No pudimos recuperar tu sesión en este intento. El gasto no se envió. Recarga la página e inténtalo de nuevo; si continúa, revisaremos el diagnóstico de autenticación.","error");
+   diag("missing_session");
+   message("expenseMessage","La sesión del navegador no está disponible. El formulario se mantiene abierto para evitar perder los datos. Recarga la página e inicia sesión nuevamente; si persiste, comparte el código NOFEKI_SAVE_DIAG de la consola.","error");
    return;
   }
   currentUser=sessionUser;
   const payload={user_id:sessionUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};
   if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");
   btn.textContent="Guardando en la nube…";
+  diag("before_insert",{userId:sessionUser.id,amount:payload.amount});
   const {data,error}=await client.from("gastos").insert(payload).select("id").single();
-  if(error)throw error;
+  if(error){diag("insert_error",{code:error.code||null,message:error.message||String(error),details:error.details||null,hint:error.hint||null});throw error;}
   if(!data?.id)throw new Error("El servidor no confirmó el registro del gasto.");
+  diag("insert_success",{expenseId:data.id});
   e.target.reset();$("expenseDate").value=today();
   await loadExpenses();
   message("expenseMessage","Gasto guardado correctamente en tu cuenta.");
   setTimeout(closeExpenseForm,650);
  }catch(err){
+  diag("caught_error",{name:err?.name||null,message:err?.message||String(err),code:err?.code||null});
   console.error("NOFEKI: error al guardar gasto",err);
-  message("expenseMessage","No pudimos confirmar el guardado. "+friendly(err),"error");
- }finally{btn.disabled=false;btn.textContent="Guardar gasto";}
+  message("expenseMessage","No pudimos confirmar el guardado. "+friendly(err)+" (diagnóstico: "+expenseSaveStage+").","error");
+ }finally{expenseSaveInProgress=false;btn.disabled=false;btn.textContent="Guardar gasto";}
 });
 // La eliminación se ejecuta desde el botón de cada fila mediante nofekiDeleteExpenseFromButton.
 function checkLegacy(){try{const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");if(Array.isArray(old)&&old.length){$("migrationPanel").style.display="block";$("migrate").textContent="Importar "+old.length+" registro"+(old.length===1?"":"s")+" antiguos";}}catch{}}
 $("migrate").addEventListener("click",async()=>{if(!currentUser)return;let old=[];try{old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");}catch{}if(!Array.isArray(old)||!old.length){message("migrationMessage","No encontramos registros antiguos para importar.","error");return;}const btn=$("migrate");btn.disabled=true;btn.textContent="Importando…";let done=0,failed=0;try{for(let i=0;i<old.length;i+=50){const batch=old.slice(i,i+50).map((e,j)=>({user_id:currentUser.id,expense_date:e.date||today(),description:String(e.desc||"Gasto importado").slice(0,160),category:["Alimentación","Transporte","Vivienda","Servicios","Deudas","Ocio","Salud","Compras","Otros"].includes(e.cat)?e.cat:"Otros",amount:Number(e.amount),expense_type:["Necesario","Discrecional","Deuda"].includes(e.type)?e.type:"Necesario",payment_method:e.pay||null,note:e.note||null,source:"import",idempotency_key:"legacy-"+String(e.id||i+j)})).filter(e=>Number.isFinite(e.amount)&&e.amount>0);if(!batch.length)continue;const {data,error}=await client.from("gastos").upsert(batch,{onConflict:"user_id,idempotency_key",ignoreDuplicates:true}).select("id");if(error)throw error;done+=data?.length||0;}await loadExpenses();message("migrationMessage","Proceso terminado. "+done+" registros importados o confirmados. Los datos originales siguen en este navegador.");}catch(err){failed++;message("migrationMessage","La importación se detuvo por un error: "+friendly(err)+". Tus datos originales no se borraron; puedes reintentar.","error");}finally{btn.disabled=false;checkLegacy();}});
-client.auth.onAuthStateChange((event,session)=>{if(event==="PASSWORD_RECOVERY"){recoveryMode=true;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setTimeout(()=>setAuthMode("recovery"),0);return;}if(session?.user&&!currentUser&&!recoveryMode){setTimeout(()=>loadUser(session.user),0);}else if(event==="SIGNED_OUT"){currentUser=null;document.body.classList.remove("dashboard-active");$("dashboardView").hidden=true;$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.display="block";}});
+client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"&&expenseSaveInProgress){console.error("NOFEKI_SAVE_DIAG",JSON.stringify({stage:"SIGNED_OUT_during_save",at:new Date().toISOString(),lastStage:expenseSaveStage,hasCurrentUser:!!currentUser}));message("expenseMessage","El navegador notificó cierre de sesión durante el guardado (diagnóstico: SIGNED_OUT_during_save). No cierres esta ventana; recarga e inicia sesión y vuelve a intentarlo.","error");return;}if(event==="PASSWORD_RECOVERY"){recoveryMode=true;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setTimeout(()=>setAuthMode("recovery"),0);return;}if(session?.user&&!currentUser&&!recoveryMode){setTimeout(()=>loadUser(session.user),0);}else if(event==="SIGNED_OUT"){currentUser=null;document.body.classList.remove("dashboard-active");$("dashboardView").hidden=true;$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.display="block";}});
 (async()=>{const hash=new URLSearchParams(location.hash.slice(1));const query=new URLSearchParams(location.search);recoveryMode=query.get("mode")==="recovery"||hash.get("type")==="recovery";if(recoveryMode){document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setAuthMode("recovery");}const {data,error}=await client.auth.getSession();if(error){message("authMessage",friendly(error),"error");return;}if(data.session?.user&&!recoveryMode)await loadUser(data.session.user);if(hash.get("error_description"))message("authMessage",decodeURIComponent(hash.get("error_description").replace(/\+/g," ")),"error");if(query.get("mode")==="recovery"&&!data.session?.user){message("authMessage","El enlace no inició una sesión de recuperación. Solicita un enlace nuevo y ábrelo en el mismo navegador.","error");}})();
 
 async function loadShortcutAuthorizations(){
