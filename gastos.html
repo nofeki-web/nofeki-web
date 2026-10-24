@@ -263,9 +263,16 @@ body.dashboard-active #dashboardView.dashboard{display:grid}
  .dash-heading h1{font-size:27px;line-height:1.2}
  .dash-heading p{font-size:13px}
  .period-chip{padding:9px 30px 9px 12px;max-width:100%}
- .product-metrics{grid-template-columns:minmax(0,1fr);gap:9px;margin-bottom:28px}
- .product-metric{padding:16px 17px;border-radius:14px}
- .product-metric strong{font-size:23px;margin:9px 0 6px}
+ .product-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:22px}
+ .product-metric{padding:14px 13px;border-radius:14px}
+ .product-metric:last-child{grid-column:1 / -1}
+ .product-metric .label{font-size:10px;letter-spacing:.25px}
+ .product-metric strong{font-size:21px;margin:9px 0 6px}
+ .product-metric .sub{font-size:10px}
+ .shortcut-secondary{margin:0 0 24px}
+ #shortcutConnectPanel{padding:16px!important}
+ #shortcutConnectPanel .panel-head{align-items:flex-start;gap:10px}
+ #shortcutConnectPanel .panel-head .pill{white-space:normal;text-align:center}
  .recent-heading{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:13px}
  .recent-heading h2{font-size:20px}
  .recent-heading p{font-size:12px}
