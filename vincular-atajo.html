@@ -26,9 +26,9 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <h1>Conecta tu iPhone</h1>
 <p class="intro">Vincula tu Atajo de iOS para registrar gastos en tu cuenta sin abrir la aplicación cada vez. La autorización pertenece únicamente a tu usuario y puedes revocarla cuando quieras.</p>
 <div class="steps" id="steps">
-<div class="step"><div class="num">1</div><div><strong>Confirma tu sesión</strong><span>Debes haber iniciado sesión en NOFEKI Gastos en este navegador.</span></div></div>
-<div class="step"><div class="num">2</div><div><strong>Crea tu autorización personal</strong><span>Generaremos una clave segura para este Atajo. Solo se mostrará una vez.</span></div></div>
-<div class="step"><div class="num">3</div><div><strong>Guárdala en el Atajo</strong><span>Copia la clave y pégala en el encabezado Authorization después de la palabra <b>Bearer</b> y un espacio.</span></div></div>
+<div class="step"><div class="num">1</div><div><strong>Instala el Atajo oficial</strong><span>Abre el enlace desde tu iPhone y toca Añadir atajo. Si ya lo instalaste, continúa al siguiente paso.</span><a class="btn secondary" style="text-decoration:none;text-align:center;margin-top:10px" href="https://www.icloud.com/shortcuts/387f18bd9db740ebaa5fa63ba37e56ab" target="_blank" rel="noopener">Añadir Atajo NOFEKI a mi iPhone ↗</a></div></div>
+<div class="step"><div class="num">2</div><div><strong>Crea tu autorización personal</strong><span>Comprueba que tienes sesión iniciada en NOFEKI Gastos. Generaremos una clave exclusiva para tu cuenta; se mostrará una sola vez.</span></div></div>
+<div class="step"><div class="num">3</div><div><strong>Configura el Atajo con tu clave</strong><span>En los detalles del Atajo, sustituye <b>TU_TOKEN</b> por tu clave en los dos encabezados: <b>X-Shortcut-Token</b> (consulta de categorías) y <b>Authorization</b> (registro de gastos). En ambos, conserva el prefijo <b>Bearer</b> y un espacio antes de la clave.</span></div></div>
 </div>
 <button id="connect" class="btn" type="button">Crear autorización personal</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado para vincular.</p>
@@ -39,7 +39,7 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <p id="expiry" class="note"></p>
 <div class="security"><strong>Importante:</strong> no compartas esta clave ni capturas donde aparezca. Si se expone, revócala desde NOFEKI Gastos y crea una nueva.</div>
 </section>
-<div class="step" style="margin-top:18px"><div class="num">✦</div><div><strong>Tus categorías son personales</strong><span>Las categorías que crees en NOFEKI pertenecen a tu cuenta. Estamos preparando el flujo del Atajo para que pueda consultar esa lista personalizada, además de las categorías predeterminadas.</span></div></div>
+<div class="step" style="margin-top:18px"><div class="num">✦</div><div><strong>Tus categorías son personales</strong><span>El Atajo consulta las categorías predeterminadas y las categorías personalizadas de tu cuenta. Los gastos registrados se sincronizan con NOFEKI Gastos.</span></div></div>
 <a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
 <script>
@@ -64,13 +64,13 @@ button.addEventListener("click",async function(){
   if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error==="active_authorization_exists"?"Este usuario ya tiene una autorización activa. Adminístrala desde NOFEKI Gastos.":(payload.error||("El servidor respondió "+response.status+".")));
   document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;
   document.getElementById("expiry").textContent="Vence: "+(payload.expires_at?new Date(payload.expires_at).toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"}):"12 meses después de su creación")+". Si sales de esta página, no podrás volver a consultar el token completo.";
-  authorizationCreated=true;button.textContent="Autorización creada";say("Autorización creada. Cópiala y pégala en tu Atajo personal.","ok");
+  authorizationCreated=true;button.textContent="Autorización creada";say("Autorización creada. Cópiala ahora y configúrala en los dos encabezados del Atajo. No cierres esta página hasta terminar.","ok");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
  finally{if(!authorizationCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);field.value="";field.placeholder="Autorización copiada al portapapeles";say("Copiada. Ahora pégala en el encabezado Authorization de tu Atajo.","ok");}
+ try{await navigator.clipboard.writeText(field.value);field.value="";field.placeholder="Autorización copiada al portapapeles";say("Copiada. Pega la clave en X-Shortcut-Token y Authorization, conservando Bearer y un espacio antes de la clave.","ok");}
  catch(e){field.focus();field.select();say("No se pudo copiar automáticamente. Mantén pulsado el texto seleccionado y elige Copiar.","error");}
 });
 })();
