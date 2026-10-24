@@ -31,12 +31,13 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <button id="connect" class="btn" type="button">Conectar mi iPhone</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado para vincular.</p>
 <section id="tokenPanel" hidden>
-<label for="token"><strong>Último paso: configura tu autorización en el Atajo</strong></label>
-<p class="note">Apple no permite que una página web configure automáticamente los encabezados de un Atajo ya instalado. Copia la clave y sustituye TU_TOKEN en los dos campos indicados: X-Shortcut-Token y Authorization (mantén “Bearer ” antes de la clave).</p>
+<label for="token"><strong>Código temporal de vinculación</strong></label>
+<p class="note">Este código dura 5 minutos y solo puede utilizarse una vez. El Atajo debe recibirlo como entrada y canjearlo por su autorización personal. No es el token definitivo.</p>
 <input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false">
-<button id="copy" class="btn secondary" type="button">Copiar autorización</button>
+<button id="copy" class="btn secondary" type="button">Copiar código temporal</button>
+<button id="launch" class="btn secondary" type="button">Abrir Atajo con el código</button>
 <p id="expiry" class="note"></p>
-<div class="security"><strong>Importante:</strong> no compartas esta clave ni capturas donde aparezca. Si se expone, revócala desde NOFEKI Gastos y crea una nueva.</div>
+<div class="security"><strong>Importante:</strong> el Atajo compartido actual todavía debe actualizarse para recibir y canjear este código. No pegues este código en los campos X-Shortcut-Token ni Authorization.</div>
 </section>
 <a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
@@ -45,34 +46,32 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const status=document.getElementById("status"),button=document.getElementById("connect");
-let authorizationCreated=false;
+let codeCreated=false,link="";
 function say(s,kind){status.textContent=s;status.className="status"+(kind?" "+kind:"");}
 button.addEventListener("click",async function(){
- if(authorizationCreated)return;
- button.disabled=true;button.textContent="Conectando…";document.getElementById("tokenPanel").hidden=true;say("Comprobando tu sesión…");
- // Open the Apple shortcut page from the user gesture so iOS does not block the navigation.
- const shortcutWindow=window.open("https://www.icloud.com/shortcuts/387f18bd9db740ebaa5fa63ba37e56ab","_blank");
+ if(codeCreated)return;
+ button.disabled=true;button.textContent="Generando código…";document.getElementById("tokenPanel").hidden=true;say("Comprobando tu sesión…");
  try{
   if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro. Comprueba tu conexión y recarga la página.");
   const client=window.supabase.createClient(URL,KEY,{auth:{storage:window.localStorage,storageKey:"nofeki-gastos-auth-v1",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"pkce"}});
   const {data,error}=await client.auth.getSession();if(error)throw error;
   const access=data&&data.session&&data.session.access_token;
   if(!access)throw new Error("Tu sesión no está activa. Vuelve a NOFEKI Gastos, inicia sesión y regresa aquí.");
-  say("Creando tu autorización segura…");
-  const response=await fetch(URL+"/functions/v1/crear-token-atajo",{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+access},body:JSON.stringify({device_name:"iPhone NOFEKI"})});
+  const response=await fetch(URL+"/functions/v1/crear-codigo-vinculacion-atajo",{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+access},body:JSON.stringify({device_name:"iPhone NOFEKI"})});
   const payload=await response.json().catch(()=>({}));
-  if(!response.ok||!payload.ok||!payload.token)throw new Error(payload.error==="active_authorization_exists"?"Este usuario ya tiene una autorización activa. Adminístrala desde NOFEKI Gastos.":(payload.error||("El servidor respondió "+response.status+".")));
-  document.getElementById("token").value=payload.token;document.getElementById("tokenPanel").hidden=false;
-  document.getElementById("expiry").textContent="Vence: "+(payload.expires_at?new Date(payload.expires_at).toLocaleDateString("es-CO",{year:"numeric",month:"long",day:"numeric"}):"12 meses después de su creación")+". Si sales de esta página, no podrás volver a consultar el token completo.";
-  authorizationCreated=true;button.textContent="Conexión iniciada";say("Autorización creada y enlace del Atajo abierto. Por seguridad, iOS no permite insertar automáticamente esta clave en las acciones del Atajo: cópiala y sigue las instrucciones de configuración que aparecen abajo.","ok");
- if(!shortcutWindow)say("Autorización creada. iOS bloqueó la apertura automática del Atajo; ábrelo con el enlace oficial y continúa con la clave de abajo.","ok");
+  if(!response.ok||!payload.ok||!payload.code)throw new Error(payload.message||payload.error||("El servidor respondió "+response.status+"."));
+  document.getElementById("token").value=payload.code;document.getElementById("tokenPanel").hidden=false;
+  document.getElementById("expiry").textContent="Vence: "+new Date(payload.expires_at).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})+". Genera otro si caduca.";
+  link="shortcuts://run-shortcut?name="+encodeURIComponent("ATAJO_NOFEKI_GASTOS_V1.0")+"&input=text&text="+encodeURIComponent(payload.code);
+  codeCreated=true;button.textContent="Código generado";say("Código temporal creado. El siguiente paso requiere la versión del Atajo que canjea este código; no modifica ni revoca tu autorización actual.","ok");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
- finally{if(!authorizationCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
+ finally{if(!codeCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);field.value="";field.placeholder="Autorización copiada al portapapeles";say("Clave copiada. Pégala en X-Shortcut-Token y Authorization, conservando “Bearer ” antes de la clave.","ok");}
- catch(e){field.focus();field.select();say("No se pudo copiar automáticamente. Mantén pulsado el texto seleccionado y elige Copiar.","error");}
+ try{await navigator.clipboard.writeText(field.value);say("Código temporal copiado. No lo pegues en los encabezados actuales del Atajo.","ok");}
+ catch(e){field.focus();field.select();say("Mantén pulsado el código seleccionado y elige Copiar.","error");}
 });
+document.getElementById("launch").addEventListener("click",function(){if(!link){say("Primero genera el código temporal.","error");return;}window.location.href=link;});
 })();
 </script></body></html>
