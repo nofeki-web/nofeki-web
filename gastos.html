@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">\n<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n<meta http-equiv="Pragma" content="no-cache">\n<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111827">
 <title>NOFEKI Gastos — Tu dinero, más claro</title>
@@ -559,7 +559,7 @@ function render(){
  visible.forEach(e=>{categoryTotals[e.cat||"Sin categoría"]=(categoryTotals[e.cat||"Sin categoría"]||0)+e.amount;paymentTotals[e.pay||"Sin especificar"]=(paymentTotals[e.pay||"Sin especificar"]||0)+e.amount;});
  drawPie("categoryPie",categoryTotals,"Registra gastos para ver la distribución por categoría.");
  drawPie("paymentPie",paymentTotals,"Registra el medio de pago de tus gastos para ver la distribución.");
- $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
+ $("rows").innerHTML=visible.slice(0,100).map(e=>'<tr><td><span class="cell-value">'+safe(e.date)+'</span></td><td><span class="cell-value">'+safe(e.desc)+'</span></td><td><span class="cell-value">'+safe(e.cat)+'</span></td><td><span class="cell-value"><span class="tag">'+safe(e.type)+'</span></span></td><td class="amount"><span class="cell-value">'+money(e.amount)+'</span></td><td><span class="cell-value"><button class="btn danger" type="button" onclick="return window.nofekiDeleteExpenseInline(this)" data-delete="'+safe(e.id)+'" aria-label="Eliminar '+safe(e.desc)+'">Eliminar</button></span></td></tr>').join("")||'<tr><td colspan="6"><div class="empty">No hay movimientos en este periodo. Prueba otro filtro o registra un gasto.</div></td></tr>';
  // El control invoca el manejador directamente desde onclick.
 }
 $("expenseForm").addEventListener("submit",async e=>{
@@ -623,7 +623,7 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes atajos vinculados. Pulsa “Vincular un iPhone” para comenzar.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+(active>1?'<div class="notice" style="margin:0 0 10px">Tienes varias autorizaciones activas. Conserva la que usa tu atajo actual hasta identificarla con certeza.</div>':'')+rows.map(a=>{
    const st=state(a),label=st==="active"?"Activa":st==="revoked"?"Revocada":"Vencida",expiry=a.expires_at?fmt(a.expires_at):"No registrada (autorización antigua)",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" onclick="return window.nofekiRevokeShortcutInline(this)" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   // El control invoca el manejador directamente desde onclick.
   message("shortcutTokenStatus","Estado actualizado correctamente.","ok");
@@ -634,6 +634,30 @@ async function loadShortcutAuthorizations(){
 
 
 // Acciones directas en cada botón, con confirmación y errores visibles en pantalla.
+window.nofekiDeleteExpenseInline=function(button){
+ if(!button)return false;
+ const id=button.getAttribute("data-delete");
+ if(!id){message("listMessage","No se pudo identificar el gasto seleccionado.","error");return false;}
+ void window.nofekiDeleteExpenseById(id,button);
+ return false;
+};
+window.nofekiDeleteExpenseById=async function(id,btn){
+ if(!id)return;
+ if(!window.confirm("¿Eliminar este gasto de tu cuenta? Esta acción no se puede deshacer.")){message("listMessage","Eliminación cancelada.");return;}
+ if(btn){btn.disabled=true;btn.textContent="Verificando…";}
+ try{
+  const {data:sessionData,error:sessionError}=await client.auth.getSession();
+  if(sessionError)throw sessionError;
+  const user=sessionData?.session?.user;
+  if(!user)throw new Error("Tu sesión no está activa. Inicia sesión de nuevo.");
+  currentUser=user;
+  if(btn)btn.textContent="Eliminando…";
+  const {data,error}=await client.from("gastos").delete().eq("id",id).eq("user_id",user.id).select("id");
+  if(error)throw error;
+  if(!Array.isArray(data)||data.length===0)throw new Error("El servidor no confirmó la eliminación. Verifica la sesión y los permisos de tu cuenta.");
+  await loadExpenses();message("listMessage","Gasto eliminado correctamente.");
+ }catch(err){console.error("NOFEKI delete error",err);if(btn){btn.disabled=false;btn.textContent="Eliminar";}message("listMessage","No pudimos eliminar el gasto. "+friendly(err),"error");}
+};
 window.nofekiDeleteExpenseFromButton=async function(event){
  if(event){event.preventDefault();event.stopPropagation();}
  const target=event&&event.target instanceof Element?event.target:null;
@@ -671,6 +695,13 @@ window.nofekiDeleteCategoryFromButton=async function(event){
 };
 
 window.nofekiLoadShortcutAuthorizations=loadShortcutAuthorizations;
+window.nofekiRevokeShortcutInline=function(button){
+ if(!button)return false;
+ const id=button.getAttribute("data-revoke-shortcut");
+ if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return false;}
+ void window.nofekiRevokeShortcut(id);
+ return false;
+};
 window.nofekiRevokeShortcut=async function(id){
  if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
  if(!window.confirm("¿Revocar esta autorización? El atajo asociado dejará de registrar gastos.")){message("shortcutTokenStatus","Revocación cancelada.");return;}
