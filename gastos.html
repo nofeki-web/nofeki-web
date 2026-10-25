@@ -708,7 +708,7 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes una conexión activa. Pulsa “Vincular un iPhone” para conectar tu atajo.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+rows.map(a=>{
    const st=state(a),label="Activa",expiry=a.expires_at?fmt(a.expires_at):"No registrada",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'" onclick="return window.nofekiRevokeShortcutInline(this)">Revocar autorización</button>':'')+'</div></article>';
   }).join("");
   // El control invoca el manejador directamente desde onclick.
   message("shortcutTokenStatus",active>0?"Conexión exitosa: tu iPhone está vinculado y listo para registrar gastos.":"No hay una conexión activa.",active>0?"ok":"");
@@ -822,11 +822,6 @@ document.addEventListener("click", function(event) {
     event.preventDefault();
     void window.nofekiDeleteExpenseFromButton(event);
     return;
-  }
-  const revokeButton = target.closest("button[data-revoke-shortcut]");
-  if (revokeButton) {
-    event.preventDefault();
-    void window.nofekiRevokeShortcutFromButton(event);
   }
 }, false);
 
