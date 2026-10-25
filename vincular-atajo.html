@@ -37,9 +37,9 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false">
 <button id="copy" class="btn secondary" type="button">Copiar código temporal</button>
 <button id="launch" class="btn secondary" type="button">Abrir Atajo con el código</button>
-<p class="note">Importante: si aún no instalaste el Atajo, no generes el código todavía. Instálalo primero y vuelve a esta página.</p>
+
 <p id="expiry" class="note"></p>
-<div class="security"><strong>Seguridad:</strong> el código temporal se utiliza una sola vez y caduca en 5 minutos. No lo compartas ni lo pegues en los campos X-Shortcut-Token o Authorization. Si vence, recarga la página y genera uno nuevo.</div>
+<div class="security"><strong>Por seguridad:</strong> el código es de un solo uso y vence en 5 minutos. No lo compartas. Si vence, genera uno nuevo.</div>
 </section>
 <a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
@@ -72,7 +72,7 @@ button.addEventListener("click",async function(){
 });
 document.getElementById("copy").addEventListener("click",async function(){
  const field=document.getElementById("token");
- try{await navigator.clipboard.writeText(field.value);say("Código temporal copiado. No lo pegues en los encabezados actuales del Atajo.","ok");}
+ try{await navigator.clipboard.writeText(field.value);say("Código temporal copiado.","ok");}
  catch(e){field.focus();field.select();say("Mantén pulsado el código seleccionado y elige Copiar.","error");}
 });
 document.getElementById("launch").addEventListener("click",function(){if(!link){say("Genera un código nuevo antes de abrir el Atajo.","error");return;}window.location.href=link;});
