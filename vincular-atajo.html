@@ -37,8 +37,9 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false">
 <button id="copy" class="btn secondary" type="button">Copiar código temporal</button>
 <button id="launch" class="btn secondary" type="button">Abrir Atajo con el código</button>
+<p class="note">¿Aún no lo tienes instalado? Usa primero el enlace «Abrir Atajo actualizado en iCloud» de arriba para añadirlo. Luego vuelve aquí y pulsa este botón antes de que venza el código.</p>
 <p id="expiry" class="note"></p>
-<div class="security"><strong>Importante:</strong> actualiza primero el Atajo desde el enlace de iCloud de arriba. El código temporal solo sirve para vincular y caduca en 5 minutos. No lo pegues en los campos X-Shortcut-Token ni Authorization.</div>
+<div class="security"><strong>Seguridad:</strong> el código temporal se utiliza una sola vez y caduca en 5 minutos. No lo compartas ni lo pegues en los campos X-Shortcut-Token o Authorization. Si vence, recarga la página y genera uno nuevo.</div>
 </section>
 <a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
@@ -64,7 +65,7 @@ button.addEventListener("click",async function(){
   document.getElementById("token").value=payload.code;document.getElementById("tokenPanel").hidden=false;
   document.getElementById("expiry").textContent="Vence: "+new Date(payload.expires_at).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})+". Genera otro si caduca.";
   link="shortcuts://run-shortcut?name="+encodeURIComponent("ATAJO_NOFEKI_GASTOS_V1.0")+"&input=text&text="+encodeURIComponent(payload.code);
-  codeCreated=true;button.textContent="Código generado";say("Código temporal creado. El siguiente paso requiere la versión del Atajo que canjea este código; no modifica ni revoca tu autorización actual.","ok");
+  codeCreated=true;button.textContent="Código generado";say("Código temporal creado. Si todavía no tienes el Atajo instalado, toca primero «Abrir Atajo actualizado en iCloud», añádelo y vuelve aquí. Después pulsa «Abrir Atajo con el código». El código caduca en 5 minutos.","ok");
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
  finally{if(!codeCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
 });
