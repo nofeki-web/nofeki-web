@@ -26,9 +26,10 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <h1>Conecta tu iPhone</h1>
 <p class="intro">Vincula tu Atajo de iOS para registrar gastos en tu cuenta sin abrir la aplicación cada vez. La autorización pertenece únicamente a tu usuario y puedes revocarla cuando quieras.</p>
 <div class="steps" id="steps">
-<div class="step"><div class="num">1</div><div><strong>Conecta tu iPhone</strong><span>Con tu sesión iniciada, crearemos una autorización personal y abriremos el Atajo oficial para que puedas añadirlo si aún no está instalado.</span></div></div>
+<div class="step"><div class="num">1</div><div><strong>Actualiza el Atajo</strong><span>Abre el enlace oficial y añade la versión actualizada. Conserva el nombre exacto ATAJO_NOFEKI_GASTOS_V1.0.</span><a class="back" style="margin-top:8px" href="https://www.icloud.com/shortcuts/de1d18e592894a469681cdff847ff92b" target="_blank" rel="noopener">Abrir Atajo actualizado en iCloud ↗</a></div></div>
+<div class="step"><div class="num">2</div><div><strong>Vincula tu iPhone</strong><span>Después de actualizar el Atajo, genera un código temporal y ábrelo con ese código.</span></div></div>
 </div>
-<button id="connect" class="btn" type="button">Conectar mi iPhone</button>
+<button id="connect" class="btn" type="button">Generar código de vinculación</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado para vincular.</p>
 <section id="tokenPanel" hidden>
 <label for="token"><strong>Código temporal de vinculación</strong></label>
@@ -37,7 +38,7 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <button id="copy" class="btn secondary" type="button">Copiar código temporal</button>
 <button id="launch" class="btn secondary" type="button">Abrir Atajo con el código</button>
 <p id="expiry" class="note"></p>
-<div class="security"><strong>Importante:</strong> el Atajo compartido actual todavía debe actualizarse para recibir y canjear este código. No pegues este código en los campos X-Shortcut-Token ni Authorization.</div>
+<div class="security"><strong>Importante:</strong> actualiza primero el Atajo desde el enlace de iCloud de arriba. El código temporal solo sirve para vincular y caduca en 5 minutos. No lo pegues en los campos X-Shortcut-Token ni Authorization.</div>
 </section>
 <a class="back" href="/gastos.html">← Volver a NOFEKI Gastos</a>
 </main>
