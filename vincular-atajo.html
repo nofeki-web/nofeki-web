@@ -27,17 +27,17 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <p class="intro">Vincula tu Atajo de iOS para registrar gastos en tu cuenta sin abrir la aplicación cada vez. La autorización pertenece únicamente a tu usuario y puedes revocarla cuando quieras.</p>
 <div class="steps" id="steps">
 <div class="step"><div class="num">1</div><div><strong>Actualiza el Atajo</strong><span>Abre el enlace oficial y añade la versión actualizada. Conserva el nombre exacto ATAJO_NOFEKI_GASTOS_V1.0.</span><a class="back" style="margin-top:8px" href="https://www.icloud.com/shortcuts/de1d18e592894a469681cdff847ff92b" target="_blank" rel="noopener">Abrir Atajo actualizado en iCloud ↗</a></div></div>
-<div class="step"><div class="num">2</div><div><strong>Vincula tu iPhone</strong><span>Después de actualizar el Atajo, genera un código temporal y ábrelo con ese código.</span></div></div>
+<div class="step"><div class="num">2</div><div><strong>Vincula tu iPhone</strong><span>Primero añade el Atajo a tu iPhone. Cuando ya esté instalado, vuelve aquí, genera el código temporal y ejecútalo enseguida.</span></div></div>
 </div>
 <button id="connect" class="btn" type="button">Generar código de vinculación</button>
 <p id="status" class="status" role="status" aria-live="polite">Preparado para vincular.</p>
 <section id="tokenPanel" hidden>
 <label for="token"><strong>Código temporal de vinculación</strong></label>
-<p class="note">Este código dura 5 minutos y solo puede utilizarse una vez. El Atajo debe recibirlo como entrada y canjearlo por su autorización personal. No es el token definitivo.</p>
+<p class="note">Genera este código únicamente cuando el Atajo ya esté instalado. Dura 5 minutos, solo puede utilizarse una vez y no es el token definitivo.</p>
 <input id="token" class="token" readonly autocomplete="off" autocapitalize="off" spellcheck="false">
 <button id="copy" class="btn secondary" type="button">Copiar código temporal</button>
 <button id="launch" class="btn secondary" type="button">Abrir Atajo con el código</button>
-<p class="note">¿Aún no lo tienes instalado? Usa primero el enlace «Abrir Atajo actualizado en iCloud» de arriba para añadirlo. Luego vuelve aquí y pulsa este botón antes de que venza el código.</p>
+<p class="note">Importante: si aún no instalaste el Atajo, no generes el código todavía. Instálalo primero y vuelve a esta página.</p>
 <p id="expiry" class="note"></p>
 <div class="security"><strong>Seguridad:</strong> el código temporal se utiliza una sola vez y caduca en 5 minutos. No lo compartas ni lo pegues en los campos X-Shortcut-Token o Authorization. Si vence, recarga la página y genera uno nuevo.</div>
 </section>
@@ -48,10 +48,10 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 const URL="https://bxjgodhqseoxrnshqtfr.supabase.co";
 const KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
 const status=document.getElementById("status"),button=document.getElementById("connect");
-let codeCreated=false,link="";
+let codeCreated=false,link="",expiryTimer=null;
 function say(s,kind){status.textContent=s;status.className="status"+(kind?" "+kind:"");}
 button.addEventListener("click",async function(){
- if(codeCreated)return;
+ if(codeCreated){say("Ya hay un código generado. Si venció, pulsa «Generar otro código» para crear uno nuevo.", "error");return;}
  button.disabled=true;button.textContent="Generando código…";document.getElementById("tokenPanel").hidden=true;say("Comprobando tu sesión…");
  try{
   if(!window.supabase)throw new Error("No se pudo cargar el módulo seguro. Comprueba tu conexión y recarga la página.");
@@ -65,7 +65,8 @@ button.addEventListener("click",async function(){
   document.getElementById("token").value=payload.code;document.getElementById("tokenPanel").hidden=false;
   document.getElementById("expiry").textContent="Vence: "+new Date(payload.expires_at).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})+". Genera otro si caduca.";
   link="shortcuts://run-shortcut?name="+encodeURIComponent("ATAJO_NOFEKI_GASTOS_V1.0")+"&input=text&text="+encodeURIComponent(payload.code);
-  codeCreated=true;button.textContent="Código generado";say("Código temporal creado. Si todavía no tienes el Atajo instalado, toca primero «Abrir Atajo actualizado en iCloud», añádelo y vuelve aquí. Después pulsa «Abrir Atajo con el código». El código caduca en 5 minutos.","ok");
+  codeCreated=true;button.textContent="Código generado";say("Código listo. Pulsa ahora «Abrir Atajo con el código» para completar la vinculación. Caduca en 5 minutos.","ok");
+  clearTimeout(expiryTimer);expiryTimer=setTimeout(function(){codeCreated=false;link="";document.getElementById("tokenPanel").hidden=true;button.disabled=false;button.textContent="Generar otro código";say("El código temporal venció. Genera uno nuevo y ejecútalo enseguida.","error");},300000);
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
  finally{if(!codeCreated){button.disabled=false;button.textContent="Intentar de nuevo";}}
 });
@@ -74,6 +75,6 @@ document.getElementById("copy").addEventListener("click",async function(){
  try{await navigator.clipboard.writeText(field.value);say("Código temporal copiado. No lo pegues en los encabezados actuales del Atajo.","ok");}
  catch(e){field.focus();field.select();say("Mantén pulsado el código seleccionado y elige Copiar.","error");}
 });
-document.getElementById("launch").addEventListener("click",function(){if(!link){say("Primero genera el código temporal.","error");return;}window.location.href=link;});
+document.getElementById("launch").addEventListener("click",function(){if(!link){say("Genera un código nuevo antes de abrir el Atajo.","error");return;}window.location.href=link;});
 })();
 </script></body></html>
