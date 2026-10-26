@@ -486,6 +486,9 @@ window.initNofekiTurnstile = function(){
     });
   }catch(err){console.error("NOFEKI Turnstile init:",err);}
 };
+if(window.turnstile) window.initNofekiTurnstile();
+window.addEventListener("load",()=>{if(window.turnstile) window.initNofekiTurnstile();});
+
 function resetNofekiTurnstile(){
   turnstileToken="";
   if(window.turnstile && turnstileWidgetId!==null){
