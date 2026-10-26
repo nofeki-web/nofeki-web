@@ -480,7 +480,26 @@ window.initNofekiTurnstile = function(){
       sitekey:TURNSTILE_SITE_KEY,
       callback:token=>{turnstileToken=token;},
       "expired-callback":()=>{turnstileToken="";},
-      "error-callback":()=>{turnstileToken="";},
+      "error-callback":(code)=>{
+        turnstileToken="";
+        console.error("NOFEKI Turnstile error code:",code);
+        const el=document.getElementById("authMessage");
+        if(el){
+          const descriptions={
+            "110100":"Cloudflare: Site Key inválida.",
+            "110110":"Cloudflare: no se encontró la Site Key.",
+            "110200":"Cloudflare: dominio no autorizado.",
+            "200100":"Cloudflare: posible problema de caché o reloj.",
+            "200500":"Cloudflare: no se pudo cargar el iframe; revisa la conexión o bloqueo de challenges.cloudflare.com.",
+            "400020":"Cloudflare: Site Key inválida.",
+            "400021":"Cloudflare: la región de la Site Key no coincide.",
+            "400070":"Cloudflare: la Site Key está deshabilitada."
+          };
+          el.textContent=(descriptions[String(code)]||("Cloudflare Turnstile no pudo cargar (código "+String(code)+")."))+" Recarga la página o intenta otra red.";
+          el.className="message show error";
+        }
+        return false;
+      },
       theme:"auto",
       size:"flexible"
     });
