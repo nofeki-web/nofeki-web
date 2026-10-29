@@ -467,6 +467,45 @@ a{
   color:#9CA3AF
 }
 
+/* Redes sociales del pie de página */
+.footer-socials{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:20px 0 24px
+}
+.footer-social-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  color:#F8FAFC;
+  border:1px solid rgba(226,232,240,.24);
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  transition:background .2s ease,border-color .2s ease,transform .2s ease
+}
+.footer-social-link:hover{
+  background:rgba(20,184,166,.14);
+  border-color:#14B8A6;
+  transform:translateY(-2px)
+}
+.footer-social-link:focus-visible{
+  outline:3px solid #5EEAD4;
+  outline-offset:3px
+}
+.footer-social-link svg{
+  display:block;
+  width:21px;
+  height:21px;
+  fill:currentColor
+}
+@media(max-width:520px){
+  .footer-socials{margin:18px 0 22px}
+  .footer-social-link{width:44px;height:44px}
+}
+
 /* =========================
    MICROAPP
 ========================= */
@@ -1826,6 +1865,15 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
     <p>
       Supply chain · Inventarios · Operaciones · Microapps
     </p>
+
+    <nav class="footer-socials" aria-label="Redes sociales de NOFEKI">
+      <a class="footer-social-link" href="https://www.linkedin.com/company/nofeki/" target="_blank" rel="noopener noreferrer" aria-label="NOFEKI en LinkedIn" title="LinkedIn">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z"/></svg>
+      </a>
+      <a class="footer-social-link" href="https://www.instagram.com/nofeki.co/" target="_blank" rel="noopener noreferrer" aria-label="NOFEKI en Instagram" title="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2A3.8 3.8 0 0 0 4 7.8v8.4A3.8 3.8 0 0 0 7.8 20h8.4a3.8 3.8 0 0 0 3.8-3.8V7.8A3.8 3.8 0 0 0 16.2 4H7.8ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm5.25-3.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z"/></svg>
+      </a>
+    </nav>
 
     <div style="display:flex;gap:18px;flex-wrap:wrap;margin:18px 0;font-size:14px;">
 
