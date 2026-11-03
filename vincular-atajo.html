@@ -26,7 +26,7 @@ p{color:var(--muted);line-height:1.6;margin:0 0 16px}.intro{font-size:15px}
 <h1>Conecta tu iPhone</h1>
 <p class="intro">Vincula tu Atajo de iOS para registrar gastos en tu cuenta sin abrir la aplicación cada vez. La autorización pertenece únicamente a tu usuario y puedes revocarla cuando quieras.</p>
 <div class="steps" id="steps">
-<div class="step"><div class="num">1</div><div><strong>Actualiza el Atajo</strong><span>Abre el enlace oficial y añade la versión actualizada. Conserva el nombre exacto ATAJO_NOFEKI_GASTOS_V1.0.</span><a class="back" style="margin-top:8px" href="https://www.icloud.com/shortcuts/e9624195cf2d4e7eadba3d14716f900c" target="_blank" rel="noopener">Abrir Atajo actualizado en iCloud ↗</a></div></div>
+<div class="step"><div class="num">1</div><div><strong>Actualiza el Atajo</strong><span>Abre el enlace oficial y añade la versión actualizada. Conserva el nombre exacto ATAJO_NOFEKI_GASTOS_V2.0.</span><a class="back" style="margin-top:8px" href="https://www.icloud.com/shortcuts/0dad47be5ca445d49677eccf9c93f199" target="_blank" rel="noopener">Abrir Atajo NOFEKI V2.0 en iCloud ↗</a></div></div>
 <div class="step"><div class="num">2</div><div><strong>Vincula tu iPhone</strong><span>Primero añade el Atajo a tu iPhone. Cuando ya esté instalado, vuelve aquí, genera el código temporal y ejecútalo enseguida.</span></div></div>
 </div>
 <button id="connect" class="btn" type="button">Generar código de vinculación</button>
@@ -64,7 +64,7 @@ button.addEventListener("click",async function(){
   if(!response.ok||!payload.ok||!payload.code)throw new Error(payload.message||payload.error||("El servidor respondió "+response.status+"."));
   document.getElementById("token").value=payload.code;document.getElementById("tokenPanel").hidden=false;
   document.getElementById("expiry").textContent="Vence: "+new Date(payload.expires_at).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"})+". Genera otro si caduca.";
-  link="shortcuts://run-shortcut?name="+encodeURIComponent("ATAJO_NOFEKI_GASTOS_V1.0")+"&input=text&text="+encodeURIComponent(payload.code);
+  link="shortcuts://run-shortcut?name="+encodeURIComponent("ATAJO_NOFEKI_GASTOS_V2.0")+"&input=text&text="+encodeURIComponent(payload.code);
   codeCreated=true;button.textContent="Código generado";say("Código listo. Pulsa ahora «Abrir Atajo con el código» para completar la vinculación. Caduca en 5 minutos.","ok");
   clearTimeout(expiryTimer);expiryTimer=setTimeout(function(){codeCreated=false;link="";document.getElementById("tokenPanel").hidden=true;button.disabled=false;button.textContent="Generar otro código";say("El código temporal venció. Genera uno nuevo y ejecútalo enseguida.","error");},300000);
  }catch(e){console.error("NOFEKI shortcut link:",e);say("No se pudo completar: "+(e&&e.message?e.message:String(e)),"error");}
