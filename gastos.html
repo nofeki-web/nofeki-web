@@ -453,31 +453,7 @@ html,body{max-width:100%}
 <section class="panel budget-compliance" id="budgetCompliance" aria-label="Cumplimiento del presupuesto"><div class="compliance-head"><div><div class="eyebrow">PRESUPUESTO DEL MES</div><h2>Cumplimiento vs. ejecutado</h2><p class="small" id="budgetComplianceText">Configura tu presupuesto para ver el avance.</p></div><a href="#budgetPanel" class="btn ghost" data-nav="budgetPanel">Ver presupuesto</a></div><div class="compliance-track"><span id="budgetComplianceBar"></span></div><div class="compliance-foot"><strong id="budgetCompliancePercent">—</strong><span id="budgetComplianceAmounts">Sin presupuesto configurado</span></div></section>
 
 
-<div class="dash-content dashboard-module" id="incomeView" hidden><section class="panel budget-panel" id="incomePanel" aria-labelledby="incomeTitle">
- <div class="panel-head"><div><div class="eyebrow">DINERO RECIBIDO</div><h2 id="incomeTitle">Mis ingresos</h2><p class="small">Registra lo que realmente recibes. Puedes añadir salario, ingresos extra u otras entradas.</p></div></div>
- <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="incomePeriod" aria-label="Mes de ingresos"></label></div>
- <div class="budget-metrics">
-  <article class="budget-metric"><span>Ingresos recibidos</span><strong id="incomeTotal">$0</strong></article>
-  <article class="budget-metric"><span>Registros</span><strong id="incomeCount">0</strong></article>
-  <article class="budget-metric"><span>Ingreso planeado</span><strong id="incomePlanned">—</strong></article>
-  <article class="budget-metric"><span>Diferencia vs. plan</span><strong id="incomeVariance">—</strong></article>
- </div>
- <div id="incomeMessage" class="message" role="status"></div>
- <form id="incomeForm">
-  <div class="grid-two">
-   <div class="field"><label for="incomeDate">Fecha de recepción</label><input id="incomeDate" type="date" required></div>
-   <div class="field"><label for="incomeAmount">Monto recibido (COP)</label><input id="incomeAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 2500000" required></div>
-  </div>
-  <div class="grid-two">
-   <div class="field"><label for="incomeConcept">Concepto</label><input id="incomeConcept" maxlength="120" placeholder="Ej. Salario quincenal" required></div>
-   <div class="field"><label for="incomeSource">Origen</label><select id="incomeSource"><option value="">Selecciona</option><option>Salario</option><option>Honorarios</option><option>Negocio</option><option>Comisión</option><option>Rendimientos</option><option>Otros</option></select></div>
-  </div>
-  <div class="field"><label for="incomeNote">Nota (opcional)</label><input id="incomeNote" maxlength="500" placeholder="Detalle adicional"></div>
-  <div class="form-actions"><button class="btn teal-btn" id="saveIncome" type="submit">Registrar ingreso</button><button class="btn ghost" id="cancelIncomeEdit" type="button" hidden>Cancelar edición</button></div>
- </form>
- <div class="panel-head" style="margin-top:24px"><h3>Movimientos de ingreso</h3></div>
- <div id="incomeList" class="budget-category-list"><p class="small">Cargando ingresos…</p></div>
-</section></div>
+
 
 
       
