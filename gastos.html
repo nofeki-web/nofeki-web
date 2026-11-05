@@ -453,31 +453,7 @@ html,body{max-width:100%}
 <section class="panel budget-compliance" id="budgetCompliance" aria-label="Cumplimiento del presupuesto"><div class="compliance-head"><div><div class="eyebrow">PRESUPUESTO DEL MES</div><h2>Cumplimiento vs. ejecutado</h2><p class="small" id="budgetComplianceText">Configura tu presupuesto para ver el avance.</p></div><a href="#budgetPanel" class="btn ghost" data-nav="budgetPanel">Ver presupuesto</a></div><div class="compliance-track"><span id="budgetComplianceBar"></span></div><div class="compliance-foot"><strong id="budgetCompliancePercent">—</strong><span id="budgetComplianceAmounts">Sin presupuesto configurado</span></div></section>
 
 
-<div class="dash-content dashboard-module" id="incomeView" hidden><section class="panel budget-panel" id="incomePanel" aria-labelledby="incomeTitle">
- <div class="panel-head"><div><div class="eyebrow">DINERO RECIBIDO</div><h2 id="incomeTitle">Mis ingresos</h2><p class="small">Registra lo que realmente recibes. Puedes añadir salario, ingresos extra u otras entradas.</p></div></div>
- <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="incomePeriod" aria-label="Mes de ingresos"></label></div>
- <div class="budget-metrics">
-  <article class="budget-metric"><span>Ingresos recibidos</span><strong id="incomeTotal">$0</strong></article>
-  <article class="budget-metric"><span>Registros</span><strong id="incomeCount">0</strong></article>
-  <article class="budget-metric"><span>Ingreso planeado</span><strong id="incomePlanned">—</strong></article>
-  <article class="budget-metric"><span>Diferencia vs. plan</span><strong id="incomeVariance">—</strong></article>
- </div>
- <div id="incomeMessage" class="message" role="status"></div>
- <form id="incomeForm">
-  <div class="grid-two">
-   <div class="field"><label for="incomeDate">Fecha de recepción</label><input id="incomeDate" type="date" required></div>
-   <div class="field"><label for="incomeAmount">Monto recibido (COP)</label><input id="incomeAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 2500000" required></div>
-  </div>
-  <div class="grid-two">
-   <div class="field"><label for="incomeConcept">Concepto</label><input id="incomeConcept" maxlength="120" placeholder="Ej. Salario quincenal" required></div>
-   <div class="field"><label for="incomeSource">Origen</label><select id="incomeSource"><option value="">Selecciona</option><option>Salario</option><option>Honorarios</option><option>Negocio</option><option>Comisión</option><option>Rendimientos</option><option>Otros</option></select></div>
-  </div>
-  <div class="field"><label for="incomeNote">Nota (opcional)</label><input id="incomeNote" maxlength="500" placeholder="Detalle adicional"></div>
-  <div class="form-actions"><button class="btn teal-btn" id="saveIncome" type="submit">Registrar ingreso</button><button class="btn ghost" id="cancelIncomeEdit" type="button" hidden>Cancelar edición</button></div>
- </form>
- <div class="panel-head" style="margin-top:24px"><h3>Movimientos de ingreso</h3></div>
- <div id="incomeList" class="budget-category-list"><p class="small">Cargando ingresos…</p></div>
-</section></div>
+
 
 
       
@@ -540,8 +516,8 @@ html,body{max-width:100%}
       <section class="panel recent-panel"><div class="panel-head"><h2>Últimos movimientos</h2><span class="pill" id="rowCount">0 registros</span></div><div class="movement-filters" aria-label="Filtros de movimientos"><label>Mostrar<select id="movementRange" aria-label="Periodo de movimientos"><option value="7" selected>Últimos 7 días</option><option value="15">Últimos 15 días</option><option value="30">Últimos 30 días</option><option value="date">Fecha específica</option><option value="all">Todo el historial</option></select></label><label id="movementDateWrap" class="hidden">Fecha<input type="date" id="movementDate" aria-label="Fecha específica de movimientos"></label></div><input type="hidden" id="movementPage" value="1"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Valor</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="6"><div class="empty">Cargando movimientos…</div></td></tr></tbody></table></div><div id="movementPagination" class="movement-pagination"></div><div id="listMessage" class="message"></div></section>
     </div>
 <div class="dash-content dashboard-module" id="budgetView" hidden><section class="panel budget-panel" id="budgetPanel" aria-labelledby="budgetTitle">
- <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button" onclick="var w=document.getElementById('budgetWizard');if(w){w.hidden=false;w.removeAttribute('hidden');w.style.setProperty('display','flex','important');document.body.classList.add('modal-open');}">Configurar presupuesto</button></div>
- <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="budgetPeriod" aria-label="Mes del presupuesto"></label><span class="pill" id="budgetModeLabel">Sin configurar</span></div>
+ <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button" >Configurar presupuesto</button></div>
+ <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="budgetPeriod" aria-label="Mes del presupuesto"></label><span class="pill" id="budgetModeLabel" role="status" aria-live="polite" aria-atomic="true">Cargando…</span></div>
  <div id="budgetMessage" class="message" role="status"></div>
  <div id="budgetEmpty" class="empty">Configura tu presupuesto para comenzar a medir tus gastos.</div>
  <div id="budgetContent" hidden>
@@ -589,80 +565,11 @@ html,body{max-width:100%}
 </section>
 </main>
 <footer class="foot">© <span id="year"></span> NOFEKI · Microapps simples, útiles y accionables. · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
-<script>
-// --- Ingresos reales ---
-let incomeTransactions=[],editingIncomeId=null;
-function incomeMonth(){return monthKey($("incomePeriod").value);}
-function renderIncome(){
- const key=incomeMonth(),rows=incomeTransactions.filter(x=>String(x.income_date).slice(0,7)===key);
- const total=rows.reduce((s,x)=>s+Number(x.amount||0),0);
- $("incomeTotal").textContent=money(total);$("incomeCount").textContent=String(rows.length);
- const planned=activeBudget&&String(activeBudget.period_month).slice(0,7)===key&&activeBudget.mode==="income"?Number(activeBudget.income_amount):null;
- $("incomePlanned").textContent=planned===null?"—":money(planned);
- $("incomeVariance").textContent=planned===null?"—":money(total-planned);
- $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<p class="small">No hay ingresos registrados para este mes.</p>';
-}
-async function loadIncome(){
- if(!currentUser)return;
- const key=incomeMonth(),start=key+"-01",[y,m]=key.split("-").map(Number),end=new Date(y,m,1).toISOString().slice(0,10);
- const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",currentUser.id).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
- if(error)throw error;incomeTransactions=data||[];renderIncome();
-}
-window.loadIncome=loadIncome;
-function resetIncomeForm(){editingIncomeId=null;$("incomeForm").reset();$("incomeDate").value=today();$("saveIncome").textContent="Registrar ingreso";$("cancelIncomeEdit").hidden=true;}
-$("incomeForm").addEventListener("submit",async e=>{
- e.preventDefault();if(!currentUser)return;const btn=$("saveIncome");btn.disabled=true;
- const payload={user_id:currentUser.id,income_date:$("incomeDate").value,concept:$("incomeConcept").value.trim(),source:$("incomeSource").value||null,amount:Number($("incomeAmount").value),note:$("incomeNote").value.trim()||null,updated_at:new Date().toISOString()};
- try{const q=editingIncomeId?await client.from("income_transactions").update(payload).eq("id",editingIncomeId).eq("user_id",currentUser.id):await client.from("income_transactions").insert(payload);if(q.error)throw q.error;message("incomeMessage",editingIncomeId?"Ingreso actualizado.":"Ingreso registrado.");resetIncomeForm();await window.loadIncome();await loadBudget();}catch(err){message("incomeMessage","No se pudo guardar el ingreso. "+friendly(err),"error");}finally{btn.disabled=false;}
-});
-$("cancelIncomeEdit").addEventListener("click",resetIncomeForm);
-$("incomeList").addEventListener("click",async e=>{
- const edit=e.target.closest("[data-income-edit]"),del=e.target.closest("[data-income-delete]");
- if(edit){const x=incomeTransactions.find(r=>r.id===edit.dataset.incomeEdit);if(!x)return;editingIncomeId=x.id;$("incomeDate").value=x.income_date;$("incomeConcept").value=x.concept;$("incomeSource").value=x.source||"";$("incomeAmount").value=x.amount;$("incomeNote").value=x.note||"";$("saveIncome").textContent="Guardar cambios";$("cancelIncomeEdit").hidden=false;$("incomeDate").focus();}
- if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await window.loadIncome();await loadBudget();}
-});
-$("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
-$("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
-// Los manejadores del asistente se resuelven al hacer clic, después de cargar el módulo de presupuesto.
-$("openBudgetWizard").addEventListener("click",()=>window.openBudgetWizard?.());
-$("closeBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
-$("cancelBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
-$("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))window.closeBudgetWizard?.();});
-$("budgetForm").addEventListener("submit",e=>saveBudget(e));
-$("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
-$("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
-$("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
+<script src="/assets/js/supabase-fallback.js"></script>
+<script id="supabase-client" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-
-</script>
-<script>
-// Este controlador debe vivir en un bloque independiente: el módulo de ingresos anterior
-// se ejecuta antes de que el script principal declare sus variables léxicas.
-document.addEventListener('click',function(event){
- const trigger=event.target.closest('#openBudgetWizard');
- if(!trigger)return;
- event.preventDefault();
- const modal=document.getElementById('budgetWizard');
- if(!modal)return;
- modal.hidden=false;
- modal.removeAttribute('hidden');
- modal.style.setProperty('display','flex','important');
- document.body.classList.add('modal-open');
-},true);
-document.addEventListener('click',function(event){
- const close=event.target.closest('#closeBudgetWizard, #cancelBudgetWizard');
- const modal=document.getElementById('budgetWizard');
- if(!modal)return;
- if(close || event.target===modal){
-  modal.hidden=true;
-  modal.style.removeProperty('display');
-  document.body.classList.remove('modal-open');
- }
-},true);
-</script>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script>
 "use strict";
 const TURNSTILE_SITE_KEY = "0x4AAAAAAFl9gZWmFMMpoxsB";
@@ -817,7 +724,7 @@ document.querySelectorAll(".dash-nav [data-nav],#budgetCompliance [data-nav]").f
 function friendly(err){const m=String(err?.message||"Ocurrió un error.");if(/Invalid login credentials/i.test(m))return "Correo o contraseña incorrectos.";if(/Email not confirmed/i.test(m))return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";if(/already registered/i.test(m))return "Este correo ya tiene una cuenta. Inicia sesión.";if(/fetch/i.test(m))return "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";return m;}
 let loadingUserId=null;
 function showAuthenticatedDashboard(user){if(!user)return;currentUser=user;recoveryMode=false;const auth=$("authView"),dashboard=$("dashboardView");document.body.classList.add("dashboard-active");auth.hidden=true;auth.style.setProperty("display","none","important");dashboard.hidden=false;dashboard.style.setProperty("display","grid","important");const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();resetDashboardHome();startInactivityLogout();}function resetDashboardHome(){$("overview").hidden=false;$("overview").style.setProperty("display","block","important");$("budgetView").hidden=true;$("budgetView").style.setProperty("display","none","important");$("incomeView").hidden=true;$("incomeView").style.setProperty("display","none","important");const content=$("overview");content?.classList.remove("categories-only");if($("categories"))$("categories").hidden=true;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a.dataset.nav==="overview"));const crumb=document.querySelector(".breadcrumb");if(crumb)crumb.innerHTML="Mis finanzas <span>/</span> Resumen";if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo({top:0,behavior:"instant"});}const INACTIVITY_LIMIT_MS=15*60*1000;let inactivityTimer=null;function startInactivityLogout(){clearTimeout(inactivityTimer);if(!currentUser)return;inactivityTimer=setTimeout(()=>autoLogoutForInactivity(),INACTIVITY_LIMIT_MS);}function noteUserActivity(){if(currentUser)startInactivityLogout();}async function autoLogoutForInactivity(){if(!currentUser)return;const {error}=await client.auth.signOut();if(error)console.warn("NOFEKI auto logout:",error.message);currentUser=null;expenses=[];userCategories=[];document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.removeProperty("display");setAuthMode("login");message("authMessage","Cerramos tu sesión automáticamente tras 15 minutos de inactividad. Inicia sesión para continuar.");clearTimeout(inactivityTimer);}["pointerdown","keydown","touchstart","scroll","click"].forEach(type=>document.addEventListener(type,noteUserActivity,{passive:true}));document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")noteUserActivity();});
-async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadBudget().catch(err=>console.warn("NOFEKI budget:",err));if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);if(!$("incomeDate").value)$("incomeDate").value=today();await window.loadIncome().catch(err=>console.warn("NOFEKI income:",err));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
+async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadBudget().catch(err=>console.warn("NOFEKI budget:",err));if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);if(!$("incomeDate").value)$("incomeDate").value=today();await window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
 async function loadFinancialProfile(){const {data,error}=await client.from("financial_profiles").select("net_income_amount,income_frequency,has_additional_income,additional_income_monthly,income_stability,onboarding_step,onboarding_status").eq("user_id",currentUser.id).maybeSingle();if(error){console.warn("No se pudo consultar el perfil financiero:",error.message);return;}if(data){$("netIncome").value=data.net_income_amount??"";$("incomeFrequency").value=data.income_frequency||"monthly";const yes=data.has_additional_income===true;$("onboardingForm").querySelector('input[name="hasAdditionalIncome"][value="'+(yes?"yes":"no")+'"]').checked=true;$("additionalIncome").value=data.additional_income_monthly||"";$("incomeStability").value=data.income_stability||"stable";toggleAdditionalIncome();}
 // No abrir el modal de onboarding automáticamente: no debe bloquear los controles del dashboard.
 }
@@ -929,6 +836,54 @@ $("expenseForm").addEventListener("submit",async e=>{
 // La eliminación se ejecuta desde el botón de cada fila mediante nofekiDeleteExpenseFromButton.
 function checkLegacy(){try{const old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");if(Array.isArray(old)&&old.length){$("migrationPanel").style.display="block";$("migrate").textContent="Importar "+old.length+" registro"+(old.length===1?"":"s")+" antiguos";}}catch{}}
 $("migrate").addEventListener("click",async()=>{if(!currentUser)return;let old=[];try{old=JSON.parse(localStorage.getItem(LEGACY_KEY)||"[]");}catch{}if(!Array.isArray(old)||!old.length){message("migrationMessage","No encontramos registros antiguos para importar.","error");return;}const btn=$("migrate");btn.disabled=true;btn.textContent="Importando…";let done=0,failed=0;try{for(let i=0;i<old.length;i+=50){const batch=old.slice(i,i+50).map((e,j)=>({user_id:currentUser.id,expense_date:e.date||today(),description:String(e.desc||"Gasto importado").slice(0,160),category:["Alimentación","Transporte","Vivienda","Servicios","Deudas","Ocio","Salud","Compras","Otros"].includes(e.cat)?e.cat:"Otros",amount:Number(e.amount),expense_type:["Necesario","Discrecional","Deuda"].includes(e.type)?e.type:"Necesario",payment_method:e.pay||null,note:e.note||null,source:"import",idempotency_key:"legacy-"+String(e.id||i+j)})).filter(e=>Number.isFinite(e.amount)&&e.amount>0);if(!batch.length)continue;const {data,error}=await client.from("gastos").upsert(batch,{onConflict:"user_id,idempotency_key",ignoreDuplicates:true}).select("id");if(error)throw error;done+=data?.length||0;}await loadExpenses();message("migrationMessage","Proceso terminado. "+done+" registros importados o confirmados. Los datos originales siguen en este navegador.");}catch(err){failed++;message("migrationMessage","La importación se detuvo por un error: "+friendly(err)+". Tus datos originales no se borraron; puedes reintentar.","error");}finally{btn.disabled=false;checkLegacy();}});
+// El módulo de ingresos y sus listeners se inicializan después de las dependencias comunes.
+// --- Ingresos reales ---
+let incomeTransactions=[],editingIncomeId=null;
+function incomeMonth(){return monthKey($("incomePeriod").value);}
+function renderIncome(){
+ const key=incomeMonth(),rows=incomeTransactions.filter(x=>String(x.income_date).slice(0,7)===key);
+ const total=rows.reduce((s,x)=>s+Number(x.amount||0),0);
+ $("incomeTotal").textContent=money(total);$("incomeCount").textContent=String(rows.length);
+ const planned=activeBudget&&String(activeBudget.period_month).slice(0,7)===key&&activeBudget.mode==="income"?Number(activeBudget.income_amount):null;
+ $("incomePlanned").textContent=planned===null?"—":money(planned);
+ $("incomeVariance").textContent=planned===null?"—":money(total-planned);
+ $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<p class="small">No hay ingresos registrados para este mes.</p>';
+}
+async function loadIncome(){
+ if(!currentUser)return;
+ const key=incomeMonth(),start=key+"-01",[y,m]=key.split("-").map(Number),end=new Date(y,m,1).toISOString().slice(0,10);
+ const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",currentUser.id).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
+ if(error)throw error;incomeTransactions=data||[];renderIncome();
+}
+window.loadIncome=loadIncome;
+function resetIncomeForm(){editingIncomeId=null;$("incomeForm").reset();$("incomeDate").value=today();$("saveIncome").textContent="Registrar ingreso";$("cancelIncomeEdit").hidden=true;}
+$("incomeForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!currentUser)return;const btn=$("saveIncome");btn.disabled=true;
+ const payload={user_id:currentUser.id,income_date:$("incomeDate").value,concept:$("incomeConcept").value.trim(),source:$("incomeSource").value||null,amount:Number($("incomeAmount").value),note:$("incomeNote").value.trim()||null,updated_at:new Date().toISOString()};
+ try{const q=editingIncomeId?await client.from("income_transactions").update(payload).eq("id",editingIncomeId).eq("user_id",currentUser.id):await client.from("income_transactions").insert(payload);if(q.error)throw q.error;message("incomeMessage",editingIncomeId?"Ingreso actualizado.":"Ingreso registrado.");resetIncomeForm();await window.loadIncome();await loadBudget();}catch(err){message("incomeMessage","No se pudo guardar el ingreso. "+friendly(err),"error");}finally{btn.disabled=false;}
+});
+$("cancelIncomeEdit").addEventListener("click",resetIncomeForm);
+$("incomeList").addEventListener("click",async e=>{
+ const edit=e.target.closest("[data-income-edit]"),del=e.target.closest("[data-income-delete]");
+ if(edit){const x=incomeTransactions.find(r=>r.id===edit.dataset.incomeEdit);if(!x)return;editingIncomeId=x.id;$("incomeDate").value=x.income_date;$("incomeConcept").value=x.concept;$("incomeSource").value=x.source||"";$("incomeAmount").value=x.amount;$("incomeNote").value=x.note||"";$("saveIncome").textContent="Guardar cambios";$("cancelIncomeEdit").hidden=false;$("incomeDate").focus();}
+ if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await window.loadIncome();await loadBudget();}
+});
+$("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
+$("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
+// Los manejadores del asistente se resuelven al hacer clic, después de cargar el módulo de presupuesto.
+$("openBudgetWizard").addEventListener("click",()=>window.openBudgetWizard?.());
+$("closeBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
+$("cancelBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
+$("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))window.closeBudgetWizard?.();});
+$("budgetForm").addEventListener("submit",e=>saveBudget(e));
+$("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
+$("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
+$("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
+
+
+
+
+
 client.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_OUT"){console.error("NOFEKI_AUTH_DIAG",JSON.stringify({event,at:new Date().toISOString(),saveInProgress:!!expenseSaveInProgress,lastSaveStage:expenseSaveStage,hadCurrentUser:!!currentUser}));/* No cambiar automáticamente a login: un refresh/token transitorio no debe desmontar el formulario ni borrar su estado. La acción explícita Cerrar sesión gestiona la salida. */if(expenseSaveInProgress){message("expenseMessage","La sesión cambió durante el guardado. El formulario se conserva. Diagnóstico: "+expenseSaveStage,"error");}else{message("listMessage","La sesión del navegador cambió. Conservamos esta pantalla para proteger tus datos; vuelve a iniciar sesión solo si una operación lo requiere.","error");}return;}if(event==="PASSWORD_RECOVERY"){recoveryMode=true;document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").style.display="block";setTimeout(()=>setAuthMode("recovery"),0);return;}if(session?.user&&!currentUser&&!recoveryMode){setTimeout(()=>loadUser(session.user),0);}});
 (async()=>{
  const hash=new URLSearchParams(location.hash.slice(1));
@@ -996,9 +951,8 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes una conexión activa. Pulsa “Vincular un iPhone” para conectar tu atajo.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+rows.map(a=>{
    const st=state(a),label="Activa",expiry=a.expires_at?fmt(a.expires_at):"No registrada",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'" onclick="return window.nofekiRevokeShortcutInline(this)">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'" >Revocar autorización</button>':'')+'</div></article>';
   }).join("");
-  // El control invoca el manejador directamente desde onclick.
   message("shortcutTokenStatus",active>0?"Conexión exitosa: tu iPhone está vinculado y listo para registrar gastos.":"No hay una conexión activa.",active>0?"ok":"");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
  finally{host.removeAttribute("aria-busy");}
@@ -1068,13 +1022,6 @@ window.nofekiDeleteCategoryFromButton=async function(event){
 };
 
 window.nofekiLoadShortcutAuthorizations=loadShortcutAuthorizations;
-window.nofekiRevokeShortcutInline=function(button){
- if(!button)return false;
- const id=button.getAttribute("data-revoke-shortcut");
- if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return false;}
- void window.nofekiRevokeShortcut(id);
- return false;
-};
 window.nofekiRevokeShortcut=async function(id){
  if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
  if(!window.confirm("¿Revocar esta autorización? El atajo asociado dejará de registrar gastos.")){message("shortcutTokenStatus","Revocación cancelada.");return;}
@@ -1111,18 +1058,16 @@ document.addEventListener("click", function(event) {
     void window.nofekiDeleteExpenseFromButton(event);
     return;
   }
+  const revokeButton = target.closest("button[data-revoke-shortcut]");
+  if (revokeButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    void window.nofekiRevokeShortcut(revokeButton.getAttribute("data-revoke-shortcut"));
+  }
 }, false);
 
-window.nofekiRevokeShortcutFromButton=function(event){
- if(event){event.preventDefault();event.stopPropagation();}
- const target=event&&event.target instanceof Element?event.target:null;
- const button=target&&target.closest("button[data-revoke-shortcut]");
- const id=button&&button.getAttribute("data-revoke-shortcut");
- if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return;}
- void window.nofekiRevokeShortcut(id);
-};
-
-// Los botones de eliminar y revocar usan listeners directos al renderizarse.
+// Las acciones de filas usan delegación de eventos para soportar contenido dinámico.
 </script>
+
 </body>
 </html>
