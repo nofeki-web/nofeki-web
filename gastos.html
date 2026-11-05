@@ -592,7 +592,7 @@ $("cancelIncomeEdit").addEventListener("click",resetIncomeForm);
 $("incomeList").addEventListener("click",async e=>{
  const edit=e.target.closest("[data-income-edit]"),del=e.target.closest("[data-income-delete]");
  if(edit){const x=incomeTransactions.find(r=>r.id===edit.dataset.incomeEdit);if(!x)return;editingIncomeId=x.id;$("incomeDate").value=x.income_date;$("incomeConcept").value=x.concept;$("incomeSource").value=x.source||"";$("incomeAmount").value=x.amount;$("incomeNote").value=x.note||"";$("saveIncome").textContent="Guardar cambios";$("cancelIncomeEdit").hidden=false;$("incomeDate").focus();}
- if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await loadIncome();await loadBudget();}
+ if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await window.loadIncome();await loadBudget();}
 });
 $("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
 $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
