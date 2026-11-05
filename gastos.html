@@ -540,7 +540,7 @@ html,body{max-width:100%}
       <section class="panel recent-panel"><div class="panel-head"><h2>Últimos movimientos</h2><span class="pill" id="rowCount">0 registros</span></div><div class="movement-filters" aria-label="Filtros de movimientos"><label>Mostrar<select id="movementRange" aria-label="Periodo de movimientos"><option value="7" selected>Últimos 7 días</option><option value="15">Últimos 15 días</option><option value="30">Últimos 30 días</option><option value="date">Fecha específica</option><option value="all">Todo el historial</option></select></label><label id="movementDateWrap" class="hidden">Fecha<input type="date" id="movementDate" aria-label="Fecha específica de movimientos"></label></div><input type="hidden" id="movementPage" value="1"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Valor</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="6"><div class="empty">Cargando movimientos…</div></td></tr></tbody></table></div><div id="movementPagination" class="movement-pagination"></div><div id="listMessage" class="message"></div></section>
     </div>
 <div class="dash-content dashboard-module" id="budgetView" hidden><section class="panel budget-panel" id="budgetPanel" aria-labelledby="budgetTitle">
- <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button" onclick="var w=document.getElementById('budgetWizard');if(w){w.hidden=false;w.removeAttribute('hidden');w.style.setProperty('display','flex','important');document.body.classList.add('modal-open');}">Configurar presupuesto</button></div>
+ <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button">Configurar presupuesto</button></div>
  <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="budgetPeriod" aria-label="Mes del presupuesto"></label><span class="pill" id="budgetModeLabel">Sin configurar</span></div>
  <div id="budgetMessage" class="message" role="status"></div>
  <div id="budgetEmpty" class="empty">Configura tu presupuesto para comenzar a medir tus gastos.</div>
@@ -624,11 +624,6 @@ $("incomeList").addEventListener("click",async e=>{
 });
 $("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
 $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
-// Los manejadores del asistente se resuelven al hacer clic, después de cargar el módulo de presupuesto.
-$("openBudgetWizard").addEventListener("click",()=>window.openBudgetWizard?.());
-$("closeBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
-$("cancelBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
-$("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))window.closeBudgetWizard?.();});
 $("budgetForm").addEventListener("submit",e=>saveBudget(e));
 $("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
 $("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
@@ -636,31 +631,6 @@ $("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-
 
 
 
-</script>
-<script>
-// Este controlador debe vivir en un bloque independiente: el módulo de ingresos anterior
-// se ejecuta antes de que el script principal declare sus variables léxicas.
-document.addEventListener('click',function(event){
- const trigger=event.target.closest('#openBudgetWizard');
- if(!trigger)return;
- event.preventDefault();
- const modal=document.getElementById('budgetWizard');
- if(!modal)return;
- modal.hidden=false;
- modal.removeAttribute('hidden');
- modal.style.setProperty('display','flex','important');
- document.body.classList.add('modal-open');
-},true);
-document.addEventListener('click',function(event){
- const close=event.target.closest('#closeBudgetWizard, #cancelBudgetWizard');
- const modal=document.getElementById('budgetWizard');
- if(!modal)return;
- if(close || event.target===modal){
-  modal.hidden=true;
-  modal.style.removeProperty('display');
-  document.body.classList.remove('modal-open');
- }
-},true);
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
 <script>
@@ -849,6 +819,9 @@ $("budgetTotal").textContent=money(limit);$("budgetSpent").textContent=money(spe
 function renderBudgetHistory(){const host=$("budgetHistory");if(!budgetHistory.length){host.textContent="Aún no hay meses anteriores configurados.";return;}host.innerHTML='<div class="budget-history-list">'+budgetHistory.map(h=>'<button type="button" data-budget-history="'+safe(String(h.period_month).slice(0,7))+'">'+safe(budgetMonthLabel(String(h.period_month).slice(0,7)))+' · '+(h.mode==="income"?"Ingresos":"Manual")+'</button>').join("")+'</div>';}
 function openBudgetWizard(){try{if(!currentUser){message("budgetMessage","Tu sesión no está disponible. Cierra sesión e ingresa nuevamente.","error");return;}const wizard=$("budgetWizard");if(!wizard)throw new Error("No se encontró la ventana de configuración.");const existing=activeBudget;$("budgetMode").value=existing?.mode||"income";$("budgetIncomeAmount").value=existing?.income_amount??"";$("budgetSavingsTarget").value=existing?.savings_target??0;budgetEditorRender(budgetCategories||[]);toggleBudgetMode();wizard.style.removeProperty("display");wizard.hidden=false;document.body.classList.add("modal-open");}catch(err){console.error("NOFEKI openBudgetWizard:",err);message("budgetMessage","No se pudo abrir la configuración: "+friendly(err),"error");}}window.openBudgetWizard=openBudgetWizard;
 function closeBudgetWizard(){const wizard=$("budgetWizard");if(!wizard)return;wizard.hidden=true;wizard.style.removeProperty("display");if($("expenseModal").hidden&&$("onboardingModal").hidden)document.body.classList.remove("modal-open");}window.closeBudgetWizard=closeBudgetWizard;
+ // Eventos del asistente enlazados desde el script principal.
+ document.addEventListener("click",event=>{const target=event.target instanceof Element?event.target:null;if(!target)return;if(target.closest("#openBudgetWizard")){event.preventDefault();openBudgetWizard();return;}if(target.closest("#closeBudgetWizard, #cancelBudgetWizard")){event.preventDefault();closeBudgetWizard();return;}if(target===$("budgetWizard"))closeBudgetWizard();});
+ document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("budgetWizard").hidden)closeBudgetWizard();});
 async function saveBudget(event){event.preventDefault();if(!currentUser)return;const mode=$("budgetMode").value,key=monthKey($("budgetPeriod").value),income=Number($("budgetIncomeAmount").value),savings=Number($("budgetSavingsTarget").value)||0,rows=[...document.querySelectorAll("[data-budget-category]")].map(input=>({category_name:input.dataset.budgetCategory,planned_amount:Number(input.value)||0})).filter(row=>row.planned_amount>0),total=rows.reduce((sum,row)=>sum+row.planned_amount,0);if(!rows.length){message("budgetFormMessage","Asigna un monto a por lo menos una categoría.","error");return;}if(mode==="income"&&(!Number.isFinite(income)||income<0||savings<0||total+savings>income)){message("budgetFormMessage","La suma de gastos y ahorro no puede superar el ingreso mensual.","error");return;}const btn=$("saveBudget");btn.disabled=true;btn.textContent="Guardando…";try{const {error}=await client.rpc("save_monthly_budget",{p_period_month:monthStart(key),p_mode:mode,p_income_amount:mode==="income"?income:null,p_expense_limit:total,p_savings_target:mode==="income"?savings:0,p_categories:rows});if(error)throw error;closeBudgetWizard();message("budgetMessage","Presupuesto guardado para "+budgetMonthLabel(key)+".","ok");await loadBudget(key);}catch(err){message("budgetFormMessage","No pudimos guardar el presupuesto. "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent="Guardar presupuesto";}}
 
 async function loadExpenses(){clearMessage("listMessage");$("rows").innerHTML='<tr><td colspan="6"><div class="empty">Sincronizando datos…</div></td></tr>';const pageSize=500;let allRows=[],from=0;while(true){const {data,error}=await client.from("gastos").select("id,expense_date,description,category,amount,expense_type,payment_method,note,source,created_at").order("expense_date",{ascending:false}).order("id",{ascending:false}).range(from,from+pageSize-1);if(error){message("listMessage","No pudimos cargar tus gastos. "+friendly(error),"error");return;}const batch=data||[];allRows=allRows.concat(batch);if(batch.length<pageSize)break;from+=pageSize;}expenses=allRows.map(e=>({id:e.id,date:e.expense_date,desc:e.description,cat:e.category,amount:Number(e.amount),type:e.expense_type,pay:e.payment_method||"",note:e.note||"",source:e.source}));categoryOptions();render();await loadBudget($("budgetPeriod").value);}
