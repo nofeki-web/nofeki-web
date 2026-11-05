@@ -245,7 +245,7 @@ body.dashboard-active #dashboardView.dashboard{display:grid}
 .dash-topbar{height:82px;background:#fff;border-bottom:1px solid #e7edf2;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,3vw,44px);gap:16px}
 .breadcrumb{font-size:13px;color:#576678}.breadcrumb span{padding:0 10px;color:#9aa6b2}
 .dash-user{display:flex;align-items:center;gap:12px;color:#576678;font-size:13px}.dash-user .avatar{background:#00b8ad;color:#fff;width:38px;height:38px}.dash-user .btn{padding:9px 12px;font-size:12px}
-.budget-compliance{margin:0 0 24px;padding:18px 20px}.compliance-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.compliance-head h2{font-size:17px;margin:4px 0}.compliance-track{height:9px;background:#e9eff2;border-radius:99px;overflow:hidden;margin:16px 0 8px}.compliance-track span{display:block;height:100%;width:0;background:#45b7a9;border-radius:99px}.compliance-track span.over{background:#e06b6b}.compliance-foot{display:flex;justify-content:space-between;gap:12px;color:#64748b;font-size:13px}.compliance-foot strong{color:#0e1726}.dashboard-module{max-width:1500px}.dashboard-module .budget-panel{margin:0}.dashboard-module[hidden]{display:none!important}.dashboard-module:not([hidden]){display:block!important}.budget-toolbar>.pill{position:static;align-self:flex-end;white-space:nowrap;margin:0 0 4px}
+.budget-compliance{margin:0 0 24px;padding:18px 20px}.compliance-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.compliance-head h2{font-size:17px;margin:4px 0}.compliance-track{height:9px;background:#e9eff2;border-radius:99px;overflow:hidden;margin:16px 0 8px}.compliance-track span{display:block;height:100%;width:0;background:#45b7a9;border-radius:99px}.compliance-track span.over{background:#e06b6b}.compliance-foot{display:flex;justify-content:space-between;gap:12px;color:#64748b;font-size:13px}.compliance-foot strong{color:#0e1726}.dashboard-module{max-width:1500px}.dashboard-module .budget-panel{margin:0}.dashboard-module[hidden]{display:none!important}.dashboard-module:not([hidden]){display:block!important}.budget-toolbar>.pill{position:static;align-self:flex-end;white-space:nowrap;margin:0 0 4px}@media(max-width:700px){.budget-toolbar{align-items:stretch;flex-direction:column;gap:8px}.budget-toolbar .field{width:100%;min-width:0}.budget-toolbar>.pill{align-self:flex-start;margin:0;position:static}}
 .dash-content{max-width:1500px;margin:0 auto;padding:34px clamp(20px,3vw,44px) 48px}
 .dash-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:28px}
 .dashboard-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.dashboard-actions .btn{white-space:nowrap}
@@ -625,8 +625,8 @@ $("incomeList").addEventListener("click",async e=>{
 $("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
 $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
 // Los manejadores del asistente se resuelven al hacer clic, después de cargar el módulo de presupuesto.
-$("openBudgetWizard").addEventListener("click",()=>openBudgetWizard());
-$("closeBudgetWizard").addEventListener("click",()=>closeBudgetWizard());
+$("openBudgetWizard").addEventListener("click",()=>window.openBudgetWizard?.());
+$("closeBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
 $("cancelBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
 $("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))window.closeBudgetWizard?.();});
 $("budgetForm").addEventListener("submit",e=>saveBudget(e));
