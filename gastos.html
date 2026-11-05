@@ -633,27 +633,34 @@ $("budgetForm").addEventListener("submit",e=>saveBudget(e));
 $("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
 $("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
 $("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
-// Apertura delegada e independiente del resto del JavaScript de la aplicación.
-document.addEventListener("click",function(event){
- const trigger=event.target.closest("#openBudgetWizard");
+
+
+
+</script>
+<script>
+// Este controlador debe vivir en un bloque independiente: el módulo de ingresos anterior
+// se ejecuta antes de que el script principal declare sus variables léxicas.
+document.addEventListener('click',function(event){
+ const trigger=event.target.closest('#openBudgetWizard');
  if(!trigger)return;
  event.preventDefault();
- const modal=document.getElementById("budgetWizard");
+ const modal=document.getElementById('budgetWizard');
  if(!modal)return;
  modal.hidden=false;
- modal.removeAttribute("hidden");
- modal.style.setProperty("display","flex","important");
- document.body.classList.add("modal-open");
+ modal.removeAttribute('hidden');
+ modal.style.setProperty('display','flex','important');
+ document.body.classList.add('modal-open');
 },true);
-document.addEventListener("click",function(event){
- if(event.target.closest("#closeBudgetWizard,#cancelBudgetWizard")||event.target===document.getElementById("budgetWizard")){
-  const modal=document.getElementById("budgetWizard");
-  if(modal){modal.hidden=true;modal.style.removeProperty("display");}
-  document.body.classList.remove("modal-open");
+document.addEventListener('click',function(event){
+ const close=event.target.closest('#closeBudgetWizard, #cancelBudgetWizard');
+ const modal=document.getElementById('budgetWizard');
+ if(!modal)return;
+ if(close || event.target===modal){
+  modal.hidden=true;
+  modal.style.removeProperty('display');
+  document.body.classList.remove('modal-open');
  }
 },true);
-
-
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
 <script>
