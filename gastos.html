@@ -441,6 +441,7 @@ html,body{max-width:100%}
       <a href="#categories" data-nav="categories">▦ <span>Categorías</span></a>
       <a href="#analysis" data-nav="analysis">◷ <span>Análisis</span></a>
       <a href="#budgetPanel" data-nav="budgetPanel">▤ <span>Presupuesto</span></a>
+      <a href="#incomePanel" data-nav="incomePanel">＋ <span>Ingresos</span></a>
     </nav>
     <div class="dash-beta">BETA · Tu feedback importa</div>
   </aside>
@@ -467,6 +468,31 @@ html,body{max-width:100%}
   <div class="budget-unplanned" id="budgetUnplanned"></div>
  </div>
  <div class="budget-history"><h3>Historial de presupuestos</h3><div id="budgetHistory" class="small">Cargando historial…</div></div>
+</section>
+<section class="panel budget-panel" id="incomePanel" aria-labelledby="incomeTitle">
+ <div class="panel-head"><div><div class="eyebrow">DINERO RECIBIDO</div><h2 id="incomeTitle">Mis ingresos</h2><p class="small">Registra lo que realmente recibes. Puedes añadir salario, ingresos extra u otras entradas.</p></div></div>
+ <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="incomePeriod" aria-label="Mes de ingresos"></label></div>
+ <div class="budget-metrics">
+  <article class="budget-metric"><span>Ingresos recibidos</span><strong id="incomeTotal">$0</strong></article>
+  <article class="budget-metric"><span>Registros</span><strong id="incomeCount">0</strong></article>
+  <article class="budget-metric"><span>Ingreso planeado</span><strong id="incomePlanned">—</strong></article>
+  <article class="budget-metric"><span>Diferencia vs. plan</span><strong id="incomeVariance">—</strong></article>
+ </div>
+ <div id="incomeMessage" class="message" role="status"></div>
+ <form id="incomeForm">
+  <div class="grid-two">
+   <div class="field"><label for="incomeDate">Fecha de recepción</label><input id="incomeDate" type="date" required></div>
+   <div class="field"><label for="incomeAmount">Monto recibido (COP)</label><input id="incomeAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 2500000" required></div>
+  </div>
+  <div class="grid-two">
+   <div class="field"><label for="incomeConcept">Concepto</label><input id="incomeConcept" maxlength="120" placeholder="Ej. Salario quincenal" required></div>
+   <div class="field"><label for="incomeSource">Origen</label><select id="incomeSource"><option value="">Selecciona</option><option>Salario</option><option>Honorarios</option><option>Negocio</option><option>Comisión</option><option>Rendimientos</option><option>Otros</option></select></div>
+  </div>
+  <div class="field"><label for="incomeNote">Nota (opcional)</label><input id="incomeNote" maxlength="500" placeholder="Detalle adicional"></div>
+  <div class="form-actions"><button class="btn teal-btn" id="saveIncome" type="submit">Registrar ingreso</button><button class="btn ghost" id="cancelIncomeEdit" type="button" hidden>Cancelar edición</button></div>
+ </form>
+ <div class="panel-head" style="margin-top:24px"><h3>Movimientos de ingreso</h3></div>
+ <div id="incomeList" class="budget-category-list"><p class="small">Cargando ingresos…</p></div>
 </section>
 <div class="modal-backdrop" id="budgetWizard" hidden role="presentation"><section class="panel modal-card budget-wizard" role="dialog" aria-modal="true" aria-labelledby="budgetWizardTitle">
  <div class="modal-heading"><div><div class="eyebrow">CONFIGURACIÓN</div><h2 id="budgetWizardTitle">Diseña tu presupuesto</h2><p class="small">Cada mes comienza desde cero. Los saldos no se trasladan.</p></div><button class="modal-close" id="closeBudgetWizard" type="button" aria-label="Cerrar">×</button></div>
@@ -530,7 +556,41 @@ html,body{max-width:100%}
 </section>
 </main>
 <footer class="foot">© <span id="year"></span> NOFEKI · Microapps simples, útiles y accionables. · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';">
+// --- Ingresos reales ---
+let incomeTransactions=[],editingIncomeId=null;
+function incomeMonth(){return monthKey($("incomePeriod").value);}
+function renderIncome(){
+ const key=incomeMonth(),rows=incomeTransactions.filter(x=>String(x.income_date).slice(0,7)===key);
+ const total=rows.reduce((s,x)=>s+Number(x.amount||0),0);
+ $("incomeTotal").textContent=money(total);$("incomeCount").textContent=String(rows.length);
+ const planned=activeBudget&&String(activeBudget.period_month).slice(0,7)===key&&activeBudget.mode==="income"?Number(activeBudget.income_amount):null;
+ $("incomePlanned").textContent=planned===null?"—":money(planned);
+ $("incomeVariance").textContent=planned===null?"—":money(total-planned);
+ $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<p class="small">No hay ingresos registrados para este mes.</p>';
+}
+async function loadIncome(){
+ if(!currentUser)return;
+ const key=incomeMonth(),start=key+"-01",[y,m]=key.split("-").map(Number),end=new Date(y,m,1).toISOString().slice(0,10);
+ const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",currentUser.id).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
+ if(error)throw error;incomeTransactions=data||[];renderIncome();
+}
+function resetIncomeForm(){editingIncomeId=null;$("incomeForm").reset();$("incomeDate").value=today();$("saveIncome").textContent="Registrar ingreso";$("cancelIncomeEdit").hidden=true;}
+$("incomeForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!currentUser)return;const btn=$("saveIncome");btn.disabled=true;
+ const payload={user_id:currentUser.id,income_date:$("incomeDate").value,concept:$("incomeConcept").value.trim(),source:$("incomeSource").value||null,amount:Number($("incomeAmount").value),note:$("incomeNote").value.trim()||null,updated_at:new Date().toISOString()};
+ try{const q=editingIncomeId?await client.from("income_transactions").update(payload).eq("id",editingIncomeId).eq("user_id",currentUser.id):await client.from("income_transactions").insert(payload);if(q.error)throw q.error;message("incomeMessage",editingIncomeId?"Ingreso actualizado.":"Ingreso registrado.");resetIncomeForm();await loadIncome();await loadBudget();}catch(err){message("incomeMessage","No se pudo guardar el ingreso. "+friendly(err),"error");}finally{btn.disabled=false;}
+});
+$("cancelIncomeEdit").addEventListener("click",resetIncomeForm);
+$("incomeList").addEventListener("click",async e=>{
+ const edit=e.target.closest("[data-income-edit]"),del=e.target.closest("[data-income-delete]");
+ if(edit){const x=incomeTransactions.find(r=>r.id===edit.dataset.incomeEdit);if(!x)return;editingIncomeId=x.id;$("incomeDate").value=x.income_date;$("incomeConcept").value=x.concept;$("incomeSource").value=x.source||"";$("incomeAmount").value=x.amount;$("incomeNote").value=x.note||"";$("saveIncome").textContent="Guardar cambios";$("cancelIncomeEdit").hidden=false;$("incomeDate").focus();}
+ if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await loadIncome();await loadBudget();}
+});
+$("incomePeriod").addEventListener("change",()=>{void loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
+$("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(loadIncome).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
+
+</script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
 <script>
 "use strict";
@@ -672,7 +732,7 @@ document.querySelectorAll(".dash-nav [data-nav]").forEach(link=>link.addEventLis
 function friendly(err){const m=String(err?.message||"Ocurrió un error.");if(/Invalid login credentials/i.test(m))return "Correo o contraseña incorrectos.";if(/Email not confirmed/i.test(m))return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";if(/already registered/i.test(m))return "Este correo ya tiene una cuenta. Inicia sesión.";if(/fetch/i.test(m))return "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";return m;}
 let loadingUserId=null;
 function showAuthenticatedDashboard(user){if(!user)return;currentUser=user;recoveryMode=false;const auth=$("authView"),dashboard=$("dashboardView");document.body.classList.add("dashboard-active");auth.hidden=true;auth.style.setProperty("display","none","important");dashboard.hidden=false;dashboard.style.setProperty("display","grid","important");const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();resetDashboardHome();startInactivityLogout();}function resetDashboardHome(){const content=document.querySelector(".dash-content");content?.classList.remove("categories-only");if($("categories"))$("categories").hidden=true;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a.dataset.nav==="overview"));const crumb=document.querySelector(".breadcrumb");if(crumb)crumb.innerHTML="Mis finanzas <span>/</span> Resumen";if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo({top:0,behavior:"instant"});}const INACTIVITY_LIMIT_MS=15*60*1000;let inactivityTimer=null;function startInactivityLogout(){clearTimeout(inactivityTimer);if(!currentUser)return;inactivityTimer=setTimeout(()=>autoLogoutForInactivity(),INACTIVITY_LIMIT_MS);}function noteUserActivity(){if(currentUser)startInactivityLogout();}async function autoLogoutForInactivity(){if(!currentUser)return;const {error}=await client.auth.signOut();if(error)console.warn("NOFEKI auto logout:",error.message);currentUser=null;expenses=[];userCategories=[];document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.removeProperty("display");setAuthMode("login");message("authMessage","Cerramos tu sesión automáticamente tras 15 minutos de inactividad. Inicia sesión para continuar.");clearTimeout(inactivityTimer);}["pointerdown","keydown","touchstart","scroll","click"].forEach(type=>document.addEventListener(type,noteUserActivity,{passive:true}));document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")noteUserActivity();});
-async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
+async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadIncome().catch(err=>console.warn("NOFEKI income:",err));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
 async function loadFinancialProfile(){const {data,error}=await client.from("financial_profiles").select("net_income_amount,income_frequency,has_additional_income,additional_income_monthly,income_stability,onboarding_step,onboarding_status").eq("user_id",currentUser.id).maybeSingle();if(error){console.warn("No se pudo consultar el perfil financiero:",error.message);return;}if(data){$("netIncome").value=data.net_income_amount??"";$("incomeFrequency").value=data.income_frequency||"monthly";const yes=data.has_additional_income===true;$("onboardingForm").querySelector('input[name="hasAdditionalIncome"][value="'+(yes?"yes":"no")+'"]').checked=true;$("additionalIncome").value=data.additional_income_monthly||"";$("incomeStability").value=data.income_stability||"stable";toggleAdditionalIncome();}
 // No abrir el modal de onboarding automáticamente: no debe bloquear los controles del dashboard.
 }
