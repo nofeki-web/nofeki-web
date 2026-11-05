@@ -245,7 +245,7 @@ body.dashboard-active #dashboardView.dashboard{display:grid}
 .dash-topbar{height:82px;background:#fff;border-bottom:1px solid #e7edf2;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,3vw,44px);gap:16px}
 .breadcrumb{font-size:13px;color:#576678}.breadcrumb span{padding:0 10px;color:#9aa6b2}
 .dash-user{display:flex;align-items:center;gap:12px;color:#576678;font-size:13px}.dash-user .avatar{background:#00b8ad;color:#fff;width:38px;height:38px}.dash-user .btn{padding:9px 12px;font-size:12px}
-.budget-compliance{margin:0 0 24px;padding:18px 20px}.compliance-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.compliance-head h2{font-size:17px;margin:4px 0}.compliance-track{height:9px;background:#e9eff2;border-radius:99px;overflow:hidden;margin:16px 0 8px}.compliance-track span{display:block;height:100%;width:0;background:#45b7a9;border-radius:99px}.compliance-track span.over{background:#e06b6b}.compliance-foot{display:flex;justify-content:space-between;gap:12px;color:#64748b;font-size:13px}.compliance-foot strong{color:#0e1726}.dashboard-module{max-width:1500px}.dashboard-module .budget-panel{margin:0}.dashboard-module[hidden]{display:none!important}.dashboard-module:not([hidden]){display:block!important}.budget-toolbar>.pill{position:static;align-self:flex-end;white-space:nowrap;margin:0 0 4px}@media(max-width:700px){.budget-toolbar{display:flex;align-items:stretch;flex-direction:column;gap:8px;width:100%;min-width:0}.budget-toolbar .field{display:block;flex:1 1 auto;width:100%;max-width:100%;min-width:0;box-sizing:border-box}.budget-toolbar .field input[type="month"]{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none}.budget-toolbar>.pill{align-self:flex-start;margin:0;position:static}}
+.budget-compliance{margin:0 0 24px;padding:18px 20px}.compliance-head{display:flex;align-items:center;justify-content:space-between;gap:16px}.compliance-head h2{font-size:17px;margin:4px 0}.compliance-track{height:9px;background:#e9eff2;border-radius:99px;overflow:hidden;margin:16px 0 8px}.compliance-track span{display:block;height:100%;width:0;background:#45b7a9;border-radius:99px}.compliance-track span.over{background:#e06b6b}.compliance-foot{display:flex;justify-content:space-between;gap:12px;color:#64748b;font-size:13px}.compliance-foot strong{color:#0e1726}.dashboard-module{max-width:1500px}.dashboard-module .budget-panel{margin:0}.dashboard-module[hidden]{display:none!important}.dashboard-module:not([hidden]){display:block!important}.budget-toolbar>.pill{position:static;align-self:flex-end;white-space:nowrap;margin:0 0 4px}@media(max-width:700px){.budget-toolbar{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:8px;width:100%;min-width:0}.budget-toolbar .field{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box}.budget-toolbar .field input[type="month"]{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;-webkit-appearance:none;appearance:none;font-size:16px;padding:12px 13px}.budget-toolbar>.pill{justify-self:start;align-self:start;margin:0;position:static}}
 .dash-content{max-width:1500px;margin:0 auto;padding:34px clamp(20px,3vw,44px) 48px}
 .dash-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:28px}
 .dashboard-actions{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap}.dashboard-actions .btn{white-space:nowrap}
@@ -633,6 +633,25 @@ $("budgetForm").addEventListener("submit",e=>saveBudget(e));
 $("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
 $("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
 $("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
+// Apertura delegada e independiente del resto del JavaScript de la aplicación.
+document.addEventListener("click",function(event){
+ const trigger=event.target.closest("#openBudgetWizard");
+ if(!trigger)return;
+ event.preventDefault();
+ const modal=document.getElementById("budgetWizard");
+ if(!modal)return;
+ modal.hidden=false;
+ modal.removeAttribute("hidden");
+ modal.style.setProperty("display","flex","important");
+ document.body.classList.add("modal-open");
+},true);
+document.addEventListener("click",function(event){
+ if(event.target.closest("#closeBudgetWizard,#cancelBudgetWizard")||event.target===document.getElementById("budgetWizard")){
+  const modal=document.getElementById("budgetWizard");
+  if(modal){modal.hidden=true;modal.style.removeProperty("display");}
+  document.body.classList.remove("modal-open");
+ }
+},true);
 
 
 </script>
