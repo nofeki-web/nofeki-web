@@ -1529,7 +1529,8 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
         <button
           class="btn light"
-          onclick="clearAll()"
+          id="clearAllData"
+          type="button"
         >
           Borrar datos
         </button>
@@ -2167,7 +2168,7 @@ function render(){
 
               <button
                 class="btn light"
-                onclick="removeExpense('${e.id}')"
+                type="button" data-remove-expense="${escapeHtml(e.id)}"
               >
                 Eliminar
               </button>
@@ -2282,6 +2283,12 @@ function clearAll(){
 
 }
 
+
+document.getElementById("clearAllData").addEventListener("click",clearAll);
+document.getElementById("rows").addEventListener("click",event=>{
+  const button=event.target.closest("[data-remove-expense]");
+  if(button)removeExpense(button.dataset.removeExpense);
+});
 
 document.getElementById("year").textContent =
   new Date().getFullYear();
