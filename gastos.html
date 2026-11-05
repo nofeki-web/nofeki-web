@@ -627,6 +627,7 @@ $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>wind
 $("openBudgetWizard").addEventListener("click",openBudgetWizard);
 $("closeBudgetWizard").addEventListener("click",closeBudgetWizard);
 $("cancelBudgetWizard").addEventListener("click",closeBudgetWizard);
+$("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))closeBudgetWizard();});
 $("budgetForm").addEventListener("submit",saveBudget);
 $("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
 $("budgetCategoryRows").addEventListener("input",updateBudgetEditorTotal);
