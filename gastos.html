@@ -106,6 +106,35 @@
   .metric strong{font-size:15px}
 }
 
+/* Presupuesto mensual */
+.budget-panel{margin:0 0 22px;scroll-margin-top:24px}
+.budget-toolbar{display:flex;align-items:end;gap:14px;flex-wrap:wrap;margin:8px 0 18px}
+.budget-toolbar .field{margin:0;min-width:170px}
+.budget-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:18px 0}
+.budget-metric{padding:16px;border:1px solid var(--line);border-radius:14px;background:#f8fafc;min-width:0}
+.budget-metric span{display:block;color:var(--muted);font-size:12px}
+.budget-metric strong{display:block;margin-top:8px;font:800 21px Manrope,sans-serif;overflow-wrap:anywhere}
+.budget-progress{height:12px;background:#e8edf2;border-radius:20px;overflow:hidden}
+.budget-progress>div{height:100%;width:0;background:#14b8a6;border-radius:20px;transition:width .2s}
+.budget-progress>div.over{background:#dc2626}
+.budget-category-list{display:grid;gap:12px;margin-top:20px}
+.budget-category-row{display:grid;grid-template-columns:minmax(130px,1fr) minmax(100px,2fr) auto;gap:12px;align-items:center}
+.budget-category-row .track{height:8px;background:#edf2f7;border-radius:20px;overflow:hidden}
+.budget-category-row .track span{display:block;height:100%;background:#14b8a6}
+.budget-category-row .track span.over{background:#dc2626}
+.budget-unplanned{margin-top:14px;padding:12px;border-radius:12px;background:#fff7ed;color:#9a3412;font-size:13px}
+.budget-history{margin-top:24px;padding-top:18px;border-top:1px solid var(--line)}
+.budget-history h3{font:700 16px Manrope,sans-serif}
+.budget-history-list{display:flex;gap:8px;flex-wrap:wrap}
+.budget-history-list button{border:1px solid var(--line);background:white;border-radius:10px;padding:8px 11px}
+.budget-category-editor{display:grid;gap:9px}
+.budget-editor-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(130px,.8fr);gap:10px;align-items:center}
+.budget-editor-row label{font-size:13px;font-weight:600}
+.budget-editor-row input{width:100%;padding:11px;border:1px solid #dbe4ec;border-radius:10px}
+.budget-wizard-total{display:flex;justify-content:space-between;gap:10px;padding:14px;background:#f1f5f9;border-radius:12px;margin:14px 0;font-size:13px}
+.budget-wizard-total strong{font-weight:800}
+.budget-wizard .rowactions{justify-content:flex-end;flex-wrap:wrap}
+@media(max-width:700px){.budget-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.budget-category-row{grid-template-columns:minmax(0,1fr) auto}.budget-category-row .track{grid-column:1/-1;grid-row:2}.budget-editor-row{grid-template-columns:minmax(0,1fr) minmax(110px,.8fr)}}
 /* NOFEKI Gastos visual refresh */
 :root{--ink:#111827;--muted:#64748b;--line:#e2e8f0;--paper:#f4f7fa;--teal:#14b8a6;--teal-dark:#0f766e;--shadow:0 24px 70px rgba(15,23,42,.09)}
 body{background:linear-gradient(180deg,#fff 0,#f4f7fa 340px);color:#111827}
@@ -411,6 +440,8 @@ html,body{max-width:100%}
       <a href="#recentMoves" data-nav="recentMoves">↔ <span>Movimientos</span></a>
       <a href="#categories" data-nav="categories">▦ <span>Categorías</span></a>
       <a href="#analysis" data-nav="analysis">◷ <span>Análisis</span></a>
+      <a href="#budgetPanel" data-nav="budgetPanel">▤ <span>Presupuesto</span></a>
+      <a href="#incomePanel" data-nav="incomePanel">＋ <span>Ingresos</span></a>
     </nav>
     <div class="dash-beta">BETA · Tu feedback importa</div>
   </aside>
@@ -419,7 +450,67 @@ html,body{max-width:100%}
     <div class="dash-content" id="overview">
       <div class="dash-heading"><div class="dash-title"><h1>Tus gastos, bajo control.</h1><p>Una vista simple para entender tus movimientos y tomar mejores decisiones.</p></div><section class="heading-insight"><span class="insight-icon">✦</span><div><h2>Un hábito pequeño cambia la perspectiva.</h2><p>Registra tus gastos con constancia y descubre patrones con información organizada.</p></div></section><div class="dashboard-actions"><label class="period-filter-label"><span class="sr-only">Filtrar periodo</span><select id="periodFilter" class="period-chip" aria-label="Filtrar periodo"><option value="current">Este mes</option><option value="previous">Mes anterior</option><option value="six">Últimos 6 meses</option><option value="all">Todo el historial</option></select></label><button class="btn teal-btn register-expense" type="button">+ Agregar gasto</button></div></div>
 
-      <div class="modal-backdrop" id="expenseModal" hidden role="presentation"><section class="panel modal-card" id="expenseFormPanel" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle"><div class="modal-heading"><div><div class="eyebrow">NUEVO MOVIMIENTO</div><h2 id="expenseModalTitle">Registrar un gasto</h2><p class="small">Completa los datos para guardar el movimiento en tu cuenta.</p></div><button class="modal-close" id="closeExpenseModal" type="button" aria-label="Cerrar ventana">×</button></div><form id="expenseForm"><div class="formgrid">
+      <section class="panel budget-panel" id="budgetPanel" aria-labelledby="budgetTitle">
+ <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button">Configurar presupuesto</button></div>
+ <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="budgetPeriod" aria-label="Mes del presupuesto"></label><span class="pill" id="budgetModeLabel">Sin configurar</span></div>
+ <div id="budgetMessage" class="message" role="status"></div>
+ <div id="budgetEmpty" class="empty">Configura tu presupuesto para comenzar a medir tus gastos.</div>
+ <div id="budgetContent" hidden>
+  <div class="budget-metrics">
+   <article class="budget-metric"><span>Presupuesto de gastos</span><strong id="budgetTotal">$0</strong></article>
+   <article class="budget-metric"><span>Ejecutado</span><strong id="budgetSpent">$0</strong></article>
+   <article class="budget-metric"><span>Disponible</span><strong id="budgetAvailable">$0</strong></article>
+   <article class="budget-metric"><span>Ejecución</span><strong id="budgetPercent">0%</strong></article>
+  </div>
+  <div class="budget-progress"><div id="budgetProgressBar"></div></div>
+  <p class="small" id="budgetProjection"></p>
+  <div class="budget-category-list" id="budgetCategoryList"></div>
+  <div class="budget-unplanned" id="budgetUnplanned"></div>
+ </div>
+ <div class="budget-history"><h3>Historial de presupuestos</h3><div id="budgetHistory" class="small">Cargando historial…</div></div>
+</section>
+<section class="panel budget-panel" id="incomePanel" aria-labelledby="incomeTitle">
+ <div class="panel-head"><div><div class="eyebrow">DINERO RECIBIDO</div><h2 id="incomeTitle">Mis ingresos</h2><p class="small">Registra lo que realmente recibes. Puedes añadir salario, ingresos extra u otras entradas.</p></div></div>
+ <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="incomePeriod" aria-label="Mes de ingresos"></label></div>
+ <div class="budget-metrics">
+  <article class="budget-metric"><span>Ingresos recibidos</span><strong id="incomeTotal">$0</strong></article>
+  <article class="budget-metric"><span>Registros</span><strong id="incomeCount">0</strong></article>
+  <article class="budget-metric"><span>Ingreso planeado</span><strong id="incomePlanned">—</strong></article>
+  <article class="budget-metric"><span>Diferencia vs. plan</span><strong id="incomeVariance">—</strong></article>
+ </div>
+ <div id="incomeMessage" class="message" role="status"></div>
+ <form id="incomeForm">
+  <div class="grid-two">
+   <div class="field"><label for="incomeDate">Fecha de recepción</label><input id="incomeDate" type="date" required></div>
+   <div class="field"><label for="incomeAmount">Monto recibido (COP)</label><input id="incomeAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 2500000" required></div>
+  </div>
+  <div class="grid-two">
+   <div class="field"><label for="incomeConcept">Concepto</label><input id="incomeConcept" maxlength="120" placeholder="Ej. Salario quincenal" required></div>
+   <div class="field"><label for="incomeSource">Origen</label><select id="incomeSource"><option value="">Selecciona</option><option>Salario</option><option>Honorarios</option><option>Negocio</option><option>Comisión</option><option>Rendimientos</option><option>Otros</option></select></div>
+  </div>
+  <div class="field"><label for="incomeNote">Nota (opcional)</label><input id="incomeNote" maxlength="500" placeholder="Detalle adicional"></div>
+  <div class="form-actions"><button class="btn teal-btn" id="saveIncome" type="submit">Registrar ingreso</button><button class="btn ghost" id="cancelIncomeEdit" type="button" hidden>Cancelar edición</button></div>
+ </form>
+ <div class="panel-head" style="margin-top:24px"><h3>Movimientos de ingreso</h3></div>
+ <div id="incomeList" class="budget-category-list"><p class="small">Cargando ingresos…</p></div>
+</section>
+<div class="modal-backdrop" id="budgetWizard" hidden role="presentation"><section class="panel modal-card budget-wizard" role="dialog" aria-modal="true" aria-labelledby="budgetWizardTitle">
+ <div class="modal-heading"><div><div class="eyebrow">CONFIGURACIÓN</div><h2 id="budgetWizardTitle">Diseña tu presupuesto</h2><p class="small">Cada mes comienza desde cero. Los saldos no se trasladan.</p></div><button class="modal-close" id="closeBudgetWizard" type="button" aria-label="Cerrar">×</button></div>
+ <form id="budgetForm">
+  <div class="field"><label for="budgetMode">¿Cómo quieres definirlo?</label><select id="budgetMode"><option value="income">A partir de mis ingresos</option><option value="manual">Asignación manual por categoría</option></select></div>
+  <div id="budgetIncomeFields">
+   <div class="field"><label for="budgetIncomeAmount">Ingreso mensual disponible (COP)</label><input id="budgetIncomeAmount" type="number" min="0" step="1" placeholder="Ej. 5000000"></div>
+   <div class="field"><label for="budgetSavingsTarget">Meta de ahorro mensual (COP)</label><input id="budgetSavingsTarget" type="number" min="0" step="1" value="0"></div>
+   <p class="small">El monto que asignes a categorías será el límite de gastos. El ahorro se muestra como objetivo separado.</p>
+  </div>
+  <div class="field"><label for="budgetCategoryRows">Límites por categoría (COP)</label><div id="budgetCategoryRows" class="budget-category-editor"></div></div>
+  <div class="budget-wizard-total">Total asignado a gastos <strong id="budgetEditorTotal">$0</strong></div>
+  <div class="small" id="budgetRemainder"></div>
+  <div id="budgetFormMessage" class="message" role="status"></div>
+  <div class="rowactions"><button class="btn ghost" id="cancelBudgetWizard" type="button">Cancelar</button><button class="btn teal-btn" id="saveBudget" type="submit">Guardar presupuesto</button></div>
+ </form>
+</section></div>
+<div class="modal-backdrop" id="expenseModal" hidden role="presentation"><section class="panel modal-card" id="expenseFormPanel" role="dialog" aria-modal="true" aria-labelledby="expenseModalTitle"><div class="modal-heading"><div><div class="eyebrow">NUEVO MOVIMIENTO</div><h2 id="expenseModalTitle">Registrar un gasto</h2><p class="small">Completa los datos para guardar el movimiento en tu cuenta.</p></div><button class="modal-close" id="closeExpenseModal" type="button" aria-label="Cerrar ventana">×</button></div><form id="expenseForm"><div class="formgrid">
             <div class="field"><label for="expenseDate">Fecha</label><input id="expenseDate" type="date" required></div>
             <div class="field"><label for="expenseAmount">Valor (COP)</label><input id="expenseAmount" type="number" min="1" step="1" placeholder="25000" required></div>
             <div class="field span2"><label for="expenseDescription">Descripción</label><input id="expenseDescription" maxlength="160" placeholder="Ej. mercado de la semana" required></div>
@@ -465,7 +556,41 @@ html,body{max-width:100%}
 </section>
 </main>
 <footer class="foot">© <span id="year"></span> NOFEKI · Microapps simples, útiles y accionables. · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';">
+// --- Ingresos reales ---
+let incomeTransactions=[],editingIncomeId=null;
+function incomeMonth(){return monthKey($("incomePeriod").value);}
+function renderIncome(){
+ const key=incomeMonth(),rows=incomeTransactions.filter(x=>String(x.income_date).slice(0,7)===key);
+ const total=rows.reduce((s,x)=>s+Number(x.amount||0),0);
+ $("incomeTotal").textContent=money(total);$("incomeCount").textContent=String(rows.length);
+ const planned=activeBudget&&String(activeBudget.period_month).slice(0,7)===key&&activeBudget.mode==="income"?Number(activeBudget.income_amount):null;
+ $("incomePlanned").textContent=planned===null?"—":money(planned);
+ $("incomeVariance").textContent=planned===null?"—":money(total-planned);
+ $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<p class="small">No hay ingresos registrados para este mes.</p>';
+}
+async function loadIncome(){
+ if(!currentUser)return;
+ const key=incomeMonth(),start=key+"-01",[y,m]=key.split("-").map(Number),end=new Date(y,m,1).toISOString().slice(0,10);
+ const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",currentUser.id).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
+ if(error)throw error;incomeTransactions=data||[];renderIncome();
+}
+function resetIncomeForm(){editingIncomeId=null;$("incomeForm").reset();$("incomeDate").value=today();$("saveIncome").textContent="Registrar ingreso";$("cancelIncomeEdit").hidden=true;}
+$("incomeForm").addEventListener("submit",async e=>{
+ e.preventDefault();if(!currentUser)return;const btn=$("saveIncome");btn.disabled=true;
+ const payload={user_id:currentUser.id,income_date:$("incomeDate").value,concept:$("incomeConcept").value.trim(),source:$("incomeSource").value||null,amount:Number($("incomeAmount").value),note:$("incomeNote").value.trim()||null,updated_at:new Date().toISOString()};
+ try{const q=editingIncomeId?await client.from("income_transactions").update(payload).eq("id",editingIncomeId).eq("user_id",currentUser.id):await client.from("income_transactions").insert(payload);if(q.error)throw q.error;message("incomeMessage",editingIncomeId?"Ingreso actualizado.":"Ingreso registrado.");resetIncomeForm();await loadIncome();await loadBudget();}catch(err){message("incomeMessage","No se pudo guardar el ingreso. "+friendly(err),"error");}finally{btn.disabled=false;}
+});
+$("cancelIncomeEdit").addEventListener("click",resetIncomeForm);
+$("incomeList").addEventListener("click",async e=>{
+ const edit=e.target.closest("[data-income-edit]"),del=e.target.closest("[data-income-delete]");
+ if(edit){const x=incomeTransactions.find(r=>r.id===edit.dataset.incomeEdit);if(!x)return;editingIncomeId=x.id;$("incomeDate").value=x.income_date;$("incomeConcept").value=x.concept;$("incomeSource").value=x.source||"";$("incomeAmount").value=x.amount;$("incomeNote").value=x.note||"";$("saveIncome").textContent="Guardar cambios";$("cancelIncomeEdit").hidden=false;$("incomeDate").focus();}
+ if(del){if(!confirm("¿Eliminar este ingreso?"))return;const {error}=await client.from("income_transactions").delete().eq("id",del.dataset.incomeDelete).eq("user_id",currentUser.id);if(error){message("incomeMessage","No se pudo eliminar el ingreso. "+friendly(error),"error");return;}message("incomeMessage","Ingreso eliminado.");await loadIncome();await loadBudget();}
+});
+$("incomePeriod").addEventListener("change",()=>{void loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
+$("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(loadIncome).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
+
+</script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
 <script>
 "use strict";
@@ -606,8 +731,8 @@ document.querySelectorAll(".register-expense").forEach(btn=>btn.addEventListener
 document.querySelectorAll(".dash-nav [data-nav]").forEach(link=>link.addEventListener("click",e=>{e.preventDefault();const id=link.dataset.nav;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a===link));const content=document.querySelector(".dash-content");if(id==="categories"){content.classList.add("categories-only");$("categories").hidden=false;loadUserCategories();return;}content.classList.remove("categories-only");$("categories").hidden=true;if(id==="overview"){window.scrollTo({top:0,behavior:"smooth"});return;}const target=$(id);if(target)target.scrollIntoView({behavior:"smooth",block:"start"});}));
 function friendly(err){const m=String(err?.message||"Ocurrió un error.");if(/Invalid login credentials/i.test(m))return "Correo o contraseña incorrectos.";if(/Email not confirmed/i.test(m))return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";if(/already registered/i.test(m))return "Este correo ya tiene una cuenta. Inicia sesión.";if(/fetch/i.test(m))return "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";return m;}
 let loadingUserId=null;
-function showAuthenticatedDashboard(user){if(!user)return;currentUser=user;recoveryMode=false;const auth=$("authView"),dashboard=$("dashboardView");document.body.classList.add("dashboard-active");auth.hidden=true;auth.style.setProperty("display","none","important");dashboard.hidden=false;dashboard.style.setProperty("display","grid","important");const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();resetDashboardHome();startInactivityLogout();}function resetDashboardHome(){const content=document.querySelector(".dash-content");content?.classList.remove("categories-only");if($("categories"))$("categories").hidden=true;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a.dataset.nav==="overview"));const crumb=document.querySelector(".breadcrumb");if(crumb)crumb.innerHTML="Mis finanzas <span>/</span> Resumen";if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo({top:0,behavior:"instant"});}const INACTIVITY_LIMIT_MS=15*60*1000;let inactivityTimer=null;function startInactivityLogout(){clearTimeout(inactivityTimer);if(!currentUser)return;inactivityTimer=setTimeout(()=>autoLogoutForInactivity(),INACTIVITY_LIMIT_MS);}function noteUserActivity(){if(currentUser)startInactivityLogout();}async function autoLogoutForInactivity(){if(!currentUser)return;const {error}=await client.auth.signOut();if(error)console.warn("NOFEKI auto logout:",error.message);currentUser=null;expenses=[];userCategories=[];document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.removeProperty("display");setAuthMode("login");message("authMessage","Cerramos tu sesión automáticamente tras 30 minutos de inactividad. Inicia sesión para continuar.");clearTimeout(inactivityTimer);}["pointerdown","keydown","touchstart","scroll","click"].forEach(type=>document.addEventListener(type,noteUserActivity,{passive:true}));document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")noteUserActivity();});
-async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
+function showAuthenticatedDashboard(user){if(!user)return;currentUser=user;recoveryMode=false;const auth=$("authView"),dashboard=$("dashboardView");document.body.classList.add("dashboard-active");auth.hidden=true;auth.style.setProperty("display","none","important");dashboard.hidden=false;dashboard.style.setProperty("display","grid","important");const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();resetDashboardHome();startInactivityLogout();}function resetDashboardHome(){const content=document.querySelector(".dash-content");content?.classList.remove("categories-only");if($("categories"))$("categories").hidden=true;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a.dataset.nav==="overview"));const crumb=document.querySelector(".breadcrumb");if(crumb)crumb.innerHTML="Mis finanzas <span>/</span> Resumen";if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo({top:0,behavior:"instant"});}const INACTIVITY_LIMIT_MS=15*60*1000;let inactivityTimer=null;function startInactivityLogout(){clearTimeout(inactivityTimer);if(!currentUser)return;inactivityTimer=setTimeout(()=>autoLogoutForInactivity(),INACTIVITY_LIMIT_MS);}function noteUserActivity(){if(currentUser)startInactivityLogout();}async function autoLogoutForInactivity(){if(!currentUser)return;const {error}=await client.auth.signOut();if(error)console.warn("NOFEKI auto logout:",error.message);currentUser=null;expenses=[];userCategories=[];document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.removeProperty("display");setAuthMode("login");message("authMessage","Cerramos tu sesión automáticamente tras 15 minutos de inactividad. Inicia sesión para continuar.");clearTimeout(inactivityTimer);}["pointerdown","keydown","touchstart","scroll","click"].forEach(type=>document.addEventListener(type,noteUserActivity,{passive:true}));document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")noteUserActivity();});
+async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadBudget().catch(err=>console.warn("NOFEKI budget:",err));if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);if(!$("incomeDate").value)$("incomeDate").value=today();await loadIncome().catch(err=>console.warn("NOFEKI income:",err));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
 async function loadFinancialProfile(){const {data,error}=await client.from("financial_profiles").select("net_income_amount,income_frequency,has_additional_income,additional_income_monthly,income_stability,onboarding_step,onboarding_status").eq("user_id",currentUser.id).maybeSingle();if(error){console.warn("No se pudo consultar el perfil financiero:",error.message);return;}if(data){$("netIncome").value=data.net_income_amount??"";$("incomeFrequency").value=data.income_frequency||"monthly";const yes=data.has_additional_income===true;$("onboardingForm").querySelector('input[name="hasAdditionalIncome"][value="'+(yes?"yes":"no")+'"]').checked=true;$("additionalIncome").value=data.additional_income_monthly||"";$("incomeStability").value=data.income_stability||"stable";toggleAdditionalIncome();}
 // No abrir el modal de onboarding automáticamente: no debe bloquear los controles del dashboard.
 }
@@ -621,7 +746,26 @@ $("saveOnboardingDraft").addEventListener("click",()=>saveFinancialProfile(false
 $("onboardingForm").addEventListener("submit",e=>{e.preventDefault();saveFinancialProfile(true);});
 async function saveFinancialProfile(completeStep){if(!currentUser)return;const incomeRaw=$("netIncome").value.trim(),frequency=$("incomeFrequency").value,hasExtra=document.querySelector('input[name="hasAdditionalIncome"]:checked')?.value==="yes",extraRaw=$("additionalIncome").value.trim(),stability=$("incomeStability").value;clearMessage("onboardingMessage");if(completeStep&&(!incomeRaw||!Number.isFinite(Number(incomeRaw))||Number(incomeRaw)<=0)){message("onboardingMessage","Ingresa un ingreso neto mayor que cero para continuar.","error");$("netIncome").focus();return;}if(incomeRaw&&(!Number.isFinite(Number(incomeRaw))||Number(incomeRaw)<=0)){message("onboardingMessage","El ingreso debe ser mayor que cero, o déjalo vacío para continuar después.","error");return;}if(hasExtra&&extraRaw!==""&&(!Number.isFinite(Number(extraRaw))||Number(extraRaw)<0)){message("onboardingMessage","El ingreso adicional debe ser cero o un valor positivo.","error");return;}if(completeStep&&hasExtra&&extraRaw===""){message("onboardingMessage","Indica el ingreso adicional mensual promedio; puedes escribir 0 si no tienes un promedio.","error");return;}const btn=completeStep?$("saveOnboarding"):$("saveOnboardingDraft");btn.disabled=true;const old=btn.textContent;btn.textContent="Guardando…";const payload={user_id:currentUser.id,net_income_amount:incomeRaw?Number(incomeRaw):null,income_frequency:frequency,has_additional_income:hasExtra,additional_income_monthly:hasExtra&&extraRaw!==""?Number(extraRaw):0,income_stability:stability,onboarding_step:completeStep?2:1,onboarding_status:"in_progress",updated_at:new Date().toISOString()};try{const {error}=await client.from("financial_profiles").upsert(payload,{onConflict:"user_id"});if(error)throw error;if(completeStep){message("onboardingMessage","Paso 1 guardado. El siguiente paso será gastos fijos y esenciales cuando esté habilitado.");$("onboardingProgressText").textContent="Paso 1 guardado · Próximo: gastos fijos";setTimeout(closeOnboarding,1000);}else{message("onboardingMessage","Progreso guardado. Puedes retomarlo más adelante.");setTimeout(closeOnboarding,700);}}catch(err){message("onboardingMessage","No pudimos guardar tu progreso. "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent=old;}}
 
-async function loadExpenses(){clearMessage("listMessage");$("rows").innerHTML='<tr><td colspan="6"><div class="empty">Sincronizando datos…</div></td></tr>';const {data,error}=await client.from("gastos").select("id,expense_date,description,category,amount,expense_type,payment_method,note,source,created_at").order("expense_date",{ascending:false}).limit(1000);if(error){message("listMessage","No pudimos cargar tus gastos. "+friendly(error),"error");return;}expenses=(data||[]).map(e=>({id:e.id,date:e.expense_date,desc:e.description,cat:e.category,amount:Number(e.amount),type:e.expense_type,pay:e.payment_method||"",note:e.note||"",source:e.source}));categoryOptions();render();}
+
+// --- Presupuesto mensual ---
+let activeBudget=null,budgetCategories=[],budgetHistory=[];
+const monthKey=(value)=>/^\\d{4}-\\d{2}$/.test(value||"")?value:today().slice(0,7);
+const monthStart=(key)=>monthKey(key)+"-01";
+const budgetMonthLabel=(key)=>{const [y,m]=monthKey(key).split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("es-CO",{month:"long",year:"numeric"});};
+function budgetExpensesForMonth(key){return expenses.filter(e=>String(e.date||"").slice(0,7)===monthKey(key));}
+function budgetCategoryTotals(key){const out={};budgetExpensesForMonth(key).forEach(e=>out[e.cat]=(out[e.cat]||0)+Number(e.amount||0));return out;}
+function budgetCategoryNames(){return [...new Set([...DEFAULT_CATEGORIES.map(c=>c.name),...userCategories.map(c=>c.name)])];}
+function budgetEditorRender(existing=[]){const map=new Map(existing.map(c=>[c.category_name,Number(c.planned_amount)]));const totals=budgetCategoryTotals($("budgetPeriod").value);const names=[...new Set([...budgetCategoryNames(),...Object.keys(totals),...map.keys()])];$("budgetCategoryRows").innerHTML=names.map(name=>'<div class="budget-editor-row"><label>'+safe(name)+'</label><input type="number" min="0" step="1" inputmode="numeric" data-budget-category="'+safe(name)+'" value="'+(map.has(name)?map.get(name):"")+'" placeholder="0" aria-label="Presupuesto para '+safe(name)+'"></div>').join("");updateBudgetEditorTotal();}
+function updateBudgetEditorTotal(){const total=[...document.querySelectorAll("[data-budget-category]")].reduce((sum,input)=>sum+(Number(input.value)||0),0);$("budgetEditorTotal").textContent=money(total);const mode=$("budgetMode").value;if(mode==="income"){const income=Number($("budgetIncomeAmount").value)||0,savings=Number($("budgetSavingsTarget").value)||0;$("budgetRemainder").textContent=income>=total+savings?"Margen libre estimado: "+money(income-total-savings):"Asignación superior al ingreso por "+money(total+savings-income)+". Ajusta los montos antes de guardar.";}else $("budgetRemainder").textContent="La modalidad manual no requiere declarar ingresos.";}
+function toggleBudgetMode(){const income=$("budgetMode").value==="income";$("budgetIncomeFields").hidden=!income;updateBudgetEditorTotal();}
+async function loadBudget(key=$("budgetPeriod").value){if(!currentUser)return;key=monthKey(key);$("budgetPeriod").value=key;$("budgetEmpty").hidden=true;$("budgetContent").hidden=true;$("budgetModeLabel").textContent="Consultando…";try{const {data,error}=await client.from("budgets").select("id,user_id,period_month,mode,income_amount,expense_limit,savings_target,created_at,updated_at").eq("user_id",currentUser.id).eq("period_month",monthStart(key)).maybeSingle();if(error)throw error;activeBudget=data;if(data){const {data:cats,error:catError}=await client.from("budget_categories").select("id,budget_id,user_id,category_name,planned_amount").eq("user_id",currentUser.id).eq("budget_id",data.id).order("category_name");if(catError)throw catError;budgetCategories=cats||[];$("budgetModeLabel").textContent=data.mode==="income"?"Basado en ingresos":"Manual";renderBudget();}else{budgetCategories=[];$("budgetModeLabel").textContent="Sin configurar";$("budgetEmpty").hidden=false;}const {data:history,error:historyError}=await client.from("budgets").select("period_month,mode,expense_limit").eq("user_id",currentUser.id).order("period_month",{ascending:false}).limit(12);if(historyError)throw historyError;budgetHistory=history||[];renderBudgetHistory();}catch(err){$("budgetModeLabel").textContent="No disponible";message("budgetMessage","No pudimos cargar el presupuesto. "+friendly(err),"error");}}
+function renderBudget(){const key=$("budgetPeriod").value,actual=budgetExpensesForMonth(key),spent=actual.reduce((sum,e)=>sum+e.amount,0),limit=budgetCategories.reduce((sum,c)=>sum+Number(c.planned_amount),0),pct=limit>0?spent/limit*100:0,available=limit-spent;const elapsed=Math.max(1,Math.min(new Date().getDate(),Number(key.slice(0,4))===new Date().getFullYear()&&Number(key.slice(5,7))===new Date().getMonth()+1?new Date().getDate():new Date(Number(key.slice(0,4)),Number(key.slice(5,7)),0).getDate()));const days= new Date(Number(key.slice(0,4)),Number(key.slice(5,7)),0).getDate();const projection=spent/elapsed*days;$("budgetTotal").textContent=money(limit);$("budgetSpent").textContent=money(spent);$("budgetAvailable").textContent=money(available);$("budgetPercent").textContent=pct.toFixed(1).replace(".",",")+"%";$("budgetProgressBar").style.width=Math.min(100,pct)+"%";$("budgetProgressBar").classList.toggle("over",pct>100);$("budgetProjection").textContent="Proyección al cierre: "+money(projection)+" · "+(pct>=100?"Presupuesto superado.":pct>=80?"Atención: ya ejecutaste al menos el 80%.":"Ritmo de gasto estimado con base en los días transcurridos.")+(activeBudget.mode==="income"?" · Ahorro objetivo: "+money(activeBudget.savings_target):"");const totals=budgetCategoryTotals(key);const names=[...new Set([...budgetCategories.map(c=>c.category_name),...Object.keys(totals)])];$("budgetCategoryList").innerHTML=names.map(name=>{const planned=Number(budgetCategories.find(c=>c.category_name===name)?.planned_amount||0),used=Number(totals[name]||0),ratio=planned>0?used/planned*100:used>0?100:0;return '<div class="budget-category-row"><div><strong>'+safe(name)+'</strong><div class="small">'+money(used)+' de '+(planned?money(planned):"Sin límite")+'</div></div><div class="track"><span class="'+(ratio>100?"over":"")+'" style="width:'+Math.min(100,ratio)+'%"></span></div><strong>'+ratio.toFixed(0)+'%</strong></div>';}).join("")||'<div class="empty">No hay categorías asignadas.</div>';const unplanned=actual.filter(e=>!budgetCategories.some(c=>c.category_name===e.cat)).reduce((sum,e)=>sum+e.amount,0);$("budgetUnplanned").hidden=unplanned===0;$("budgetUnplanned").textContent=unplanned?"Gastos en categorías sin presupuesto: "+money(unplanned)+". Se incluyen en el ejecutado total.":"";$("budgetEmpty").hidden=true;$("budgetContent").hidden=false;}
+function renderBudgetHistory(){const host=$("budgetHistory");if(!budgetHistory.length){host.textContent="Aún no hay meses anteriores configurados.";return;}host.innerHTML='<div class="budget-history-list">'+budgetHistory.map(h=>'<button type="button" data-budget-history="'+safe(String(h.period_month).slice(0,7))+'">'+safe(budgetMonthLabel(String(h.period_month).slice(0,7)))+' · '+(h.mode==="income"?"Ingresos":"Manual")+'</button>').join("")+'</div>';}
+function openBudgetWizard(){if(!currentUser)return;const existing=activeBudget;$("budgetMode").value=existing?.mode||"income";$("budgetIncomeAmount").value=existing?.income_amount??"";$("budgetSavingsTarget").value=existing?.savings_target??0;budgetEditorRender(budgetCategories);toggleBudgetMode();$("budgetWizard").hidden=false;document.body.classList.add("modal-open");}
+function closeBudgetWizard(){ $("budgetWizard").hidden=true;if($("expenseModal").hidden&&$("onboardingModal").hidden)document.body.classList.remove("modal-open");}
+async function saveBudget(event){event.preventDefault();if(!currentUser)return;const mode=$("budgetMode").value,key=monthKey($("budgetPeriod").value),income=Number($("budgetIncomeAmount").value),savings=Number($("budgetSavingsTarget").value)||0,rows=[...document.querySelectorAll("[data-budget-category]")].map(input=>({category_name:input.dataset.budgetCategory,planned_amount:Number(input.value)||0})).filter(row=>row.planned_amount>0),total=rows.reduce((sum,row)=>sum+row.planned_amount,0);if(!rows.length){message("budgetFormMessage","Asigna un monto a por lo menos una categoría.","error");return;}if(mode==="income"&&(!Number.isFinite(income)||income<0||savings<0||total+savings>income)){message("budgetFormMessage","La suma de gastos y ahorro no puede superar el ingreso mensual.","error");return;}const btn=$("saveBudget");btn.disabled=true;btn.textContent="Guardando…";try{const {error}=await client.rpc("save_monthly_budget",{p_period_month:monthStart(key),p_mode:mode,p_income_amount:mode==="income"?income:null,p_expense_limit:total,p_savings_target:mode==="income"?savings:0,p_categories:rows});if(error)throw error;closeBudgetWizard();message("budgetMessage","Presupuesto guardado para "+budgetMonthLabel(key)+".","ok");await loadBudget(key);}catch(err){message("budgetFormMessage","No pudimos guardar el presupuesto. "+friendly(err),"error");}finally{btn.disabled=false;btn.textContent="Guardar presupuesto";}}
+
+async function loadExpenses(){clearMessage("listMessage");$("rows").innerHTML='<tr><td colspan="6"><div class="empty">Sincronizando datos…</div></td></tr>';const pageSize=500;let allRows=[],from=0;while(true){const {data,error}=await client.from("gastos").select("id,expense_date,description,category,amount,expense_type,payment_method,note,source,created_at").order("expense_date",{ascending:false}).order("id",{ascending:false}).range(from,from+pageSize-1);if(error){message("listMessage","No pudimos cargar tus gastos. "+friendly(error),"error");return;}const batch=data||[];allRows=allRows.concat(batch);if(batch.length<pageSize)break;from+=pageSize;}expenses=allRows.map(e=>({id:e.id,date:e.expense_date,desc:e.description,cat:e.category,amount:Number(e.amount),type:e.expense_type,pay:e.payment_method||"",note:e.note||"",source:e.source}));categoryOptions();render();await loadBudget($("budgetPeriod").value);}
 function render(){
  const now=today().slice(0,7),parts=now.split("-").map(Number),currentDate=new Date(parts[0],parts[1]-1,1),previousDate=new Date(parts[0],parts[1]-2,1);
  const currentMonth=now,previousMonth=previousDate.getFullYear()+"-"+String(previousDate.getMonth()+1).padStart(2,"0");
@@ -651,6 +795,7 @@ function render(){
 }
 let expenseSaveInProgress=false;
 let expenseSaveStage="idle";
+let expenseAttemptFingerprint=null,expenseAttemptKey=null;
 $("saveExpense").addEventListener("click",()=>{console.info("NOFEKI_SAVE_DIAG",JSON.stringify({stage:"save_button_clicked",at:new Date().toISOString(),formValid:$("expenseForm").checkValidity(),hasCurrentUser:!!currentUser,modalOpen:!$("expenseModal").hidden}));});
 $("expenseForm").addEventListener("submit",async e=>{
  e.preventDefault();
@@ -673,7 +818,10 @@ $("expenseForm").addEventListener("submit",async e=>{
    return;
   }
   currentUser=sessionUser;
-  const payload={user_id:sessionUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web",idempotency_key:crypto.randomUUID()};
+  const payload={user_id:sessionUser.id,expense_date:$("expenseDate").value,description:$("expenseDescription").value.trim(),category:$("expenseCategory").value,amount:Number($("expenseAmount").value),expense_type:$("expenseType").value,payment_method:$("paymentMethod").value||null,note:$("expenseNote").value.trim()||null,source:"web"};
+  const attemptFingerprint=JSON.stringify([payload.user_id,payload.expense_date,payload.description,payload.category,payload.amount,payload.expense_type,payload.payment_method,payload.note]);
+  if(attemptFingerprint!==expenseAttemptFingerprint){expenseAttemptFingerprint=attemptFingerprint;expenseAttemptKey=crypto.randomUUID();}
+  payload.idempotency_key=expenseAttemptKey;
   if(!payload.description||!Number.isFinite(payload.amount)||payload.amount<=0)throw new Error("Revisa la descripción y el valor del gasto.");
   btn.textContent="Guardando en la nube…";
   diag("before_insert",{userId:sessionUser.id,amount:payload.amount});
@@ -681,6 +829,7 @@ $("expenseForm").addEventListener("submit",async e=>{
   if(error){diag("insert_error",{code:error.code||null,message:error.message||String(error),details:error.details||null,hint:error.hint||null});throw error;}
   if(!data?.id)throw new Error("El servidor no confirmó el registro del gasto.");
   diag("insert_success",{expenseId:data.id});
+  expenseAttemptFingerprint=null;expenseAttemptKey=null;
   e.target.reset();$("expenseDate").value=today();
   await loadExpenses();
   message("expenseMessage","Gasto guardado correctamente en tu cuenta.");
