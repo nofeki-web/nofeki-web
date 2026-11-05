@@ -565,10 +565,11 @@ html,body{max-width:100%}
 </section>
 </main>
 <footer class="foot">© <span id="year"></span> NOFEKI · Microapps simples, útiles y accionables. · <a href="/privacidad.html">Privacidad</a> · <a href="/terminos.html">Términos</a></footer>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
+<script src="/assets/js/supabase-fallback.js"></script>
+<script id="supabase-client" src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <script>
 "use strict";
 const TURNSTILE_SITE_KEY = "0x4AAAAAAFl9gZWmFMMpoxsB";
@@ -723,7 +724,7 @@ document.querySelectorAll(".dash-nav [data-nav],#budgetCompliance [data-nav]").f
 function friendly(err){const m=String(err?.message||"Ocurrió un error.");if(/Invalid login credentials/i.test(m))return "Correo o contraseña incorrectos.";if(/Email not confirmed/i.test(m))return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";if(/already registered/i.test(m))return "Este correo ya tiene una cuenta. Inicia sesión.";if(/fetch/i.test(m))return "No pudimos conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.";return m;}
 let loadingUserId=null;
 function showAuthenticatedDashboard(user){if(!user)return;currentUser=user;recoveryMode=false;const auth=$("authView"),dashboard=$("dashboardView");document.body.classList.add("dashboard-active");auth.hidden=true;auth.style.setProperty("display","none","important");dashboard.hidden=false;dashboard.style.setProperty("display","grid","important");const email=user.email||"Usuario";$("userName").textContent=email.split("@")[0];$("avatar").textContent=email.slice(0,1).toUpperCase();resetDashboardHome();startInactivityLogout();}function resetDashboardHome(){$("overview").hidden=false;$("overview").style.setProperty("display","block","important");$("budgetView").hidden=true;$("budgetView").style.setProperty("display","none","important");$("incomeView").hidden=true;$("incomeView").style.setProperty("display","none","important");const content=$("overview");content?.classList.remove("categories-only");if($("categories"))$("categories").hidden=true;document.querySelectorAll(".dash-nav [data-nav]").forEach(a=>a.classList.toggle("active",a.dataset.nav==="overview"));const crumb=document.querySelector(".breadcrumb");if(crumb)crumb.innerHTML="Mis finanzas <span>/</span> Resumen";if(location.hash)history.replaceState(null,"",location.pathname+location.search);window.scrollTo({top:0,behavior:"instant"});}const INACTIVITY_LIMIT_MS=15*60*1000;let inactivityTimer=null;function startInactivityLogout(){clearTimeout(inactivityTimer);if(!currentUser)return;inactivityTimer=setTimeout(()=>autoLogoutForInactivity(),INACTIVITY_LIMIT_MS);}function noteUserActivity(){if(currentUser)startInactivityLogout();}async function autoLogoutForInactivity(){if(!currentUser)return;const {error}=await client.auth.signOut();if(error)console.warn("NOFEKI auto logout:",error.message);currentUser=null;expenses=[];userCategories=[];document.body.classList.remove("dashboard-active");$("dashboardView").style.display="none";$("authView").hidden=false;$("authView").style.removeProperty("display");setAuthMode("login");message("authMessage","Cerramos tu sesión automáticamente tras 15 minutos de inactividad. Inicia sesión para continuar.");clearTimeout(inactivityTimer);}["pointerdown","keydown","touchstart","scroll","click"].forEach(type=>document.addEventListener(type,noteUserActivity,{passive:true}));document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")noteUserActivity();});
-async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadBudget().catch(err=>console.warn("NOFEKI budget:",err));if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);if(!$("incomeDate").value)$("incomeDate").value=today();await window.loadIncome().catch(err=>console.warn("NOFEKI income:",err));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
+async function loadUser(user){if(!user||recoveryMode)return;showAuthenticatedDashboard(user);if(loadingUserId===user.id)return;loadingUserId=user.id;try{await loadExpenses();await loadUserCategories();await loadBudget().catch(err=>console.warn("NOFEKI budget:",err));if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);if(!$("incomeDate").value)$("incomeDate").value=today();await window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));checkLegacy();await loadShortcutAuthorizations();await loadFinancialProfile();}catch(err){console.error("NOFEKI loadUser:",err);message("listMessage","Tu sesión está activa, pero hubo un problema cargando algunos datos. "+friendly(err),"error");}finally{if(loadingUserId===user.id)loadingUserId=null;}}
 async function loadFinancialProfile(){const {data,error}=await client.from("financial_profiles").select("net_income_amount,income_frequency,has_additional_income,additional_income_monthly,income_stability,onboarding_step,onboarding_status").eq("user_id",currentUser.id).maybeSingle();if(error){console.warn("No se pudo consultar el perfil financiero:",error.message);return;}if(data){$("netIncome").value=data.net_income_amount??"";$("incomeFrequency").value=data.income_frequency||"monthly";const yes=data.has_additional_income===true;$("onboardingForm").querySelector('input[name="hasAdditionalIncome"][value="'+(yes?"yes":"no")+'"]').checked=true;$("additionalIncome").value=data.additional_income_monthly||"";$("incomeStability").value=data.income_stability||"stable";toggleAdditionalIncome();}
 // No abrir el modal de onboarding automáticamente: no debe bloquear los controles del dashboard.
 }
@@ -950,9 +951,8 @@ async function loadShortcutAuthorizations(){
   if(!rows.length){host.innerHTML=summary+'<div class="empty" style="padding:18px">No tienes una conexión activa. Pulsa “Vincular un iPhone” para conectar tu atajo.</div>';message("shortcutTokenStatus","Estado actualizado.","ok");return;}
   host.innerHTML=summary+rows.map(a=>{
    const st=state(a),label="Activa",expiry=a.expires_at?fmt(a.expires_at):"No registrada",last=a.last_used_at?fmt(a.last_used_at):"Sin uso registrado";
-   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'" onclick="return window.nofekiRevokeShortcutInline(this)">Revocar autorización</button>':'')+'</div></article>';
+   return '<article class="shortcut-device"><div class="shortcut-device-main"><div class="shortcut-device-title"><strong>'+safe(a.device_name||"Dispositivo iOS")+'</strong><span class="pill" style="'+(st==="active"?"":"background:#f1f5f9;color:#64748b")+'">'+label+'</span></div><div class="shortcut-device-meta">Vinculado: '+safe(fmt(a.created_at))+'<br>Último uso: '+safe(last)+'<br>Vencimiento: '+safe(expiry)+'</div></div><div class="shortcut-device-actions">'+(st==="active"?'<button class="btn danger" type="button" data-revoke-shortcut="'+safe(a.id)+'" >Revocar autorización</button>':'')+'</div></article>';
   }).join("");
-  // El control invoca el manejador directamente desde onclick.
   message("shortcutTokenStatus",active>0?"Conexión exitosa: tu iPhone está vinculado y listo para registrar gastos.":"No hay una conexión activa.",active>0?"ok":"");
  }catch(e){host.innerHTML='<div class="message show error">'+safe(e.message||"No pudimos consultar los atajos.")+'</div>';message("shortcutTokenStatus",e.message||"No pudimos consultar los atajos.","error");}
  finally{host.removeAttribute("aria-busy");}
@@ -1022,13 +1022,6 @@ window.nofekiDeleteCategoryFromButton=async function(event){
 };
 
 window.nofekiLoadShortcutAuthorizations=loadShortcutAuthorizations;
-window.nofekiRevokeShortcutInline=function(button){
- if(!button)return false;
- const id=button.getAttribute("data-revoke-shortcut");
- if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return false;}
- void window.nofekiRevokeShortcut(id);
- return false;
-};
 window.nofekiRevokeShortcut=async function(id){
  if(!id){message("shortcutTokenStatus","No se identificó la autorización.","error");return;}
  if(!window.confirm("¿Revocar esta autorización? El atajo asociado dejará de registrar gastos.")){message("shortcutTokenStatus","Revocación cancelada.");return;}
@@ -1065,18 +1058,15 @@ document.addEventListener("click", function(event) {
     void window.nofekiDeleteExpenseFromButton(event);
     return;
   }
+  const revokeButton = target.closest("button[data-revoke-shortcut]");
+  if (revokeButton) {
+    event.preventDefault();
+    event.stopPropagation();
+    void window.nofekiRevokeShortcut(revokeButton.getAttribute("data-revoke-shortcut"));
+  }
 }, false);
 
-window.nofekiRevokeShortcutFromButton=function(event){
- if(event){event.preventDefault();event.stopPropagation();}
- const target=event&&event.target instanceof Element?event.target:null;
- const button=target&&target.closest("button[data-revoke-shortcut]");
- const id=button&&button.getAttribute("data-revoke-shortcut");
- if(!id){message("shortcutTokenStatus","No se identificó la autorización seleccionada.","error");return;}
- void window.nofekiRevokeShortcut(id);
-};
-
-// Los botones de eliminar y revocar usan listeners directos al renderizarse.
+// Las acciones de filas usan delegación de eventos para soportar contenido dinámico.
 </script>
 
 </body>
