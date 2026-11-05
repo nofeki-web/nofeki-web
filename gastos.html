@@ -400,7 +400,7 @@ html,body{max-width:100%}
  #dashboardView .analytics-grid .panel-head{flex-wrap:wrap}
 }
 
-</style>
+ #budgetView:not([hidden]),#incomeView:not([hidden]){display:block!important;visibility:visible!important;opacity:1!important} #budgetView[hidden],#incomeView[hidden]{display:none!important} </style>
 </head>
 <body>
 <header class="top"><a class="brand" href="/" aria-label="NOFEKI inicio"><img class="brand-logo" src="/assets/logo-turquesa.png" alt="NOFEKI"><span class="brand-product">Gastos</span></a><div class="topnote">Tus decisiones financieras, más claras.</div><a class="btn ghost" href="/">Volver a NOFEKI</a></header>
@@ -624,6 +624,14 @@ $("incomeList").addEventListener("click",async e=>{
 });
 $("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
 $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
+$("openBudgetWizard").addEventListener("click",openBudgetWizard);
+$("closeBudgetWizard").addEventListener("click",closeBudgetWizard);
+$("cancelBudgetWizard").addEventListener("click",closeBudgetWizard);
+$("budgetForm").addEventListener("submit",saveBudget);
+$("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
+$("budgetCategoryRows").addEventListener("input",updateBudgetEditorTotal);
+$("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
+
 
 </script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer onload="window.initNofekiTurnstile&&window.initNofekiTurnstile()"></script>
