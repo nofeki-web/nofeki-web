@@ -1970,6 +1970,7 @@ if(menuToggle && siteLinks){
 }
 
 const KEY = "nofeki_gastos_v1";
+const dateField=document.getElementById("date"),descField=document.getElementById("desc"),categoryField=document.getElementById("cat"),amountField=document.getElementById("amount"),typeField=document.getElementById("type"),paymentField=document.getElementById("pay"),noteField=document.getElementById("note");
 
 let expenses =
   JSON.parse(
@@ -2063,8 +2064,8 @@ function render(){
   .map(
     x =>
       `<div class="report">
-        <small>${x[0]}</small>
-        <strong>${x[1]}</strong>
+        <small>${escapeHtml(String(x[0]))}</small>
+        <strong>${escapeHtml(String(x[1]))}</strong>
       </div>`
   )
 
@@ -2148,17 +2149,17 @@ function render(){
 
           `<tr>
 
-            <td>${e.date}</td>
+            <td>${escapeHtml(e.date)}</td>
 
             <td>
               ${escapeHtml(e.desc)}
             </td>
 
-            <td>${e.cat}</td>
+            <td>${escapeHtml(e.cat)}</td>
 
-            <td>${e.type}</td>
+            <td>${escapeHtml(e.type)}</td>
 
-            <td>${e.pay}</td>
+            <td>${escapeHtml(e.pay)}</td>
 
             <td>
               <b>${money(e.amount)}</b>
@@ -2226,25 +2227,25 @@ document
 
         id:crypto.randomUUID(),
 
-        date:date.value,
+        date:dateField.value,
 
-        desc:desc.value.trim(),
+        desc:descField.value.trim(),
 
-        cat:cat.value,
+        cat:categoryField.value,
 
-        amount:Number(amount.value),
+        amount:Number(amountField.value),
 
-        type:type.value,
+        type:typeField.value,
 
-        pay:pay.value,
+        pay:paymentField.value,
 
-        note:note.value.trim()
+        note:noteField.value.trim()
 
       });
 
       e.target.reset();
 
-      date.value =
+      dateField.value =
         new Date()
           .toISOString()
           .slice(0,10);
@@ -2294,7 +2295,7 @@ document.getElementById("year").textContent =
   new Date().getFullYear();
 
 
-date.value =
+dateField.value =
   new Date()
     .toISOString()
     .slice(0,10);
