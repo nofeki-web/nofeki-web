@@ -1097,5 +1097,44 @@ window.nofekiRevokeShortcutFromButton=function(event){
 
 // Los botones de eliminar y revocar usan listeners directos al renderizarse.
 </script>
+
+<!-- Diagnóstico temporal del asistente de presupuesto. No modifica datos. -->
+<script>
+(function(){
+  function showBudgetDiag(message){
+    let box=document.getElementById("budgetDiagProbe");
+    if(!box){
+      box=document.createElement("div");
+      box.id="budgetDiagProbe";
+      box.style.cssText="position:fixed;left:10px;right:10px;bottom:10px;z-index:2147483647;background:#111827;color:#fff;padding:12px 14px;border-radius:12px;font:12px/1.5 -apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 8px 30px #0005;white-space:pre-wrap";
+      document.body.appendChild(box);
+    }
+    box.textContent="DIAGNÓSTICO PRESUPUESTO\n"+message;
+  }
+  window.addEventListener("error",function(e){
+    showBudgetDiag("Error JavaScript: "+(e.message||"desconocido")+" | "+(e.filename||"")+" : "+(e.lineno||""));
+  });
+  window.addEventListener("unhandledrejection",function(e){
+    showBudgetDiag("Promesa rechazada: "+String(e.reason&&e.reason.message||e.reason||"desconocido"));
+  });
+  document.addEventListener("click",function(e){
+    const t=e.target instanceof Element?e.target:null;
+    if(!t||!t.closest("#openBudgetWizard"))return;
+    showBudgetDiag("1. Safari recibió el toque.\n2. Esperando resultado de apertura…");
+    setTimeout(function(){
+      const w=document.getElementById("budgetWizard");
+      if(!w){showBudgetDiag("Toque recibido, pero no existe #budgetWizard en el DOM.");return;}
+      const c=getComputedStyle(w),r=w.getBoundingClientRect();
+      showBudgetDiag("Toque recibido.\nModal hidden: "+w.hidden+
+        "\nDisplay: "+c.display+" | visibility: "+c.visibility+
+        "\nOpacity: "+c.opacity+" | z-index: "+c.zIndex+
+        "\nTamaño: "+Math.round(r.width)+" × "+Math.round(r.height)+
+        "\nClase body modal-open: "+document.body.classList.contains("modal-open")+
+        "\nUsuario autenticado en app: "+(typeof currentUser!=="undefined"&&!!currentUser));
+    },350);
+  },true);
+})();
+</script>
+
 </body>
 </html>
