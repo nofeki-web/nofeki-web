@@ -152,7 +152,7 @@ a{
 }
 
 .btn.turq:hover{
-  background:#0f9f90
+  background:#0B665E
 }
 
 .btn.light{
@@ -252,7 +252,7 @@ a{
 }
 
 .eyebrow{
-  color:var(--turq);
+  color:#0F766E;
   font-weight:900;
   text-transform:uppercase;
   letter-spacing:.14em;
@@ -372,7 +372,7 @@ a{
 
 .num{
   font-size:13px;
-  color:var(--turq);
+  color:#0F766E;
   font-weight:900
 }
 
@@ -828,10 +828,10 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 .nav{height:82px;border-bottom:1px solid rgba(148,163,184,.18);box-shadow:0 4px 24px rgba(15,23,42,.035)}
 .brand-logo{width:176px}
 .links{gap:30px;font-weight:650;color:#475569}
-.links a:hover{color:#0D9488}
+.links a:hover{color:#0F766E}
 .btn{border-radius:9px;padding:13px 19px;letter-spacing:-.015em}
 .btn.primary{background:#111827;border-color:#111827;box-shadow:0 8px 20px rgba(17,24,39,.13)}
-.btn.turq{background:#0D9488;border-color:#0D9488}
+.btn.turq{background:#0F766E;border-color:#0F766E}
 .hero{min-height:650px;background:radial-gradient(ellipse at 83% 38%,rgba(20,184,166,.09),transparent 35%),linear-gradient(135deg,#fff 0%,#F8FAFC 100%)}
 .hero-layout{min-height:650px;width:min(1240px,92%);grid-template-columns:49% 51%}
 .hero-copy{padding:72px 0;max-width:610px}
@@ -933,16 +933,23 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
  .nav .nav-cta{display:none}
  .menu-toggle{padding:9px 11px}
 }
+
+.skip-link{position:absolute;left:12px;top:12px;z-index:2000;padding:10px 14px;border-radius:8px;background:#0B1220;color:#fff;font-weight:800;transform:translateY(-160%);transition:transform .15s ease}
+.skip-link:focus{transform:translateY(0)}
+:focus-visible{outline:3px solid #0F766E;outline-offset:3px}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:800px){.tablewrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}}
 </style>
 </head>
 
 <body>
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
 
 <!-- =========================
      NAV
 ========================= -->
 
-<nav class="nav">
+<nav class="nav" aria-label="Navegación principal">
 
   <div
     class="container"
@@ -958,6 +965,9 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
         class="brand-logo"
         src="assets/logo-turquesa.png"
         alt="NOFEKI"
+        width="2000"
+        height="800"
+        decoding="async"
       >
     </a>
 
@@ -976,7 +986,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
 </nav>
 
-
+<main id="main-content">
 <!-- =========================
      HERO
 ========================= -->
@@ -1029,6 +1039,10 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
       <img
         src="assets/hero-supply-chain-clean.jpg"
         alt="Operación moderna de supply chain, inventario y logística"
+        width="1100"
+        height="819"
+        fetchpriority="high"
+        decoding="async"
       >
 
     </div>
@@ -1531,7 +1545,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="date">
                 Fecha
               </label>
 
@@ -1546,7 +1560,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="desc">
                 Descripción
               </label>
 
@@ -1561,7 +1575,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="cat">
                 Categoría
               </label>
 
@@ -1584,7 +1598,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="amount">
                 Monto (COP)
               </label>
 
@@ -1602,7 +1616,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="type">
                 Tipo
               </label>
 
@@ -1619,7 +1633,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="pay">
                 Medio de pago
               </label>
 
@@ -1638,7 +1652,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
+              <label for="note">
                 Nota (opcional)
               </label>
 
@@ -1683,18 +1697,18 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
         <div class="tablewrap">
 
-          <table class="table">
+          <table class="table"><caption class="sr-only">Movimientos registrados en la demostración de NOFEKI Gastos</caption>
 
             <thead>
 
               <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Tipo</th>
-                <th>Pago</th>
-                <th>Monto</th>
-                <th></th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Pago</th>
+                <th scope="col">Monto</th>
+                <th scope="col"><span class="sr-only">Acciones</span></th>
               </tr>
 
             </thead>
@@ -1846,7 +1860,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
   </div>
 
 </section>
-
+</main>
 
 <!-- =========================
      FOOTER
@@ -1859,7 +1873,11 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
       <img
         class="brand-logo"
         src="assets/logo-blanco.png"
-        alt="NOFEKI">
+        alt="NOFEKI"
+        width="2000"
+        height="800"
+        loading="lazy"
+        decoding="async">
     </div>
 
     <p>
