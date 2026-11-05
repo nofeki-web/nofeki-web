@@ -625,14 +625,14 @@ $("incomeList").addEventListener("click",async e=>{
 $("incomePeriod").addEventListener("change",()=>{void window.loadIncome().catch(err=>message("incomeMessage","No pudimos cargar los ingresos. "+friendly(err),"error"));});
 $("budgetPeriod").addEventListener("change",()=>{void loadBudget().then(()=>window.loadIncome()).catch(err=>message("incomeMessage","No pudimos actualizar los ingresos. "+friendly(err),"error"));});
 // Los manejadores del asistente se resuelven al hacer clic, después de cargar el módulo de presupuesto.
-$("openBudgetWizard").addEventListener("click",()=>window.openBudgetWizard?.());
-$("closeBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
+$("openBudgetWizard").addEventListener("click",()=>openBudgetWizard());
+$("closeBudgetWizard").addEventListener("click",()=>closeBudgetWizard());
 $("cancelBudgetWizard").addEventListener("click",()=>window.closeBudgetWizard?.());
 $("budgetWizard").addEventListener("click",e=>{if(e.target===$("budgetWizard"))window.closeBudgetWizard?.();});
-$("budgetForm").addEventListener("submit",e=>window.saveBudget?.(e));
-$("budgetMode").addEventListener("change",()=>{window.toggleBudgetMode?.();window.budgetEditorRender?.(window.budgetCategories||[]);});
-$("budgetCategoryRows").addEventListener("input",()=>window.updateBudgetEditorTotal?.());
-$("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void window.loadBudget?.(b.dataset.budgetHistory);});
+$("budgetForm").addEventListener("submit",e=>saveBudget(e));
+$("budgetMode").addEventListener("change",()=>{toggleBudgetMode();budgetEditorRender(budgetCategories);});
+$("budgetCategoryRows").addEventListener("input",()=>updateBudgetEditorTotal());
+$("budgetHistory").addEventListener("click",e=>{const b=e.target.closest("[data-budget-history]");if(!b)return;$("budgetPeriod").value=b.dataset.budgetHistory;void loadBudget(b.dataset.budgetHistory);});
 
 
 </script>
