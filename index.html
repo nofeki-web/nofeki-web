@@ -491,6 +491,8 @@ a{
   border-color:#14B8A6;
   transform:translateY(-2px)
 }
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #0F766E;outline-offset:3px}
+
 .footer-social-link:focus-visible{
   outline:3px solid #5EEAD4;
   outline-offset:3px
@@ -501,6 +503,11 @@ a{
   height:21px;
   fill:currentColor
 }
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 @media(max-width:520px){
   .footer-socials{margin:18px 0 22px}
   .footer-social-link{width:44px;height:44px}
@@ -1511,7 +1518,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
             Registro de gastos
           </h2>
 
-          <small id="status">
+          <small id="status" role="status" aria-live="polite" aria-atomic="true">
             0 movimientos
           </small>
 
@@ -1535,9 +1542,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Fecha
-              </label>
+              <label for="date">Fecha</label>
 
               <input
                 id="date"
@@ -1550,9 +1555,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Descripción
-              </label>
+              <label for="desc">Descripción</label>
 
               <input
                 id="desc"
@@ -1565,9 +1568,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Categoría
-              </label>
+              <label for="cat">Categoría</label>
 
               <select id="cat">
 
@@ -1588,9 +1589,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Monto (COP)
-              </label>
+              <label for="amount">Monto (COP)</label>
 
               <input
                 id="amount"
@@ -1606,9 +1605,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Tipo
-              </label>
+              <label for="type">Tipo</label>
 
               <select id="type">
 
@@ -1623,9 +1620,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Medio de pago
-              </label>
+              <label for="pay">Medio de pago</label>
 
               <select id="pay">
 
@@ -1642,9 +1637,7 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
 
             <div class="field">
 
-              <label>
-                Nota (opcional)
-              </label>
+              <label for="note">Nota (opcional)</label>
 
               <input
                 id="note"
@@ -1676,12 +1669,17 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
         <div
           class="reports"
           id="reports"
+          role="region"
+          aria-label="Resumen de gastos"
+          aria-live="polite"
         ></div>
 
 
         <div
           class="chart"
           id="chart"
+          role="img"
+          aria-label="Gráfico de evolución mensual de gastos"
         ></div>
 
 
@@ -1692,13 +1690,13 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
             <thead>
 
               <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Tipo</th>
-                <th>Pago</th>
-                <th>Monto</th>
-                <th></th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Categoría</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Pago</th>
+                <th scope="col">Monto</th>
+                <th scope="col">Acciones</th>
               </tr>
 
             </thead>
