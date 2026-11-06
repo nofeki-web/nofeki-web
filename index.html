@@ -1047,6 +1047,119 @@ body{color:#111827;background:#fff}
  .hero-image{border-color:#DDEBE8}
 }
 
+
+/* ===== NOFEKI structural redesign · Apple-inspired ===== */
+:root{--navy:#101B2D;--turq:#16B8A6;--white:#fff;--gray:#F4F7F8;--line:#E3EAED;--muted:#657482;--shadow:0 28px 80px rgba(16,27,45,.12)}
+body{color:var(--navy);letter-spacing:-.018em}
+.nav{height:78px;background:rgba(255,255,255,.88);border-bottom:1px solid rgba(16,27,45,.08);box-shadow:none}
+.nav>.container{max-width:1280px;padding:0 8px}
+.brand-logo{width:168px}
+.links{gap:34px;font-size:13px;letter-spacing:0;color:#435365}
+.links a{padding:10px 0;position:relative}
+.links a:after{content:"";position:absolute;left:0;right:100%;bottom:2px;height:2px;background:var(--turq);transition:right .2s}
+.links a:hover:after{right:0}
+.nav-cta{border-radius:999px!important;padding:11px 18px!important;font-size:12px!important}
+.hero{min-height:690px;background:var(--navy);color:#fff;isolation:isolate}
+.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 75% 48%,rgba(22,184,166,.18),transparent 37%),linear-gradient(115deg,#101B2D 0%,#14263B 60%,#0D1726 100%)}
+.hero-layout{width:min(1280px,92%);min-height:690px;grid-template-columns:48% 52%;gap:0}
+.hero-copy{padding:88px 0;max-width:620px}
+.hero .eyebrow{display:inline-flex;border:1px solid rgba(94,234,212,.3);background:rgba(20,184,166,.09);color:#72E5D7;border-radius:999px;padding:9px 14px;font-size:10px;letter-spacing:.13em}
+.hero h1{font-size:clamp(52px,6vw,82px);line-height:.98;letter-spacing:-.078em;margin:28px 0 25px;max-width:700px}
+.hero h1 em{color:#55D9C9;font-style:normal}
+.hero p{color:#C5D1DC;font-size:18px;line-height:1.75;max-width:520px}
+.hero-actions{gap:12px;margin-top:34px}
+.hero .btn{border-radius:999px;padding:15px 22px}
+.hero .btn.primary{background:var(--turq);border-color:var(--turq);color:#062B2A;box-shadow:0 12px 32px rgba(22,184,166,.18)}
+.hero .btn:not(.primary){color:#fff;border-color:rgba(255,255,255,.28);background:rgba(255,255,255,.04)}
+.hero-image{top:9%;right:-2%;width:55%;height:82%;border:1px solid rgba(255,255,255,.18);border-radius:30px;background:#172B3D;box-shadow:0 35px 100px rgba(0,0,0,.3);overflow:hidden}
+.hero-image img{height:100%;width:100%;object-fit:cover;object-position:center}
+.hero-image:before{background:linear-gradient(90deg,rgba(16,27,45,.28),transparent 42%);opacity:1}
+.hero-image:after{background:linear-gradient(0deg,rgba(8,19,32,.28),transparent 45%)}
+.value-strip{background:#fff;border-bottom:1px solid var(--line)}
+.value-strip-inner{width:min(1160px,90%);margin:auto;min-height:108px;display:grid;grid-template-columns:1.35fr repeat(3,1fr);align-items:center;gap:24px}
+.value-intro{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#405365;text-transform:uppercase}
+.value-dot{width:9px;height:9px;border-radius:50%;background:var(--turq);box-shadow:0 0 0 6px rgba(22,184,166,.12)}
+.value-item{display:flex;align-items:center;gap:13px;border-left:1px solid var(--line);padding-left:24px;font-size:13px;color:#526273}
+.value-item strong{font-size:12px;color:var(--turq);letter-spacing:.08em}
+.section{padding:112px 0}
+.section.alt{background:#F3F6F7}
+.section .container{max-width:1160px}
+.section .eyebrow{font-size:10px;letter-spacing:.16em;color:#078F83}
+.section h2{font-size:clamp(38px,4.6vw,60px);letter-spacing:-.07em;line-height:1.02;max-width:760px}
+.lead{font-size:17px;line-height:1.8;color:#657482;max-width:670px}
+#soluciones .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:48px}
+#soluciones .card{min-height:285px;padding:34px;border-radius:22px;position:relative;overflow:hidden;background:#F8FAFB;border:1px solid #E7ECEF;box-shadow:none}
+#soluciones .card:before{content:"";display:block;width:46px;height:4px;border-radius:5px;background:var(--turq);margin-bottom:25px}
+#soluciones .card h3{font-size:27px;letter-spacing:-.05em}
+#soluciones .card p{max-width:460px;font-size:15px;line-height:1.8}
+#soluciones .card .btn{margin-top:14px;border-radius:999px}
+#ops{background:#F1F5F6}
+#ops .micro-hero{grid-template-columns:.9fr 1.1fr;gap:72px}
+#ops .steps{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#ops .step{background:#fff;border:1px solid #E2E9EC;border-top:3px solid var(--turq);border-radius:15px;padding:20px}
+#ops .step b{font-size:15px}
+#ops .step p{font-size:13px;line-height:1.7;color:#687986}
+#ops .mock{padding:28px;border-radius:26px;background:linear-gradient(145deg,#101B2D,#1A3448);box-shadow:0 30px 80px rgba(16,27,45,.2)}
+#ops .mock-top{padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.12)}
+#ops .metric{min-height:120px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08);border-radius:16px}
+#ops .metric strong{font-size:30px;letter-spacing:-.06em}
+#microapps .grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#microapps .product{min-height:330px;border-radius:22px;padding:28px;box-shadow:none;background:#fff;border:1px solid #E5EBEE;position:relative;overflow:hidden}
+#microapps .product:before{content:"";display:block;height:116px;margin:-28px -28px 25px;background:linear-gradient(135deg,#E8F8F6,#F2F7F9);border-bottom:1px solid #E5EEEF}
+#microapps .product:nth-child(1):before{background:radial-gradient(circle at 70% 40%,rgba(22,184,166,.22),transparent 27%),linear-gradient(135deg,#DDF6F1,#F1F7F8)}
+#microapps .product:nth-child(2):before{background:radial-gradient(circle at 70% 40%,rgba(22,184,166,.18),transparent 27%),linear-gradient(135deg,#E8F0F5,#F6F8FA)}
+#microapps .product:nth-child(3):before{background:radial-gradient(circle at 70% 40%,rgba(22,184,166,.18),transparent 27%),linear-gradient(135deg,#E6F3F2,#F7F9FA)}
+#microapps .product h3{font-size:22px;letter-spacing:-.05em}
+#microapps .product p{font-size:14px;line-height:1.75}
+#microapps .product .btn{border-radius:999px}
+#app .app-shell{border-radius:24px;border:1px solid #E3EAED;box-shadow:0 24px 70px rgba(16,27,45,.07)}
+#app .app-head{background:#fff;padding:28px 32px}
+#app .app-body{padding:32px}
+#app .report{background:#F2F7F7;border:1px solid #E5EEEE}
+#contacto{padding:110px 0;background:linear-gradient(180deg,#fff,#F2F8F7)}
+#contacto .container{max-width:800px}
+#contacto h2{margin-left:auto;margin-right:auto}
+#contacto .lead{margin-left:auto;margin-right:auto}
+#contacto .btn{border-radius:999px;padding:15px 28px}
+.footer{background:#0C1726;padding:62px 0 40px}
+.footer .container{max-width:1160px}
+.footer-social-link{border-radius:50%}
+@media(max-width:1000px){
+ .hero,.hero-layout{min-height:620px}
+ .hero-layout{grid-template-columns:52% 48%}
+ .hero-image{right:-5%;width:52%;height:76%;top:12%}
+ .hero h1{font-size:clamp(48px,6vw,66px)}
+ .section{padding:82px 0}
+}
+@media(max-width:800px){
+ .hero{min-height:auto}
+ .hero-layout{width:100%;min-height:auto;display:flex;flex-direction:column;align-items:stretch}
+ .hero-copy{width:90%;margin:auto;padding:66px 0 35px}
+ .hero h1{font-size:clamp(46px,9vw,64px)}
+ .hero-image{position:relative;top:auto;right:auto;width:90%;height:330px;margin:0 auto 34px;border-radius:22px}
+ .value-strip-inner{grid-template-columns:1fr 1fr;padding:24px 0;gap:18px}
+ .value-intro{grid-column:1/-1}
+ .value-item{padding-left:14px}
+ #soluciones .grid,#microapps .grid{grid-template-columns:1fr 1fr}
+ #ops .micro-hero{grid-template-columns:1fr;gap:38px}
+ .section{padding:72px 0}
+}
+@media(max-width:520px){
+ .hero-copy{padding:52px 0 30px}
+ .hero h1{font-size:45px}
+ .hero p{font-size:16px}
+ .hero-image{height:235px}
+ .value-strip-inner{grid-template-columns:1fr;gap:14px}
+ .value-intro{grid-column:auto}
+ .value-item{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}
+ #soluciones .grid,#microapps .grid{grid-template-columns:1fr}
+ #soluciones .card{min-height:0;padding:26px}
+ #microapps .product{min-height:300px}
+ #ops .steps{grid-template-columns:1fr}
+ .section{padding:60px 0}
+ #app .app-head,#app .app-body{padding:18px}
+}
+
 </style>
 </head>
 
@@ -1155,6 +1268,14 @@ body{color:#111827;background:#fff}
 
 </header>
 
+<section class="value-strip" aria-label="Enfoque NOFEKI">
+  <div class="value-strip-inner">
+    <div class="value-intro"><span class="value-dot"></span><span>De la operación al valor</span></div>
+    <div class="value-item"><strong>01</strong><span>Entiende lo que pasa</span></div>
+    <div class="value-item"><strong>02</strong><span>Identifica qué importa</span></div>
+    <div class="value-item"><strong>03</strong><span>Actúa con claridad</span></div>
+  </div>
+</section>
 
 <!-- =========================
      SOLUCIONES
