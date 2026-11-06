@@ -516,31 +516,7 @@ html,body{max-width:100%}
       <div class="recent-heading" id="recentMoves"><div><h2>Movimientos recientes</h2><p>Mantén tus registros al día.</p></div></div>
       <section class="panel recent-panel"><div class="panel-head"><h2>Últimos movimientos</h2><span class="pill" id="rowCount">0 registros</span></div><div class="movement-filters" aria-label="Filtros de movimientos"><label>Mostrar<select id="movementRange" aria-label="Periodo de movimientos"><option value="7" selected>Últimos 7 días</option><option value="15">Últimos 15 días</option><option value="30">Últimos 30 días</option><option value="date">Fecha específica</option><option value="all">Todo el historial</option></select></label><label id="movementDateWrap" class="hidden">Fecha<input type="date" id="movementDate" aria-label="Fecha específica de movimientos"></label></div><input type="hidden" id="movementPage" value="1"><div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Tipo</th><th>Valor</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="6"><div class="empty">Cargando movimientos…</div></td></tr></tbody></table></div><div id="movementPagination" class="movement-pagination"></div><div id="listMessage" class="message"></div></section>
     </div>
-<div class="dash-content dashboard-module" id="incomeView" hidden><section class="panel budget-panel" id="incomePanel" aria-labelledby="incomeTitle">
- <div class="panel-head"><div><div class="eyebrow">DINERO RECIBIDO</div><h2 id="incomeTitle">Mis ingresos</h2><p class="small">Registra lo que realmente recibes. Puedes añadir salario, ingresos extra u otras entradas.</p></div></div>
- <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="incomePeriod" aria-label="Mes de ingresos"></label></div>
- <div class="budget-metrics">
-  <article class="budget-metric"><span>Ingresos recibidos</span><strong id="incomeTotal">$0</strong></article>
-  <article class="budget-metric"><span>Registros</span><strong id="incomeCount">0</strong></article>
-  <article class="budget-metric"><span>Ingreso planeado</span><strong id="incomePlanned">—</strong></article>
-  <article class="budget-metric"><span>Diferencia vs. plan</span><strong id="incomeVariance">—</strong></article>
- </div>
- <div id="incomeMessage" class="message" role="status"></div>
- <form id="incomeForm">
-  <div class="grid-two">
-   <div class="field"><label for="incomeDate">Fecha de recepción</label><input id="incomeDate" type="date" required></div>
-   <div class="field"><label for="incomeAmount">Monto recibido (COP)</label><input id="incomeAmount" type="number" min="1" step="1" inputmode="numeric" placeholder="Ej. 2500000" required></div>
-  </div>
-  <div class="grid-two">
-   <div class="field"><label for="incomeConcept">Concepto</label><input id="incomeConcept" maxlength="120" placeholder="Ej. Salario quincenal" required></div>
-   <div class="field"><label for="incomeSource">Origen</label><select id="incomeSource"><option value="">Selecciona</option><option>Salario</option><option>Honorarios</option><option>Negocio</option><option>Comisión</option><option>Rendimientos</option><option>Otros</option></select></div>
-  </div>
-  <div class="field"><label for="incomeNote">Nota (opcional)</label><input id="incomeNote" maxlength="500" placeholder="Detalle adicional"></div>
-  <div class="form-actions"><button class="btn teal-btn" id="saveIncome" type="submit">Registrar ingreso</button><button class="btn ghost" id="cancelIncomeEdit" type="button" hidden>Cancelar edición</button></div>
- </form>
- <div class="panel-head" style="margin-top:24px"><h3>Movimientos de ingreso</h3></div>
- <div id="incomeList" class="budget-category-list"><p class="small">Cargando ingresos…</p></div>
-</section></div>
+
 <div class="dash-content dashboard-module" id="budgetView" hidden><section class="panel budget-panel" id="budgetPanel" aria-labelledby="budgetTitle">
  <div class="panel-head"><div><div class="eyebrow">PLANIFICACIÓN MENSUAL</div><h2 id="budgetTitle">Mi presupuesto</h2><p class="small" style="margin:6px 0 0">Controla cuánto planeas gastar y cuánto llevas ejecutado.</p></div><button class="btn teal-btn" id="openBudgetWizard" type="button">Configurar presupuesto</button></div>
  <div class="budget-toolbar"><label class="field"><span>Mes</span><input type="month" id="budgetPeriod" aria-label="Mes del presupuesto"></label><span class="pill" id="budgetModeLabel">Sin configurar</span></div>
