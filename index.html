@@ -15,7 +15,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111827">
 <meta property="og:title" content="NOFEKI — Supply Chain, Inventarios y Operaciones">
-<meta property="og:description" content="Herramientas digitales simples para convertir información en decisiones y operaciones en mejores resultados.">
+<meta property="og:description" content="Tecnología útil, diseño claro y decisiones que generan valor. Creamos herramientas digitales para convertir información en decisiones y operaciones en mejores resultados.">
 <meta property="og:type" content="website">
 
 <title>NOFEKI — Supply Chain · Inventarios · Operaciones · Microapps</title>
@@ -940,6 +940,113 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
  .nav .nav-cta{display:none}
  .menu-toggle{padding:9px 11px}
 }
+
+/* =========================
+   NOFEKI — VISUAL REFINEMENT
+   Apple-inspired, lightweight and responsive
+========================= */
+:root{
+  --navy:#101828;
+  --turq:#0F9F91;
+  --gray:#F7F8FA;
+  --muted:#667085;
+  --line:#EAECF0;
+  --shadow:0 24px 70px rgba(16,24,40,.07);
+}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{letter-spacing:-.018em;-webkit-font-smoothing:antialiased}
+.nav{height:72px;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(18px);-webkit-backdrop-filter:saturate(180%) blur(18px);border-bottom:1px solid rgba(16,24,40,.07)}
+.brand-logo{width:176px}
+.links{gap:28px;font-size:13px;font-weight:600;color:#475467}
+.links a:hover{color:var(--turq)}
+.btn{min-height:48px;padding:13px 21px;border-radius:999px;font-weight:650;letter-spacing:-.01em;transition:transform .22s ease,background-color .22s ease,border-color .22s ease,box-shadow .22s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 9px 24px rgba(16,24,40,.10)}
+.btn.primary{background:#101828;border-color:#101828}
+.btn.primary:hover{background:#263449}
+.btn.turq{background:#0F9F91;border-color:#0F9F91}
+.btn.light{background:#F2F4F7;border-color:#F2F4F7;color:#101828}
+.hero{min-height:650px;background:radial-gradient(ellipse at 78% 48%,rgba(20,184,166,.08),transparent 38%),#fff}
+.hero-layout{min-height:650px;width:min(1240px,92%)}
+.hero-copy{max-width:680px;padding:84px 0}
+.eyebrow{font-size:11px;letter-spacing:.17em;color:#0F9F91;font-weight:750}
+.hero h1{font-size:clamp(48px,6.7vw,88px);line-height:.98;letter-spacing:-.078em;font-weight:750;margin:20px 0 26px}
+.hero h1 em{font-style:normal;color:#0F9F91}
+.hero p{font-size:clamp(17px,1.7vw,20px);line-height:1.65;color:#475467;max-width:560px}
+.hero-image{right:-10vw;width:76%;opacity:.96}
+.hero-image img{transform:scale(1.04)}
+.section{padding:104px 0}
+.section h2{font-size:clamp(36px,4.6vw,58px);line-height:1.02;letter-spacing:-.065em;font-weight:720}
+.lead{font-size:18px;line-height:1.7;color:#667085}
+.grid{gap:16px;margin-top:46px}
+.card{border:1px solid #EAECF0;border-radius:22px;padding:30px;box-shadow:none;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+.card:hover{transform:translateY(-4px);border-color:#D0D5DD;box-shadow:0 18px 45px rgba(16,24,40,.06)}
+.card h3{font-size:23px;letter-spacing:-.04em}
+.card p{font-size:15px;line-height:1.7;color:#667085}
+.tag{background:#E9F8F5;color:#087E72;letter-spacing:.08em;padding:6px 10px}
+.section.alt{background:#F7F8FA}
+.micro-hero{gap:64px}
+.mock{border:1px solid rgba(255,255,255,.1);border-radius:26px;box-shadow:0 28px 80px rgba(16,24,40,.16)}
+.step{border-color:#E4E7EC}
+.footer{border-top:1px solid #EAECF0}
+:focus-visible{outline:3px solid rgba(15,159,145,.45);outline-offset:3px;border-radius:6px}
+@media(max-width:800px){
+ .nav{height:66px}
+ .brand-logo{width:150px}
+ .hero{min-height:unset}
+ .hero-layout{min-height:unset;display:flex;flex-direction:column;align-items:stretch;width:90%}
+ .hero-copy{padding:76px 0 28px;max-width:100%}
+ .hero h1{font-size:clamp(43px,11vw,66px);max-width:620px}
+ .hero p{font-size:17px;line-height:1.6}
+ .hero-image{position:relative;right:auto;width:112%;height:auto;min-height:0;margin:0 -6% 24px;overflow:visible}
+ .hero-image img{width:100%;max-height:none;object-fit:contain;transform:none}
+ .hero-image:before{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0) 22%)}
+ .section{padding:76px 0}
+ .grid{grid-template-columns:1fr;gap:14px}
+ .card{padding:25px}
+ .micro-hero{gap:34px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+
+
+/* NOFEKI brand palette: navy, white and turquoise */
+:root{
+ --navy:#111827;
+ --turq:#14B8A6;
+ --white:#FFFFFF;
+ --gray:#F4F7F8;
+ --muted:#667085;
+ --line:#E5EAF0;
+ --shadow:0 24px 70px rgba(17,24,39,.10);
+}
+body{color:#111827;background:#fff}
+.nav{background:rgba(255,255,255,.9);border-bottom-color:#E5EAF0}
+.links a:hover,.section .eyebrow{color:#0F9F91}
+.hero{background:radial-gradient(ellipse at 82% 38%,rgba(20,184,166,.10),transparent 36%),linear-gradient(135deg,#fff 0%,#F7FAFA 100%)}
+.hero .eyebrow{color:#0F766E;background:#E6FFFB;border-color:#CCFBF1}
+.hero h1 em{color:#0F9F91}
+.btn.primary{background:#111827;border-color:#111827;color:#fff}
+.btn.primary:hover{background:#263445}
+.btn.turq{background:#14B8A6;border-color:#14B8A6;color:#fff}
+.btn.light{background:#F1F5F6;border-color:#E5EAF0;color:#111827}
+.section.alt{background:#F4F7F8}
+.tag{background:#E6FFFB;color:#0F766E}
+.card:hover{border-color:#99F6E4}
+#ops .steps .step{border-top-color:#14B8A6}
+.mock{background:linear-gradient(145deg,#111827,#1F2937)}
+.metric{background:rgba(255,255,255,.07)}
+.bar i,.col i{background:#14B8A6}
+.report{background:#F1F8F7;border-color:#D9F0EC}
+#contacto{background:radial-gradient(ellipse at 50% 100%,rgba(20,184,166,.09),transparent 55%)}
+.footer{background:#111827}
+.footer-social-link:hover{background:rgba(20,184,166,.14);border-color:#14B8A6}
+@media(max-width:800px){
+ .hero{background:linear-gradient(180deg,#fff,#F4FAF9)}
+ .hero-image{border-color:#DDEBE8}
+}
+
 </style>
 </head>
 
@@ -999,13 +1106,11 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
       </div>
 
       <h1>
-        Menos tiempo operando.<br><em>Más tiempo creando valor.</em>
+        Menos fricción.<br><em>Más valor en cada decisión.</em>
       </h1>
 
       <p>
-        NOFEKI crea herramientas digitales simples para convertir
-        información en decisiones, decisiones en acciones y operaciones
-        en mejores resultados.
+        Diseñamos tecnología útil para que personas y empresas trabajen con más claridad, tomen mejores decisiones y conviertan sus operaciones en resultados.
       </p>
 
       <div class="hero-actions">
@@ -1062,12 +1167,11 @@ body{color:#111827;background:#fff;letter-spacing:-.01em}
     </div>
 
     <h2>
-      Herramientas que resuelven problemas reales.
+      Tecnología diseñada para hacer que las cosas funcionen mejor.
     </h2>
 
     <p class="lead">
-      Un ecosistema digital pensado para personas y empresas que
-      necesitan más claridad, menos trabajo manual y mejores decisiones.
+      Un ecosistema de productos digitales que simplifica tareas, aporta claridad y convierte información en acciones.
     </p>
 
     <div class="grid">
