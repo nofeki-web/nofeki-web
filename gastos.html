@@ -604,13 +604,16 @@ function renderIncome(){
  const planned=activeBudget&&String(activeBudget.period_month).slice(0,7)===key&&activeBudget.mode==="income"?Number(activeBudget.income_amount):null;
  $("incomePlanned").textContent=planned===null?"—":money(planned);
  $("incomeVariance").textContent=planned===null?"—":money(total-planned);
- $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<p class="small">No hay ingresos registrados para este mes.</p>';
+ $("incomeList").innerHTML=rows.length?rows.map(x=>'<article class="budget-metric"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><strong>'+safe(x.concept)+'</strong><div class="small">'+safe(x.income_date)+(x.source?' · '+safe(x.source):'')+'</div><div class="small">'+safe(x.note||'')+'</div></div><div><strong>'+money(Number(x.amount))+'</strong><div style="display:flex;gap:8px;margin-top:8px"><button class="btn ghost" type="button" data-income-edit="'+x.id+'">Editar</button><button class="btn ghost" type="button" data-income-delete="'+x.id+'">Eliminar</button></div></div></div></article>').join(""):'<div class="empty" style="padding:24px;text-align:center"><strong>Aún no tienes ingresos registrados en este mes.</strong><p class="small">Registra tu salario, pagos quincenales o ingresos adicionales en el formulario. Aquí aparecerán automáticamente para que puedas compararlos con tu presupuesto.</p></div>';
 }
 async function loadIncome(){
- if(!currentUser)return;
+ const userId=currentUser?.id;if(!userId)return;
+ if(!$("incomePeriod").value)$("incomePeriod").value=today().slice(0,7);
+ if(!$("incomeDate").value)$("incomeDate").value=today();
  const key=incomeMonth(),start=key+"-01",[y,m]=key.split("-").map(Number),end=new Date(y,m,1).toISOString().slice(0,10);
- const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",currentUser.id).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
- if(error)throw error;incomeTransactions=data||[];renderIncome();
+ $("incomeList").innerHTML='<p class="small">Consultando tus ingresos…</p>';
+ const {data,error}=await client.from("income_transactions").select("id,user_id,income_date,concept,source,amount,note,created_at").eq("user_id",userId).gte("income_date",start).lt("income_date",end).order("income_date",{ascending:false}).order("id",{ascending:false});
+ if(error)throw error;incomeTransactions=data||[];renderIncome();clearMessage("incomeMessage");
 }
 window.loadIncome=loadIncome;
 function resetIncomeForm(){editingIncomeId=null;$("incomeForm").reset();$("incomeDate").value=today();$("saveIncome").textContent="Registrar ingreso";$("cancelIncomeEdit").hidden=true;}
