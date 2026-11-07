@@ -440,9 +440,10 @@ a{
 ========================= */
 
 .footer{
-  background:var(--navy);
-  color:white;
-  padding:48px 0
+  position:relative;isolation:isolate;overflow:hidden;
+  background-image:linear-gradient(180deg,rgba(5,17,30,.88),rgba(5,17,30,.94)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png");
+  background-size:cover;background-position:center 68%;background-repeat:no-repeat;
+  color:white;padding:64px 0 42px;border-top:1px solid rgba(255,255,255,.12)
 }
 
 .footer .legal-links{
@@ -1075,12 +1076,6 @@ body{color:var(--navy);letter-spacing:-.018em}
 .hero-image img{height:100%;width:100%;object-fit:cover;object-position:center}
 .hero-image:before{background:linear-gradient(90deg,rgba(16,27,45,.28),transparent 42%);opacity:1}
 .hero-image:after{background:linear-gradient(0deg,rgba(8,19,32,.28),transparent 45%)}
-.value-strip{background:#fff;border-bottom:1px solid var(--line)}
-.value-strip-inner{width:min(1160px,90%);margin:auto;min-height:108px;display:grid;grid-template-columns:1.35fr repeat(3,1fr);align-items:center;gap:24px}
-.value-intro{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#405365;text-transform:uppercase}
-.value-dot{width:9px;height:9px;border-radius:50%;background:var(--turq);box-shadow:0 0 0 6px rgba(22,184,166,.12)}
-.value-item{display:flex;align-items:center;gap:13px;border-left:1px solid var(--line);padding-left:24px;font-size:13px;color:#526273}
-.value-item strong{font-size:12px;color:var(--turq);letter-spacing:.08em}
 .section{padding:112px 0}
 .section.alt{background:#F3F6F7}
 .section .container{max-width:1160px}
@@ -1347,28 +1342,27 @@ header.hero .hero-copy{width:min(650px,58%)!important;max-width:650px!important;
 header.hero h1{max-width:700px!important;font-size:clamp(54px,6vw,84px)!important;line-height:.98!important;text-shadow:0 2px 24px rgba(0,0,0,.2)}
 header.hero p{max-width:560px!important;font-size:18px!important;line-height:1.65!important}
 header.hero .eyebrow{color:#c7fff7!important}
-header.hero .value-strip{
- position:absolute!important;left:0!important;right:0!important;bottom:0!important;z-index:3!important;
- width:100%!important;margin:0!important;padding:0!important;
- background:linear-gradient(90deg,rgba(5,17,30,.84),rgba(5,17,30,.48))!important;
- border-top:1px solid rgba(255,255,255,.18)!important;border-bottom:0!important;
- backdrop-filter:blur(10px)!important;
-}
-header.hero .value-strip-inner{width:min(1280px,90%)!important;min-height:88px!important;margin:auto!important;grid-template-columns:1.35fr repeat(3,1fr)!important;gap:18px!important}
-header.hero .value-intro,header.hero .value-item{color:#fff!important}
-header.hero .value-item{border-left-color:rgba(255,255,255,.2)!important}
-header.hero .value-item span{color:rgba(255,255,255,.84)!important}
 @media(max-width:800px){
  header.hero{height:auto!important;min-height:calc(100svh - 60px)!important;max-height:none!important;background-position:58% center!important;background-image:linear-gradient(180deg,rgba(5,17,30,.88) 0%,rgba(5,17,30,.70) 48%,rgba(5,17,30,.42) 100%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important}
  header.hero .hero-layout{width:88%!important;height:auto!important;min-height:0!important;align-items:flex-start!important}
  header.hero .hero-copy{width:100%!important;max-width:620px!important;padding:90px 0 150px!important;margin:0!important}
  header.hero h1{font-size:clamp(44px,10vw,64px)!important}
  header.hero p{font-size:16px!important}
- header.hero .value-strip-inner{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;padding:15px 0!important}
- header.hero .value-intro{grid-column:1/-1!important}
- header.hero .value-item{padding-left:10px!important;font-size:11px!important}
 }
 @media(prefers-reduced-motion:reduce){header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
+
+/* NOFEKI Nosotros tab and image continuity in footer */
+#nosotros{background:linear-gradient(145deg,#0d1d2e,#142b3d);color:#fff;min-height:calc(100svh - 70px)}
+#nosotros .eyebrow{color:#65d8cb}
+#nosotros h2{color:#fff}
+#nosotros .lead{color:rgba(255,255,255,.76);max-width:820px}
+.nosotros-pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:44px}
+.nosotros-pillars article{padding:28px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(255,255,255,.055);backdrop-filter:blur(8px)}
+.nosotros-pillars article>span{color:#5eead4;font-size:12px;font-weight:800;letter-spacing:.12em}
+.nosotros-pillars h3{color:#fff;font-size:21px;margin:18px 0 10px}
+.nosotros-pillars p{color:rgba(255,255,255,.7);line-height:1.7;font-size:14px}
+.footer{background-color:#0b1928}
+@media(max-width:700px){.nosotros-pillars{grid-template-columns:1fr}#nosotros{min-height:0}}
 </style>
 </head>
 
@@ -1398,7 +1392,7 @@ header.hero .value-item span{color:rgba(255,255,255,.84)!important}
     </a>
 
     <div class="links" id="siteLinks" role="tablist" aria-label="Secciones principales de NOFEKI">
-      <a href="#soluciones" role="tab" aria-selected="true" data-site-tab="soluciones">Soluciones</a>
+      <a href="#nosotros" role="tab" aria-selected="false" data-site-tab="nosotros">Nosotros</a>
       <a href="#ops" role="tab" aria-selected="false" data-site-tab="ops">NOFEKI OPS</a>
       <a href="#microapps" role="tab" aria-selected="false" data-site-tab="microapps">Microapps</a>
       <a href="#servicios" role="tab" aria-selected="false" data-site-tab="servicios">Servicios</a>
@@ -1462,14 +1456,6 @@ header.hero .value-item span{color:rgba(255,255,255,.84)!important}
 
   </div>
 
-<section class="value-strip" aria-label="Enfoque NOFEKI">
-  <div class="value-strip-inner">
-    <div class="value-intro"><span class="value-dot"></span><span>De la operación al valor</span></div>
-    <div class="value-item"><strong>01</strong><span>Entiende lo que pasa</span></div>
-    <div class="value-item"><strong>02</strong><span>Identifica qué importa</span></div>
-    <div class="value-item"><strong>03</strong><span>Actúa con claridad</span></div>
-  </div>
-</section>
 </header>
 
 
@@ -1478,30 +1464,17 @@ header.hero .value-item span{color:rgba(255,255,255,.84)!important}
      SOLUCIONES
 ========================= -->
 
-<section id="soluciones" class="section">
-
-  <div class="container">
-
-    <div class="eyebrow">
-      Qué hacemos
+<section id="nosotros" class="section" hidden>
+  <div class="container nosotros-content">
+    <div class="eyebrow">Quiénes somos</div>
+    <h2>Tecnología con criterio operativo.</h2>
+    <p class="lead">En NOFEKI conectamos experiencia en operaciones, inventarios y tecnología para crear herramientas digitales que simplifican el trabajo y mejoran la toma de decisiones.</p>
+    <div class="nosotros-pillars">
+      <article><span>01</span><h3>Entendemos la operación</h3><p>Partimos de los retos reales de empresas y equipos que necesitan visibilidad, control y eficiencia.</p></article>
+      <article><span>02</span><h3>Diseñamos soluciones útiles</h3><p>Convertimos procesos complejos en productos digitales claros, prácticos y fáciles de adoptar.</p></article>
+      <article><span>03</span><h3>Impulsamos mejores decisiones</h3><p>Unimos datos, automatización e inteligencia para que la tecnología genere valor medible.</p></article>
     </div>
-
-    <h2>
-      Herramientas que resuelven problemas reales.
-    </h2>
-
-    <p class="lead">
-      Un ecosistema digital pensado para personas y empresas que
-      necesitan más claridad, menos trabajo manual y mejores decisiones.
-    </p>
-
-    <div class="solution-shortcuts">
-      <a class="btn primary" href="#ops">Explorar NOFEKI OPS</a>
-      <a class="btn light" href="#microapps">Ver microapps</a>
-    </div>
-
   </div>
-
 </section>
 
 
@@ -2682,7 +2655,8 @@ render();
 /* NOFEKI top navigation: real content views, not long-page anchors */
 (()=>{
  const panels={
-  soluciones:['soluciones'],
+  inicio:[],
+  nosotros:['nosotros'],
   ops:['ops'],
   microapps:['microapps','app'],
   servicios:['servicios'],
@@ -2694,7 +2668,7 @@ render();
  if(!links.length||Object.values(sections).some(x=>!x))return;
  allIds.forEach(id=>sections[id].classList.add('tab-view'));
  function activate(view,{updateHash=true,scroll=true}={}){
-  if(!panels[view])view='soluciones';
+  if(!panels[view])view='inicio';
   allIds.forEach(id=>{
    const visible=panels[view].includes(id);
    sections[id].hidden=!visible;
@@ -2709,10 +2683,11 @@ render();
   if(scroll)window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   window.dispatchEvent(new CustomEvent('nofeki:viewchange',{detail:{view}}));
  }
+ document.querySelectorAll('.brand[href="#inicio"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();activate('inicio');}));
  links.forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();activate(link.dataset.siteTab);
  }));
- document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#soluciones"]').forEach(link=>{
+ document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#nosotros"]').forEach(link=>{
   if(link.hasAttribute('data-site-tab'))return;
   link.addEventListener('click',event=>{
    const view=link.getAttribute('href').slice(1);
@@ -2721,7 +2696,7 @@ render();
   });
  });
  const initial=location.hash.slice(1);
- const initialView=panels[initial]?initial:'soluciones';
+ const initialView=panels[initial]?initial:'inicio';
  activate(initialView,{updateHash:false,scroll:false});
 })();
 
