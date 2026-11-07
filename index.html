@@ -1458,6 +1458,17 @@ header.hero p{
  header.hero .hero-copy{filter:none}
  .footer{background:linear-gradient(180deg,rgba(3,12,23,.76),rgba(3,12,23,.92))!important}
 }
+
+/* Header brand: white official logo, larger and optically aligned */
+.nav .brand{display:flex!important;align-items:center!important;min-width:0!important}
+.nav .brand-logo{
+ width:290px!important;max-width:32vw!important;height:auto!important;
+ max-height:54px!important;object-fit:contain!important;object-position:left center!important;
+ display:block!important;margin:0!important
+}
+@media(max-width:800px){
+ .nav .brand-logo{width:210px!important;max-width:44vw!important;max-height:46px!important}
+}
 </style>
 </head>
 
@@ -1481,7 +1492,7 @@ header.hero p{
     >
       <img
         class="brand-logo"
-        src="assets/logo-turquesa.png"
+        src="assets/logo-blanco.png"
         alt="NOFEKI"
       >
     </a>
