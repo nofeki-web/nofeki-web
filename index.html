@@ -440,9 +440,9 @@ a{
 ========================= */
 
 .footer{
-  background:var(--navy);
-  color:white;
-  padding:48px 0
+  position:relative;isolation:isolate;overflow:hidden;
+  background:linear-gradient(180deg,rgba(5,17,30,.34),rgba(5,17,30,.72))!important;
+  color:white;padding:64px 0 42px;border-top:1px solid rgba(255,255,255,.16)
 }
 
 .footer .legal-links{
@@ -1075,12 +1075,6 @@ body{color:var(--navy);letter-spacing:-.018em}
 .hero-image img{height:100%;width:100%;object-fit:cover;object-position:center}
 .hero-image:before{background:linear-gradient(90deg,rgba(16,27,45,.28),transparent 42%);opacity:1}
 .hero-image:after{background:linear-gradient(0deg,rgba(8,19,32,.28),transparent 45%)}
-.value-strip{background:#fff;border-bottom:1px solid var(--line)}
-.value-strip-inner{width:min(1160px,90%);margin:auto;min-height:108px;display:grid;grid-template-columns:1.35fr repeat(3,1fr);align-items:center;gap:24px}
-.value-intro{display:flex;align-items:center;gap:11px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#405365;text-transform:uppercase}
-.value-dot{width:9px;height:9px;border-radius:50%;background:var(--turq);box-shadow:0 0 0 6px rgba(22,184,166,.12)}
-.value-item{display:flex;align-items:center;gap:13px;border-left:1px solid var(--line);padding-left:24px;font-size:13px;color:#526273}
-.value-item strong{font-size:12px;color:var(--turq);letter-spacing:.08em}
 .section{padding:112px 0}
 .section.alt{background:#F3F6F7}
 .section .container{max-width:1160px}
@@ -1160,6 +1154,716 @@ body{color:var(--navy);letter-spacing:-.018em}
  #app .app-head,#app .app-body{padding:18px}
 }
 
+
+
+/* NOFEKI TOP-LEVEL CONTENT TABS */
+.tab-view[hidden]{display:none!important}
+#siteLinks [role="tab"]{position:relative}
+#siteLinks [role="tab"][aria-selected="true"]:after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:2px;border-radius:2px;background:#2DD4BF}
+#siteLinks [role="tab"][aria-selected="true"]{color:#0F766E}
+@media(max-width:800px){#siteLinks [role="tab"][aria-selected="true"]:after{display:none}}
+/* NOFEKI MOTION SYSTEM */
+:root{--motion-ease:cubic-bezier(.22,1,.36,1)}
+html{scroll-behavior:smooth;scroll-padding-top:88px}
+body{overflow-x:hidden}
+::selection{background:rgba(45,212,191,.28);color:inherit}
+.motion-progress{position:fixed;inset:0 auto auto 0;width:100%;height:3px;z-index:1000;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,#2DD4BF,#A3E635);pointer-events:none;will-change:transform}
+@media(min-width:801px){
+ header.hero{position:relative;width:100%;min-height:clamp(650px,calc(100svh - 78px),850px);height:clamp(650px,calc(100svh - 78px),850px);display:flex;align-items:center;isolation:isolate;overflow:hidden;background:linear-gradient(90deg,rgba(7,18,32,.94) 0%,rgba(7,18,32,.84) 31%,rgba(7,18,32,.42) 60%,rgba(7,18,32,.10) 100%),linear-gradient(0deg,rgba(7,18,32,.28),transparent 42%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png") center 48%/cover no-repeat!important}
+ header.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 78% 48%,rgba(45,212,191,.15),transparent 35%);pointer-events:none}
+ header.hero .hero-layout{position:relative;width:min(1320px,88%)!important;height:auto!important;min-height:0!important;margin:0 auto!important;display:block!important}
+ header.hero .hero-copy{width:min(660px,57%)!important;max-width:660px!important;padding:76px 0!important;position:relative!important;z-index:3!important;color:#fff!important}
+ header.hero .hero-copy .eyebrow{color:#75E8DA!important;background:rgba(13,148,136,.17)!important;border:1px solid rgba(94,234,212,.32)!important;backdrop-filter:blur(12px)}
+ header.hero h1{max-width:720px!important;font-size:clamp(58px,5.6vw,86px)!important;line-height:.99!important;letter-spacing:-.075em!important;color:#fff!important}
+ header.hero h1 em{color:#45DCCB!important;font-style:normal}
+ header.hero p{max-width:550px;color:rgba(255,255,255,.84)!important;font-size:19px!important;line-height:1.75}
+ header.hero .hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:34px}
+ header.hero .hero-actions .btn{transition:transform .35s var(--motion-ease),box-shadow .35s,border-color .35s,background .35s}
+ header.hero .hero-actions .btn:hover{transform:translateY(-4px)}
+ header.hero .hero-actions .btn.primary{box-shadow:0 12px 34px rgba(45,212,191,.2)}
+ header.hero .hero-actions .btn:not(.primary){color:#fff!important;background:rgba(255,255,255,.07)!important;border-color:rgba(255,255,255,.34)}
+}
+@media(min-width:1440px){header.hero{background-position:center 48%!important}header.hero .hero-layout{width:min(1440px,88%)!important}}
+@media(min-width:801px) and (max-width:1100px){header.hero .hero-copy{width:66%!important}header.hero h1{font-size:clamp(54px,6vw,70px)!important}}
+@media(max-width:800px){
+ header.hero{min-height:0!important;height:auto!important;overflow:hidden;background:#101B2D!important;position:relative;isolation:isolate}
+ header.hero:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(9,22,36,.97) 0%,rgba(9,22,36,.90) 46%,rgba(9,22,36,.36) 100%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png") center bottom/auto 58% no-repeat}
+ header.hero .hero-layout{width:90%!important;min-height:0!important;display:block!important;margin:auto}
+ header.hero .hero-copy{width:100%!important;max-width:620px!important;margin:0!important;padding:76px 0 270px!important;position:relative;z-index:2}
+ header.hero .hero-copy .eyebrow{color:#75E8DA;background:rgba(13,148,136,.17);border:1px solid rgba(94,234,212,.3)}
+ header.hero h1{color:#fff!important;font-size:clamp(43px,9vw,64px)!important;line-height:1.02!important;letter-spacing:-.07em!important}
+ header.hero h1 em{color:#45DCCB!important}
+ header.hero p{color:rgba(255,255,255,.84)!important;font-size:16px!important;line-height:1.7}
+ header.hero .hero-actions{display:flex;flex-wrap:wrap;gap:10px}
+ header.hero .hero-actions .btn{padding:13px 17px}
+ header.hero .hero-image{display:none!important}
+}
+@media(max-width:420px){header.hero .hero-copy{padding-top:58px!important;padding-bottom:230px!important}header.hero .hero-actions .btn{font-size:12px;padding:12px 14px}}
+.motion-ready header.hero .hero-copy>*{opacity:0;transform:translateY(30px);transition:opacity 900ms var(--motion-ease),transform 1000ms var(--motion-ease)}
+.motion-ready header.hero.is-visible .hero-copy>*{opacity:1;transform:translateY(0)}
+.motion-ready header.hero.is-visible .hero-copy>*:nth-child(1){transition-delay:100ms}
+.motion-ready header.hero.is-visible .hero-copy>*:nth-child(2){transition-delay:240ms}
+.motion-ready header.hero.is-visible .hero-copy>*:nth-child(3){transition-delay:390ms}
+.motion-ready header.hero.is-visible .hero-copy>*:nth-child(4){transition-delay:540ms}
+.motion-ready [data-reveal]{opacity:0;transform:translateY(34px);transition:opacity 850ms var(--motion-ease),transform 950ms var(--motion-ease);transition-delay:var(--reveal-delay,0ms);will-change:opacity,transform}
+.motion-ready [data-reveal].is-visible{opacity:1;transform:translateY(0)}
+.motion-ready [data-reveal="scale"]{transform:translateY(22px) scale(.975)}
+.motion-ready [data-reveal="scale"].is-visible{transform:translateY(0) scale(1)}
+.section{overflow:clip}
+#microapps .product,#ops .step{transition:transform .45s var(--motion-ease),box-shadow .45s,border-color .45s}
+#microapps .product:hover{transform:translateY(-8px);box-shadow:0 24px 60px rgba(16,27,45,.11)}
+#ops .mock{transition:transform .7s var(--motion-ease),box-shadow .7s}
+#ops .mock:hover{transform:translateY(-5px);box-shadow:0 38px 90px rgba(16,27,45,.25)}
+#ops .metric{transition:background .35s,border-color .35s,transform .35s}
+#ops .metric:hover{transform:translateY(-4px);background:rgba(255,255,255,.11);border-color:rgba(94,234,212,.28)}
+a.btn,button.btn,.nav a{transition:transform .3s var(--motion-ease),color .3s,background .3s,border-color .3s,box-shadow .3s}
+a.btn:hover,button.btn:hover{transform:translateY(-3px)}
+.nav{transition:background .35s,box-shadow .35s,backdrop-filter .35s}
+.nav.is-scrolled{background:rgba(255,255,255,.88);backdrop-filter:blur(16px);box-shadow:0 8px 28px rgba(16,27,45,.07)}
+.motion-cursor{position:fixed;left:0;top:0;width:34px;height:34px;border:1px solid rgba(45,212,191,.65);border-radius:50%;pointer-events:none;z-index:999;opacity:0;transform:translate3d(-50%,-50%,0) scale(.7);transition:opacity .25s,transform .25s,border-color .25s;mix-blend-mode:screen}
+.motion-cursor:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#5EEAD4;left:50%;top:50%;transform:translate(-50%,-50%);box-shadow:0 0 14px #5EEAD4}
+.motion-cursor.is-active{opacity:1}
+.motion-cursor.is-hover{transform:translate3d(-50%,-50%,0) scale(1.55);border-color:#A3E635}
+@media(hover:none),(max-width:800px){.motion-cursor{display:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.motion-progress,.motion-cursor{display:none!important}.motion-ready [data-reveal],.motion-ready header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
+
+/* Inactive tabs are hidden from the initial HTML render too. */
+[hidden]{display:none!important}
+
+/* Soluciones compactas: el resto del catálogo vive en su propia pestaña */
+.solution-shortcuts{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:700px){.services-grid{grid-template-columns:1fr}}
+
+/* ===== NOFEKI HERO — single image, natural proportions ===== */
+@media(min-width:801px){
+  header.hero{
+    min-height:680px!important;height:auto!important;
+    display:flex!important;align-items:center!important;
+    background:radial-gradient(ellipse at 82% 46%,rgba(20,184,166,.12),transparent 34%),linear-gradient(120deg,#0C1728 0%,#13263A 62%,#0D1B2C 100%)!important;
+    overflow:hidden!important;
+  }
+  header.hero:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(8,18,31,.28),transparent 70%);pointer-events:none}
+  header.hero .hero-layout{
+    width:min(1280px,90%)!important;min-height:0!important;height:auto!important;
+    margin:0 auto!important;display:grid!important;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;
+    align-items:center!important;gap:clamp(32px,5vw,76px)!important;
+    position:relative;z-index:1;
+  }
+  header.hero .hero-copy{width:auto!important;max-width:590px!important;padding:76px 0!important;z-index:2!important}
+  header.hero .hero-copy .eyebrow{color:#8CE9DE!important;background:rgba(20,184,166,.10)!important;border:1px solid rgba(94,234,212,.28)!important}
+  header.hero h1{font-size:clamp(48px,5.2vw,76px)!important;max-width:620px!important;line-height:1.01!important;letter-spacing:-.065em!important}
+  header.hero p{font-size:18px!important;line-height:1.72!important;max-width:510px!important}
+  header.hero .hero-image{
+    position:relative!important;inset:auto!important;
+    width:100%!important;height:auto!important;min-height:0!important;
+    aspect-ratio:16/11!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;overflow:hidden!important;
+    border:1px solid rgba(255,255,255,.16)!important;border-radius:24px!important;
+    background:rgba(255,255,255,.035)!important;
+    box-shadow:0 28px 75px rgba(0,0,0,.24)!important;
+  }
+  header.hero .hero-image img{
+    display:block!important;width:100%!important;height:100%!important;
+    max-height:none!important;object-fit:contain!important;object-position:center!important;
+    transform:none!important;
+  }
+  header.hero .hero-image:before,header.hero .hero-image:after{display:none!important;content:none!important}
+}
+@media(max-width:800px){
+  header.hero{height:auto!important;min-height:0!important;padding:0!important;background:linear-gradient(160deg,#0C1728,#142B3D)!important}
+  header.hero:before{display:none!important}
+  header.hero .hero-layout{width:90%!important;display:flex!important;flex-direction:column!important;gap:22px!important}
+  header.hero .hero-copy{width:100%!important;max-width:640px!important;padding:54px 0 12px!important}
+  header.hero h1{font-size:clamp(42px,9vw,60px)!important}
+  header.hero .hero-image{
+    position:relative!important;inset:auto!important;width:100%!important;height:auto!important;
+    min-height:0!important;aspect-ratio:16/9!important;margin:0 0 30px!important;
+    display:flex!important;overflow:hidden!important;border-radius:18px!important;
+    border:1px solid rgba(255,255,255,.16)!important;background:rgba(255,255,255,.04)!important;
+  }
+  header.hero .hero-image img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important}
+  header.hero .hero-image:before,header.hero .hero-image:after{display:none!important;content:none!important}
+}
+/* GSAP-ready states */
+.gsap-hero-ready .hero-copy>*{will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.gsap-hero-ready .hero-copy>*,.gsap-hero-ready .hero-image{opacity:1!important;transform:none!important;clip-path:none!important}}
+
+/* ===== HERO FULL-BLEED: one photographic layer, no side card ===== */
+@media(min-width:801px){
+ header.hero{
+  position:relative!important;isolation:isolate!important;
+  min-height:clamp(650px,calc(100svh - 78px),820px)!important;height:auto!important;
+  display:flex!important;align-items:center!important;overflow:hidden!important;
+  background-image:linear-gradient(90deg,rgba(7,18,32,.90) 0%,rgba(7,18,32,.78) 34%,rgba(7,18,32,.28) 68%,rgba(7,18,32,.12) 100%),linear-gradient(0deg,rgba(7,18,32,.22),transparent 45%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;background-position:center 52%!important;background-repeat:no-repeat!important;
+ }
+ header.hero:before{content:none!important;display:none!important}
+ header.hero .hero-layout{
+  position:relative!important;z-index:2!important;
+  width:min(1280px,90%)!important;min-height:0!important;height:auto!important;
+  margin:0 auto!important;display:block!important;
+ }
+ header.hero .hero-copy{width:min(650px,62%)!important;max-width:650px!important;padding:100px 0!important}
+ header.hero h1{max-width:680px!important;font-size:clamp(54px,6vw,82px)!important;line-height:1!important}
+ header.hero p{max-width:550px!important;font-size:19px!important}
+}
+@media(max-width:800px){
+ header.hero{
+  min-height:650px!important;height:auto!important;position:relative!important;isolation:isolate!important;
+  background-image:linear-gradient(180deg,rgba(7,18,32,.93) 0%,rgba(7,18,32,.82) 48%,rgba(7,18,32,.36) 100%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;
+ }
+ header.hero:before{content:none!important;display:none!important}
+ header.hero .hero-layout{width:90%!important;min-height:0!important;display:block!important;margin:auto!important}
+ header.hero .hero-copy{width:100%!important;max-width:620px!important;padding:76px 0 90px!important}
+ header.hero h1{font-size:clamp(43px,9vw,62px)!important}
+ header.hero p{font-size:17px!important}
+}
+@media(prefers-reduced-motion:reduce){header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
+
+/* ===== Full-viewport hero: image owns the entire first screen ===== */
+header.hero{
+ position:relative!important;isolation:isolate!important;
+ width:100%!important;height:calc(100svh - 66px)!important;
+ min-height:620px!important;max-height:980px!important;
+ display:flex!important;align-items:center!important;overflow:hidden!important;
+ background-image:linear-gradient(90deg,rgba(5,17,30,.90) 0%,rgba(5,17,30,.74) 30%,rgba(5,17,30,.28) 62%,rgba(5,17,30,.08) 100%),linear-gradient(0deg,rgba(5,17,30,.42) 0%,transparent 46%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+ background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;
+}
+header.hero:before,header.hero:after{content:none!important;display:none!important}
+header.hero .hero-layout{position:relative!important;z-index:2!important;width:min(1280px,90%)!important;height:100%!important;min-height:0!important;margin:0 auto!important;display:flex!important;align-items:center!important}
+header.hero .hero-copy{width:min(650px,58%)!important;max-width:650px!important;padding:0!important;margin-top:-32px!important}
+header.hero h1{max-width:700px!important;font-size:clamp(54px,6vw,84px)!important;line-height:.98!important;text-shadow:0 2px 24px rgba(0,0,0,.2)}
+header.hero p{max-width:560px!important;font-size:18px!important;line-height:1.65!important}
+header.hero .eyebrow{color:#c7fff7!important}
+@media(max-width:800px){
+ header.hero{height:auto!important;min-height:calc(100svh - 60px)!important;max-height:none!important;background-position:58% center!important;background-image:linear-gradient(180deg,rgba(5,17,30,.88) 0%,rgba(5,17,30,.70) 48%,rgba(5,17,30,.42) 100%),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important}
+ header.hero .hero-layout{width:88%!important;height:auto!important;min-height:0!important;align-items:flex-start!important}
+ header.hero .hero-copy{width:100%!important;max-width:620px!important;padding:90px 0 150px!important;margin:0!important}
+ header.hero h1{font-size:clamp(44px,10vw,64px)!important}
+ header.hero p{font-size:16px!important}
+}
+@media(prefers-reduced-motion:reduce){header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
+
+/* NOFEKI Nosotros tab and image continuity in footer */
+#nosotros{background:linear-gradient(145deg,#0d1d2e,#142b3d);color:#fff;min-height:calc(100svh - 70px)}
+#nosotros .eyebrow{color:#65d8cb}
+#nosotros h2{color:#fff}
+#nosotros .lead{color:rgba(255,255,255,.76);max-width:820px}
+.nosotros-pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:44px}
+.nosotros-pillars article{padding:28px;border:1px solid rgba(255,255,255,.16);border-radius:18px;background:rgba(255,255,255,.055);backdrop-filter:blur(8px)}
+.nosotros-pillars article>span{color:#5eead4;font-size:12px;font-weight:800;letter-spacing:.12em}
+.nosotros-pillars h3{color:#fff;font-size:21px;margin:18px 0 10px}
+.nosotros-pillars p{color:rgba(255,255,255,.7);line-height:1.7;font-size:14px}
+.footer{background-color:#0b1928}
+@media(max-width:700px){.nosotros-pillars{grid-template-columns:1fr}#nosotros{min-height:0}}
+
+/* Full-page photographic continuity and larger primary brand mark */
+body{
+ background-color:#081827!important;
+ background-image:linear-gradient(rgba(5,17,30,.18),rgba(5,17,30,.18)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+ background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;background-attachment:fixed!important
+}
+.nav .brand-logo{width:252px!important;max-width:30vw!important;height:auto!important}
+.footer{background-image:linear-gradient(180deg,rgba(5,17,30,.34),rgba(5,17,30,.72))!important;background-color:transparent!important}
+.footer .brand-logo{width:170px!important}
+@media(max-width:800px){
+ body{background-attachment:scroll!important}
+ .nav .brand-logo{width:190px!important;max-width:42vw!important}
+}
+
+/* Final correction: ONE shared warehouse background for the whole document */
+html{background:#081827!important}
+body{
+  background-color:#081827!important;
+  background-image:linear-gradient(rgba(5,17,30,.20),rgba(5,17,30,.20)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;background-position:center center!important;
+  background-repeat:no-repeat!important;background-attachment:fixed!important;
+}
+header.hero,.hero{
+  background:transparent!important;
+  background-image:none!important;
+  background-color:transparent!important;
+}
+header.hero:before,header.hero:after{display:none!important;content:none!important}
+.footer{
+  background:transparent!important;
+  background-image:none!important;
+  background-color:transparent!important;
+  border-top:0!important;
+  box-shadow:none!important;
+}
+.footer:before,.footer:after{display:none!important;content:none!important}
+@media(max-width:800px){
+ body{background-attachment:scroll!important}
+}
+
+/* Visual refinement: dark glass navigation, high-contrast hero and footer */
+.nav{
+  background:rgba(7,20,35,.86)!important;
+  border-bottom:1px solid rgba(255,255,255,.14)!important;
+  box-shadow:0 8px 28px rgba(0,0,0,.16)!important;
+  backdrop-filter:blur(18px) saturate(135%)!important;
+}
+.nav .links{color:rgba(255,255,255,.88)!important}
+.nav .links a{color:rgba(255,255,255,.88)!important;font-weight:600!important}
+.nav .links a:hover,.nav .links a[aria-selected="true"]{color:#5EEAD4!important}
+.nav .links a[aria-selected="true"]{text-shadow:0 0 18px rgba(94,234,212,.2)}
+header.hero{position:relative!important}
+header.hero:before{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;z-index:1!important;
+  background:linear-gradient(90deg,rgba(3,12,23,.76) 0%,rgba(3,12,23,.50) 38%,rgba(3,12,23,.10) 76%,transparent 100%)!important;
+  pointer-events:none!important
+}
+header.hero .hero-layout{position:relative!important;z-index:2!important}
+header.hero .hero-copy{filter:drop-shadow(0 3px 14px rgba(0,0,0,.22))}
+header.hero h1{
+ color:#FFFFFF!important;
+ text-shadow:0 3px 24px rgba(0,0,0,.46)!important;
+}
+header.hero h1 em{
+ color:#5EEAD4!important;
+ text-shadow:0 3px 22px rgba(0,0,0,.42),0 0 26px rgba(45,212,191,.12)!important
+}
+header.hero .eyebrow{color:#B9FFF3!important;text-shadow:0 1px 10px rgba(0,0,0,.4)}
+header.hero p{
+ color:#F4F8FC!important;
+ text-shadow:0 2px 12px rgba(0,0,0,.72)!important;
+ font-weight:500!important
+}
+.footer{
+ background:linear-gradient(180deg,rgba(3,12,23,.70),rgba(3,12,23,.86))!important;
+ color:#FFFFFF!important;
+ border-top:1px solid rgba(255,255,255,.20)!important;
+ text-shadow:0 1px 8px rgba(0,0,0,.55)
+}
+.footer p,.footer small,.footer .legal-links a,.footer a{
+ color:#FFFFFF!important;
+ opacity:1!important;
+}
+.footer p{font-size:14px!important;line-height:1.7!important;font-weight:500!important}
+.footer .legal-links a{font-size:14px!important;font-weight:650!important}
+.footer .legal-links a:hover,.footer a:hover{color:#5EEAD4!important}
+.footer-social-link{
+ color:#FFFFFF!important;background:rgba(255,255,255,.12)!important;
+ border-color:rgba(255,255,255,.46)!important;
+ box-shadow:0 4px 16px rgba(0,0,0,.18)
+}
+@media(max-width:800px){
+ .nav{background:rgba(7,20,35,.94)!important}
+ .nav .links{color:#fff!important}
+ header.hero:before{background:linear-gradient(180deg,rgba(3,12,23,.62),rgba(3,12,23,.25) 55%,rgba(3,12,23,.48))!important}
+ header.hero .hero-copy{filter:none}
+ .footer{background:linear-gradient(180deg,rgba(3,12,23,.76),rgba(3,12,23,.92))!important}
+}
+
+/* Header brand: white official logo, larger and optically aligned */
+.nav .brand{display:flex!important;align-items:center!important;min-width:0!important}
+.nav .brand-logo{
+ width:290px!important;max-width:32vw!important;height:auto!important;
+ max-height:54px!important;object-fit:contain!important;object-position:left center!important;
+ display:block!important;margin:0!important
+}
+@media(max-width:800px){
+ .nav .brand-logo{width:210px!important;max-width:44vw!important;max-height:46px!important}
+}
+
+/* Header logo size adjustment */
+.nav{height:94px!important;min-height:94px!important}
+.nav .brand-logo{
+ width:360px!important;max-width:36vw!important;max-height:68px!important;
+ height:auto!important;object-fit:contain!important
+}
+@media(max-width:800px){
+ .nav{min-height:82px!important;height:auto!important}
+ .nav .brand-logo{width:230px!important;max-width:46vw!important;max-height:56px!important}
+}
+@media(max-width:520px){
+ .nav .brand-logo{width:190px!important;max-width:48vw!important;max-height:48px!important}
+}
+
+/* Larger NOFEKI wordmark — desktop and mobile */
+.nav{height:108px!important;min-height:108px!important}
+.nav .brand{flex:0 0 auto!important}
+.nav .brand-logo{
+  width:440px!important;max-width:40vw!important;max-height:82px!important;
+  height:auto!important;object-fit:contain!important
+}
+@media(max-width:800px){
+  .nav{min-height:88px!important;height:auto!important}
+  .nav .brand-logo{width:260px!important;max-width:48vw!important;max-height:62px!important}
+}
+@media(max-width:520px){
+  .nav .brand-logo{width:210px!important;max-width:52vw!important;max-height:54px!important}
+}
+
+/* FINAL RESPONSIVE PASS — phone, tablet and compact laptop */
+:root{--page-gutter:clamp(20px,5vw,56px)}
+img,svg,video{max-width:100%}
+button,a{ -webkit-tap-highlight-color:transparent }
+button:focus-visible,a:focus-visible{outline:3px solid #2DD4BF;outline-offset:3px}
+@media(max-width:800px){
+ html{scroll-padding-top:76px}
+ body{background-attachment:scroll!important}
+ .nav{position:sticky;top:0;z-index:100;height:auto!important;min-height:68px!important;padding:8px 0!important;background:rgba(7,20,35,.96)!important;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+ .nav>.container{width:calc(100% - 32px)!important;min-height:52px;display:flex!important;align-items:center!important;justify-content:space-between!important;flex-wrap:wrap!important;gap:10px!important}
+ .nav .brand-logo{width:clamp(142px,37vw,190px)!important;max-width:52vw!important;max-height:44px!important;object-fit:contain}
+ .nav-actions{margin-left:auto;gap:8px}
+ .menu-toggle{display:inline-flex!important;align-items:center;justify-content:center;min-height:44px;padding:10px 14px!important;border-radius:12px;background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.28)!important;color:#fff!important;font-size:14px}
+ .nav .nav-cta{display:none!important}
+ .nav .links{display:none;order:3;width:100%;flex:0 0 100%;padding:10px 0 4px!important;margin:0!important;gap:4px!important;border-top:1px solid rgba(255,255,255,.16)!important;background:transparent!important}
+ .nav .links.open{display:flex!important;flex-direction:column!important}
+ .nav .links a{display:flex;align-items:center;min-height:46px;padding:11px 14px!important;border-radius:10px;color:#F8FAFC!important;font-size:15px}
+ .nav .links a[aria-selected="true"]{background:rgba(45,212,191,.14);color:#8CE9DE!important}
+ header.hero{min-height:0!important;height:auto!important;max-height:none!important;padding:0!important;background-color:#0B1B2C!important;background-image:linear-gradient(180deg,rgba(5,17,30,.88),rgba(5,17,30,.72) 62%,rgba(5,17,30,.58)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;background-size:cover!important;background-position:62% center!important;background-repeat:no-repeat!important}
+ header.hero .hero-layout{width:calc(100% - 40px)!important;min-height:0!important;height:auto!important;display:block!important;margin:0 auto!important}
+ header.hero .hero-copy{width:100%!important;max-width:640px!important;margin:0!important;padding:clamp(58px,10vh,92px) 0 clamp(64px,12vh,104px)!important}
+ header.hero .hero-copy .eyebrow{font-size:10px!important;letter-spacing:.11em!important;line-height:1.5;padding:7px 10px!important}
+ header.hero h1{font-size:clamp(42px,8.6vw,64px)!important;line-height:1.02!important;letter-spacing:-.065em!important;margin:18px 0 18px!important;max-width:13ch!important}
+ header.hero p{font-size:clamp(16px,2.2vw,18px)!important;line-height:1.65!important;max-width:52ch!important}
+ header.hero .hero-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:10px!important;margin-top:26px!important}
+ header.hero .hero-actions .btn{display:flex;align-items:center;justify-content:center;text-align:center;min-height:50px;padding:12px 14px!important;font-size:14px!important;line-height:1.25;border-radius:12px!important}
+ .section{padding:clamp(52px,8vw,76px) 0!important}
+ .section>.container,.footer>.container{width:calc(100% - 40px)!important}
+ .section h2{font-size:clamp(30px,6.5vw,46px)!important;line-height:1.06!important;letter-spacing:-.05em!important}
+ .lead{font-size:clamp(16px,2.4vw,18px)!important;line-height:1.65!important}
+ .grid,#microapps .grid,#soluciones .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+ .card{min-width:0;padding:22px!important;border-radius:16px!important}
+ .card h3{font-size:19px!important;line-height:1.2}
+ .card p{font-size:14px;line-height:1.6}
+ #ops .micro-hero{grid-template-columns:1fr!important;gap:28px!important}
+ #ops .steps{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+ #ops .step{min-width:0;padding:16px!important}
+ #ops .mock{min-width:0;padding:20px!important;border-radius:18px!important}
+ #ops .mock-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #ops .metric{min-width:0;padding:14px!important}
+ #ops .metric strong{font-size:clamp(20px,4vw,28px)!important;overflow-wrap:anywhere}
+ #microapps .product{min-height:270px!important;padding:22px!important}
+ #microapps .product:before{margin:-22px -22px 20px!important}
+ #app .app-shell{width:100%;min-width:0}
+ #app .app-head,#app .app-body{padding:20px!important}
+ #app .formgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #app input,#app select,#app textarea{max-width:100%;min-width:0}
+ .footer{padding:46px 0 32px!important;background-attachment:scroll!important}
+ .footer .container{max-width:none!important}
+ .footer .container>div{gap:12px!important}
+ .footer a{overflow-wrap:anywhere}
+}
+@media(max-width:560px){
+ .grid,#microapps .grid,#soluciones .grid{grid-template-columns:1fr!important}
+ #ops .steps{grid-template-columns:1fr 1fr!important}
+ #app .formgrid{grid-template-columns:1fr!important}
+ #app .app-head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+ #app .app-head>div{min-width:0}
+ #app .app-head button{width:100%}
+ #app .chart{overflow-x:auto}
+ #app .table-wrap{max-width:100%;overflow-x:auto}
+ .footer .brand-logo{width:150px!important;max-width:55vw}
+ .footer-socials{display:flex;gap:12px}
+ .footer-social-link{width:44px;height:44px;display:grid;place-items:center}
+}
+@media(max-width:390px){
+ .nav>.container{width:calc(100% - 24px)!important}
+ .nav .brand-logo{width:138px!important;max-width:48vw!important}
+ .menu-toggle{padding:9px 11px!important;font-size:13px}
+ header.hero .hero-layout,.section>.container,.footer>.container{width:calc(100% - 32px)!important}
+ header.hero .hero-copy{padding-top:52px!important;padding-bottom:64px!important}
+ header.hero h1{font-size:clamp(38px,10vw,44px)!important}
+ header.hero .hero-actions{grid-template-columns:1fr!important}
+ header.hero .hero-actions .btn{width:100%}
+ #ops .steps{grid-template-columns:1fr!important}
+ #ops .mock-grid{grid-template-columns:1fr 1fr!important}
+}
+@media(orientation:landscape) and (max-height:520px) and (max-width:900px){
+ header.hero .hero-copy{padding:34px 0 42px!important}
+ header.hero h1{font-size:clamp(34px,6vw,48px)!important}
+ header.hero .hero-actions{display:flex!important}
+ header.hero .hero-actions .btn{min-height:44px}
+}
+@supports(padding:max(0px)){
+ .footer{padding-bottom:max(32px,env(safe-area-inset-bottom))!important}
+}
+
+
+/* MOBILE LAYOUT REPAIR — keep all CSS inside the stylesheet */
+@media (max-width:800px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .nav{height:auto!important;min-height:66px!important;padding:7px 0!important}
+  .nav>.container{min-height:50px!important;gap:8px!important}
+  .nav .brand-logo{width:clamp(132px,38vw,174px)!important;max-width:46vw!important;max-height:40px!important}
+  .menu-toggle{min-height:42px!important;padding:9px 12px!important;font-size:13px!important}
+  header.hero{
+    display:flex!important;align-items:center!important;
+    min-height:680px!important;height:auto!important;max-height:none!important;
+    padding:0!important;overflow:hidden!important;
+    background-position:center center!important;background-size:cover!important;
+  }
+  header.hero .hero-layout{
+    width:calc(100% - 40px)!important;min-height:0!important;height:auto!important;
+    margin:auto!important;display:block!important;
+  }
+  header.hero .hero-copy{
+    width:100%!important;max-width:620px!important;
+    padding:54px 0 58px!important;margin:0!important;
+  }
+  header.hero .hero-copy .eyebrow{
+    max-width:100%!important;white-space:normal!important;
+    font-size:9px!important;letter-spacing:.095em!important;line-height:1.45!important;
+  }
+  header.hero h1{
+    max-width:13ch!important;font-size:clamp(40px,8.2vw,58px)!important;
+    line-height:1.01!important;margin:18px 0!important;
+  }
+  header.hero p{font-size:16px!important;line-height:1.55!important;max-width:48ch!important}
+  header.hero .hero-actions{display:grid!important;grid-template-columns:1fr 1fr!important;margin-top:24px!important;gap:10px!important}
+  header.hero .hero-actions .btn{min-height:48px!important;font-size:13px!important;padding:11px 12px!important}
+  .footer{margin-top:0!important}
+}
+@media(max-width:430px){
+  header.hero{min-height:700px!important}
+  header.hero .hero-layout{width:calc(100% - 36px)!important}
+  header.hero .hero-copy{padding:46px 0 50px!important}
+  header.hero h1{font-size:clamp(38px,9.6vw,44px)!important;max-width:12.5ch!important}
+  header.hero p{font-size:15px!important;line-height:1.52!important}
+  header.hero .hero-actions{grid-template-columns:1fr!important}
+  header.hero .hero-actions .btn{width:100%!important;min-height:46px!important;font-size:14px!important}
+}
+@media(orientation:landscape) and (max-height:520px) and (max-width:800px){
+  header.hero{min-height:560px!important}
+  header.hero .hero-copy{padding:30px 0!important}
+}
+
+
+/* IMAGE SEPARATION FIX: photo belongs only to the hero, never to the page/footer */
+html,body{
+  background-color:#081827!important;
+  background-image:none!important;
+  background-attachment:initial!important;
+}
+header.hero{
+  background-color:#0b1b2c!important;
+  background-image:
+    linear-gradient(90deg,rgba(5,17,30,.82) 0%,rgba(5,17,30,.56) 48%,rgba(5,17,30,.24) 100%),
+    url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+header.hero:before,header.hero:after{display:none!important;content:none!important}
+.footer{
+  background:#0b1928!important;
+  background-image:none!important;
+  background-color:#0b1928!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;
+}
+.footer:before,.footer:after{display:none!important;content:none!important}
+@media(max-width:800px){
+  header.hero{
+    background-image:
+      linear-gradient(180deg,rgba(5,17,30,.72),rgba(5,17,30,.50) 58%,rgba(5,17,30,.62)),
+      url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+    background-size:cover!important;
+    background-position:center center!important;
+  }
+  .footer{background:#0b1928!important;background-image:none!important}
+}
+
+
+/* DESKTOP ONLY: continuous warehouse photograph behind the full page and footer */
+@media(min-width:801px){
+  html{background:#081827!important}
+  body{
+    background-color:#081827!important;
+    background-image:
+      linear-gradient(rgba(5,17,30,.34),rgba(5,17,30,.34)),
+      url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-attachment:fixed!important;
+  }
+  header.hero{
+    background:transparent!important;
+    background-image:none!important;
+    background-color:transparent!important;
+  }
+  header.hero:before,header.hero:after{display:none!important;content:none!important}
+  .footer{
+    background:transparent!important;
+    background-image:none!important;
+    background-color:transparent!important;
+    border-top:1px solid rgba(255,255,255,.18)!important;
+  }
+  .footer:before,.footer:after{display:none!important;content:none!important}
+}
+
+
+/* Desktop: remove visible footer divider without changing mobile footer */
+@media(min-width:801px){
+  .footer{border:0!important;border-top:0!important;box-shadow:none!important;outline:0!important}
+  .footer:before,.footer:after{border:0!important;box-shadow:none!important}
+}
+
+/* Mobile header wordmark: increase logo visibility while preserving menu space */
+@media(max-width:800px){
+  .nav>.container{gap:8px!important}
+  .nav .brand{flex:0 1 auto!important;min-width:0!important;max-width:calc(100% - 126px)!important}
+  .nav .brand-logo{
+    width:clamp(176px,48vw,204px)!important;
+    max-width:100%!important;
+    max-height:54px!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:left center!important;
+  }
+}
+@media(max-width:390px){
+  .nav .brand-logo{width:clamp(164px,47vw,184px)!important;max-height:50px!important}
+}
+
+
+/* NOSOTROS — responsive brand story and impact narrative */
+.nosotros-page{
+  color:#f5f8fb!important;
+  background:
+    radial-gradient(ellipse at 82% 8%,rgba(20,184,166,.12),transparent 36%),
+    linear-gradient(145deg,#071827 0%,#0b2032 55%,#102b3c 100%)!important;
+  min-height:calc(100svh - 70px);
+  padding-top:clamp(64px,8vw,112px)!important;
+  padding-bottom:clamp(64px,8vw,112px)!important;
+}
+.nosotros-page .nosotros-content{max-width:1200px!important}
+.nosotros-intro{max-width:940px;margin:0 auto clamp(72px,9vw,124px);text-align:left}
+.nosotros-page .eyebrow{color:#66e2d3!important;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.nosotros-kicker{margin:28px 0 14px;color:#b7c9d4;font-size:clamp(15px,1.5vw,19px);font-weight:600;letter-spacing:.02em}
+.nosotros-intro h2{max-width:900px;margin:0;color:#fff!important;font-size:clamp(44px,7.2vw,88px)!important;line-height:.99!important;letter-spacing:-.075em!important;font-weight:850!important}
+.nosotros-intro h2 em,.nosotros-manifesto h3 em{color:#58d9cb;font-style:normal}
+.nosotros-lead{max-width:760px;margin:30px 0 0;color:rgba(237,245,249,.78);font-size:clamp(17px,1.65vw,21px);line-height:1.75}
+.nosotros-signature{display:flex;align-items:center;gap:12px;margin-top:34px;color:#b9d1da;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.nosotros-signature span{width:34px;height:2px;background:#45d5c5;flex:0 0 auto}
+.nosotros-impact{padding:clamp(30px,5vw,62px);border:1px solid rgba(255,255,255,.12);border-radius:28px;background:rgba(255,255,255,.035);backdrop-filter:blur(12px)}
+.nosotros-section-heading{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;align-items:end;margin-bottom:34px}
+.nosotros-section-heading .eyebrow{grid-column:1/-1;margin-bottom:16px}
+.nosotros-section-heading h3,.nosotros-method h3,.nosotros-capabilities>h3{margin:0;color:#fff;font-size:clamp(27px,3.2vw,42px);line-height:1.08;letter-spacing:-.045em}
+.nosotros-section-heading p{margin:0;color:rgba(237,245,249,.68);font-size:15px;line-height:1.7}
+.nosotros-impact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.nosotros-impact-card{position:relative;min-height:260px;padding:24px 20px;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:rgba(4,18,31,.48);overflow:hidden}
+.nosotros-index{color:#7ce4d7;font-size:10px;font-weight:850;letter-spacing:.13em}
+.nosotros-symbol{display:grid;place-items:center;width:42px;height:42px;margin:27px 0 20px;border-radius:13px;background:rgba(45,212,191,.12);color:#63e2d2;font-size:25px}
+.nosotros-impact-card h4,.nosotros-capability-grid h4{margin:0 0 10px;color:#fff;font-size:18px;line-height:1.2;letter-spacing:-.025em}
+.nosotros-impact-card p,.nosotros-capability-grid p{margin:0;color:rgba(237,245,249,.67);font-size:13px;line-height:1.65}
+.nosotros-method{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,7vw,90px);align-items:start;padding:clamp(66px,9vw,112px) 0}
+.nosotros-method-copy h3{margin:16px 0 18px}
+.nosotros-method-copy>p{max-width:430px;color:rgba(237,245,249,.7);font-size:16px;line-height:1.75}
+.nosotros-steps{border-top:1px solid rgba(255,255,255,.16)}
+.nosotros-steps>div{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:23px 0;border-bottom:1px solid rgba(255,255,255,.16)}
+.nosotros-steps>div>span,.nosotros-capability-grid article>span{color:#5ee2d2;font-size:12px;font-weight:850;letter-spacing:.12em}
+.nosotros-steps h4{margin:0 0 6px;color:#fff;font-size:18px}
+.nosotros-steps p{margin:0;color:rgba(237,245,249,.68);font-size:14px;line-height:1.65}
+.nosotros-capabilities{padding:clamp(34px,5vw,58px);border-radius:26px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11)}
+.nosotros-capabilities>h3{margin:15px 0 32px}
+.nosotros-capability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.nosotros-capability-grid article{padding-top:20px;border-top:1px solid rgba(94,234,212,.38)}
+.nosotros-capability-grid h4{margin:18px 0 9px}
+.nosotros-manifesto{padding:clamp(76px,10vw,132px) 20px 10px;text-align:center}
+.nosotros-manifesto>p{margin:0 0 14px;color:#a8c0ca;font-size:11px;font-weight:850;letter-spacing:.2em}
+.nosotros-manifesto h3{margin:0 auto 32px;color:#fff;font-size:clamp(34px,5.5vw,66px);line-height:1.05;letter-spacing:-.06em}
+.nosotros-manifesto .btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:54px;padding:14px 22px}
+@media(max-width:900px){
+ .nosotros-impact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nosotros-section-heading{grid-template-columns:1fr;gap:14px}
+ .nosotros-method{grid-template-columns:1fr;gap:24px}
+}
+@media(max-width:600px){
+ .nosotros-page{padding-top:48px!important;padding-bottom:56px!important}
+ .nosotros-intro{margin-bottom:52px}
+ .nosotros-kicker{margin-top:20px;font-size:14px}
+ .nosotros-intro h2{font-size:clamp(39px,10.5vw,52px)!important;line-height:1.02!important;letter-spacing:-.065em!important}
+ .nosotros-lead{margin-top:20px;font-size:16px;line-height:1.65}
+ .nosotros-signature{align-items:flex-start;font-size:9px;line-height:1.5;letter-spacing:.09em}
+ .nosotros-signature span{margin-top:6px}
+ .nosotros-impact{padding:22px 16px;border-radius:20px}
+ .nosotros-section-heading{margin-bottom:22px}
+ .nosotros-section-heading h3,.nosotros-method h3,.nosotros-capabilities>h3{font-size:29px}
+ .nosotros-section-heading p{font-size:14px}
+ .nosotros-impact-grid{grid-template-columns:1fr;gap:10px}
+ .nosotros-impact-card{min-height:0;padding:20px}
+ .nosotros-symbol{margin:18px 0 14px}
+ .nosotros-impact-card h4{font-size:18px}
+ .nosotros-method{padding:58px 0;gap:20px}
+ .nosotros-steps>div{grid-template-columns:34px 1fr;gap:12px;padding:19px 0}
+ .nosotros-capabilities{padding:25px 19px;border-radius:20px}
+ .nosotros-capabilities>h3{margin-bottom:24px}
+ .nosotros-capability-grid{grid-template-columns:1fr;gap:20px}
+ .nosotros-capability-grid article{padding-top:17px}
+ .nosotros-capability-grid h4{margin-top:12px}
+ .nosotros-manifesto{padding:68px 0 0}
+ .nosotros-manifesto h3{font-size:clamp(34px,9vw,44px)}
+ .nosotros-manifesto .btn{width:100%;font-size:13px;padding:13px 16px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .nosotros-impact-card{transition:transform .25s ease,border-color .25s ease,background .25s ease}
+ .nosotros-impact-card:hover{transform:translateY(-5px);border-color:rgba(94,234,212,.42);background:rgba(4,25,39,.72)}
+}
+
+
+/* Hide the homepage hero when another navigation tab is active */
+header.hero[hidden]{display:none!important}
+
+/* SOLUCIONES portfolio framing */
+.solutions-intro{max-width:850px;margin:0 0 48px}
+.solutions-intro .eyebrow{color:#16b9a8}
+.solutions-intro h2{max-width:760px;margin:14px 0 18px;letter-spacing:-.055em}
+.solutions-intro .lead{max-width:760px}
+@media(max-width:600px){
+ .solutions-intro{margin-bottom:32px}
+ .solutions-intro h2{font-size:clamp(32px,8.5vw,42px);line-height:1.08}
+ .solutions-intro .lead{font-size:15px;line-height:1.6}
+}
+
+
+/* Unified light surfaces for all navigation views except the dark Nosotros brand story */
+#soluciones,#microapps,#servicios,#contacto,#app{
+  background:#F4F7F8!important;
+  color:#111827!important;
+}
+#soluciones h1,#soluciones h2,#soluciones h3,#soluciones h4,
+#microapps h1,#microapps h2,#microapps h3,#microapps h4,
+#servicios h1,#servicios h2,#servicios h3,#servicios h4,
+#contacto h1,#contacto h2,#contacto h3,#contacto h4,
+#app h1,#app h2,#app h3,#app h4{color:#111827!important}
+#soluciones .lead,#microapps .lead,#servicios .lead,#contacto .lead,#app .lead{
+  color:#657482!important;
+}
+#soluciones .eyebrow,#microapps .eyebrow,#servicios .eyebrow,#contacto .eyebrow,#app .eyebrow{
+  color:#0F9F91!important;
+}
+#servicios .card,#soluciones .card,#microapps .product{
+  background:#FFFFFF!important;
+  color:#111827!important;
+  border-color:#E3EAED!important;
+}
+#servicios .card p,#soluciones .card p,#microapps .product p{
+  color:#657482!important;
+}
+#servicios .card h3,#soluciones .card h3,#microapps .product h3{
+  color:#111827!important;
+}
+#contacto{background:linear-gradient(180deg,#F4F7F8,#EDF5F4)!important}
+@media(max-width:800px){
+ #soluciones,#microapps,#servicios,#contacto,#app{background:#F4F7F8!important}
+}
+
+
+/* Microapps: remove the empty decorative image placeholder from product cards */
+#microapps .product:before{display:none!important;content:none!important}
+#microapps .product{padding-top:30px!important}
+@media(max-width:800px){
+ #microapps .product{padding-top:24px!important}
+}
+
 </style>
 </head>
 
@@ -1183,19 +1887,21 @@ body{color:var(--navy);letter-spacing:-.018em}
     >
       <img
         class="brand-logo"
-        src="assets/logo-turquesa.png"
+        src="assets/logo-blanco.png"
         alt="NOFEKI"
       >
     </a>
 
-    <div class="links" id="siteLinks">
-      <a href="#soluciones">Soluciones</a>
-      <a href="#microapps">Microapps</a>
-      <a href="#ops">NOFEKI OPS</a>
+    <div class="links" id="siteLinks" role="tablist" aria-label="Secciones principales de NOFEKI">
+      <a href="#nosotros" role="tab" aria-selected="false" data-site-tab="nosotros">Nosotros</a>
+      <a href="#soluciones" role="tab" aria-selected="false" data-site-tab="soluciones">Soluciones</a>
+      <a href="#microapps" role="tab" aria-selected="false" data-site-tab="microapps">Microapps</a>
+      <a href="#servicios" role="tab" aria-selected="false" data-site-tab="servicios">Servicios</a>
+      <a href="#contacto" role="tab" aria-selected="false" data-site-tab="contacto">Contacto</a>
     </div>
 
     <div class="nav-actions">
-      <a class="btn primary nav-cta" href="/gastos.html">Abrir NOFEKI Gastos</a>
+      <a class="btn primary nav-cta" href="#soluciones">Explorar soluciones</a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">Menú <span aria-hidden="true">☰</span></button>
     </div>
 
@@ -1232,9 +1938,9 @@ body{color:var(--navy);letter-spacing:-.018em}
 
         <a
           class="btn primary"
-          href="#ops"
+          href="#soluciones"
         >
-          Conocer NOFEKI OPS
+          Explorar soluciones
         </a>
 
         <a
@@ -1249,107 +1955,101 @@ body{color:var(--navy);letter-spacing:-.018em}
     </div>
 
 
-    <!-- IMAGEN REAL, SIN BACKGROUND-COVER -->
-
-    <div class="hero-image">
-
-      <img
-        src="assets/hero-supply-chain-clean.jpg"
-        alt="Operación moderna de supply chain, inventario y logística"
-        width="1100"
-        height="819"
-        fetchpriority="high"
-        decoding="async"
-      >
-
-    </div>
-
   </div>
 
 </header>
 
-<section class="value-strip" aria-label="Enfoque NOFEKI">
-  <div class="value-strip-inner">
-    <div class="value-intro"><span class="value-dot"></span><span>De la operación al valor</span></div>
-    <div class="value-item"><strong>01</strong><span>Entiende lo que pasa</span></div>
-    <div class="value-item"><strong>02</strong><span>Identifica qué importa</span></div>
-    <div class="value-item"><strong>03</strong><span>Actúa con claridad</span></div>
-  </div>
-</section>
+
 
 <!-- =========================
      SOLUCIONES
 ========================= -->
 
-<section id="soluciones" class="section">
-
-  <div class="container">
-
-    <div class="eyebrow">
-      Qué hacemos
+<section id="nosotros" class="section nosotros-page" hidden>
+  <div class="container nosotros-content">
+    <div class="nosotros-intro">
+      <div class="eyebrow">NOFEKI · Nuestra esencia</div>
+      <p class="nosotros-kicker">Transformamos la forma de operar.</p>
+      <h2>Convertimos la complejidad operativa en <em>claridad, control y crecimiento.</em></h2>
+      <p class="nosotros-lead">Creemos que detrás de cada operación hay oportunidades para hacer las cosas mejor. En NOFEKI unimos conocimiento operativo, análisis y tecnología para convertir problemas cotidianos en soluciones prácticas y decisiones que impulsan resultados.</p>
+      <div class="nosotros-signature"><span></span> Supply chain · Inventarios · Operaciones · Tecnología</div>
     </div>
 
-    <h2>
-      Herramientas que resuelven problemas reales.
-    </h2>
-
-    <p class="lead">
-      Un ecosistema digital pensado para personas y empresas que
-      necesitan más claridad, menos trabajo manual y mejores decisiones.
-    </p>
-
-    <div class="grid">
-
-      <div class="card">
-
-        <span class="tag">
-          Empresas
-        </span>
-
-        <h3>
-          NOFEKI OPS
-        </h3>
-
-        <p>
-          Gestión de inventarios y operaciones con dashboard,
-          movimientos, compras, análisis, alertas y recomendaciones.
-        </p>
-
-        <a
-          class="btn light"
-          href="#ops"
-        >
-          Ver solución
-        </a>
-
+    <div class="nosotros-impact">
+      <div class="nosotros-section-heading">
+        <div class="eyebrow">El impacto que buscamos</div>
+        <h3>La tecnología importa cuando mejora lo que sucede en el mundo real.</h3>
+        <p>No medimos el valor por la cantidad de herramientas, sino por lo que ayudan a simplificar, comprender y transformar.</p>
       </div>
-
-
-      <div class="card">
-
-        <span class="tag">
-          Personal + empresa
-        </span>
-
-        <h3>
-          Microapps
-        </h3>
-
-        <p>
-          Pequeñas aplicaciones enfocadas en un problema específico:
-          gastos, seguimiento, control, análisis y productividad.
-        </p>
-
-        <a
-          class="btn light"
-          href="#microapps"
-        >
-          Ver catálogo
-        </a>
-
+      <div class="nosotros-impact-grid">
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">01 / TIEMPO</span>
+          <div class="nosotros-symbol" aria-hidden="true">↗</div>
+          <h4>Más tiempo para lo importante</h4>
+          <p>Simplificamos tareas y reducimos fricciones para que las personas puedan concentrarse en actividades que generan valor.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">02 / VISIBILIDAD</span>
+          <div class="nosotros-symbol" aria-hidden="true">◎</div>
+          <h4>Información que se entiende</h4>
+          <p>Organizamos datos y procesos para convertir información dispersa en una visión más clara de lo que ocurre.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">03 / CONTROL</span>
+          <div class="nosotros-symbol" aria-hidden="true">⌁</div>
+          <h4>Operaciones bajo control</h4>
+          <p>Diseñamos herramientas que facilitan el seguimiento, la gestión y la identificación de oportunidades de mejora.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">04 / DECISIONES</span>
+          <div class="nosotros-symbol" aria-hidden="true">↗</div>
+          <h4>Decisiones con fundamento</h4>
+          <p>Conectamos análisis y criterio operativo para pasar de reaccionar ante los problemas a actuar con intención.</p>
+        </article>
       </div>
+    </div>
+
+    <div class="nosotros-method">
+      <div class="nosotros-method-copy">
+        <div class="eyebrow">Cómo generamos valor</div>
+        <h3>Del reto operativo al resultado.</h3>
+        <p>Escuchamos, entendemos el contexto y construimos soluciones que responden a necesidades reales. La tecnología es el medio; la mejora es el propósito.</p>
+      </div>
+      <div class="nosotros-steps">
+        <div><span>01</span><section><h4>Comprendemos</h4><p>Identificamos necesidades, puntos críticos y oportunidades en cada proceso.</p></section></div>
+        <div><span>02</span><section><h4>Diseñamos</h4><p>Traducimos el problema en una solución clara, útil y fácil de adoptar.</p></section></div>
+        <div><span>03</span><section><h4>Impulsamos</h4><p>Integramos datos, automatización y tecnología para facilitar mejores acciones.</p></section></div>
+      </div>
+    </div>
+
+    <div class="nosotros-capabilities">
+      <div class="eyebrow">Lo que conectamos</div>
+      <h3>Tres capacidades. Un mismo propósito.</h3>
+      <div class="nosotros-capability-grid">
+        <article><span>01</span><h4>Criterio operativo</h4><p>Experiencia aplicada a supply chain, inventarios y procesos para entender lo que realmente necesita mejorar.</p></article>
+        <article><span>02</span><h4>Inteligencia y análisis</h4><p>Información estructurada y pensamiento analítico para revelar oportunidades y orientar decisiones.</p></article>
+        <article><span>03</span><h4>Tecnología útil</h4><p>Soluciones digitales y microapps diseñadas para resolver necesidades concretas sin añadir complejidad.</p></article>
+      </div>
+    </div>
+
+    <div class="nosotros-manifesto">
+      <p>NO SE TRATA DE HACER MÁS.</p>
+      <h3>Se trata de <em>generar más valor.</em></h3>
+      <a href="#soluciones" class="btn btn-primary">Conoce lo que estamos construyendo <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
 
 
+<!-- =========================
+     SERVICIOS
+========================= -->
+<section id="servicios" class="section" hidden>
+  <div class="container">
+    <div class="eyebrow">Servicios NOFEKI</div>
+    <h2>Capacidades para llevar tus ideas a la acción.</h2>
+    <p class="lead">Explora nuestros servicios digitales y operativos sin mezclar sus contenidos con la vista principal de Soluciones.</p>
+    <div class="grid services-grid">
       <div class="card">
 
         <span class="tag">
@@ -1375,7 +2075,9 @@ body{color:var(--navy);letter-spacing:-.018em}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Inteligencia artificial
@@ -1400,7 +2102,9 @@ body{color:var(--navy);letter-spacing:-.018em}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Eficiencia operativa
@@ -1425,7 +2129,9 @@ body{color:var(--navy);letter-spacing:-.018em}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Presencia digital
@@ -1450,26 +2156,30 @@ body{color:var(--navy);letter-spacing:-.018em}
       </div>
 
     </div>
-
+    </div>
   </div>
-
 </section>
-
 
 <!-- =========================
      NOFEKI OPS
 ========================= -->
 
-<section id="ops" class="section alt">
+<section id="soluciones" class="section alt" hidden>
 
   <div class="container">
+
+    <div class="solutions-intro">
+      <div class="eyebrow">Portafolio NOFEKI</div>
+      <h2>Soluciones digitales para transformar tu operación.</h2>
+      <p class="lead">Creamos productos y herramientas que responden a retos reales de negocio. Cada solución tiene un propósito: simplificar procesos, mejorar la visibilidad y ayudar a tomar mejores decisiones.</p>
+    </div>
 
     <div class="micro-hero">
 
       <div>
 
         <div class="eyebrow">
-          Producto principal
+          Solución empresarial
         </div>
 
         <h2>
@@ -1601,7 +2311,7 @@ body{color:var(--navy);letter-spacing:-.018em}
      MICROAPPS
 ========================= -->
 
-<section id="microapps" class="section">
+<section id="microapps" class="section" hidden>
 
   <div class="container">
 
@@ -1718,7 +2428,7 @@ body{color:var(--navy);letter-spacing:-.018em}
      NOFEKI GASTOS
 ========================= -->
 
-<section id="app" class="section alt">
+<section id="app" class="section alt" hidden>
 
   <div class="container">
 
@@ -2043,7 +2753,7 @@ body{color:var(--navy);letter-spacing:-.018em}
      CONTACTO
 ========================= -->
 
-<section id="contacto" class="section">
+<section id="contacto" class="section" hidden>
 
   <div
     class="container"
@@ -2507,6 +3217,192 @@ date.value =
 
 render();
 
+</script>
+
+
+<script>
+/* NOFEKI top navigation: accessible content tabs */
+(()=>{
+ const panels={
+  inicio:[],
+  nosotros:['nosotros'],
+  soluciones:['soluciones'], 
+  microapps:['microapps','app'],
+  servicios:['servicios'],
+  contacto:['contacto']
+ };
+ const links=Array.from(document.querySelectorAll('[data-site-tab]'));
+ const allIds=[...new Set(Object.values(panels).flat())];
+ const sections=Object.fromEntries(allIds.map(id=>[id,document.getElementById(id)]));
+ if(!links.length||Object.values(sections).some(x=>!x))return;
+
+ links.forEach(link=>{
+  const view=link.dataset.siteTab;
+  link.id='tab-'+view;
+  const panelId=panels[view]?.[0];
+  if(panelId)link.setAttribute('aria-controls',panelId);
+  link.setAttribute('tabindex','-1');
+ });
+ allIds.forEach(id=>{
+  const panel=sections[id];
+  panel.classList.add('tab-view');
+  panel.setAttribute('role','tabpanel');
+  panel.setAttribute('tabindex','0');
+  panel.setAttribute('aria-labelledby','tab-'+(id==='app'?'microapps':id));
+ });
+
+ function activate(view,{updateHash=true,scroll=true,focus=false}={}){
+  const hero=document.querySelector('header.hero');
+  if(hero)hero.hidden=(view!=='inicio');
+  if(!panels[view])view='inicio';
+  allIds.forEach(id=>{
+   const visible=panels[view].includes(id);
+   sections[id].hidden=!visible;
+   sections[id].setAttribute('aria-hidden',String(!visible));
+  });
+  links.forEach(link=>{
+   const active=link.dataset.siteTab===view;
+   link.setAttribute('aria-selected',String(active));
+   link.tabIndex=active?0:-1;
+   if(active&&focus)link.focus();
+  });
+  if(updateHash)history.replaceState(null,'','#'+view);
+  if(scroll)window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  window.dispatchEvent(new CustomEvent('nofeki:viewchange',{detail:{view}}));
+ }
+
+ document.querySelectorAll('.brand[href="#inicio"]').forEach(link=>link.addEventListener('click',event=>{
+  event.preventDefault();activate('inicio');
+ }));
+ links.forEach((link,index)=>{
+  link.addEventListener('click',event=>{
+   event.preventDefault();activate(link.dataset.siteTab);
+  });
+  link.addEventListener('keydown',event=>{
+   let next=index;
+   if(event.key==='ArrowRight')next=(index+1)%links.length;
+   else if(event.key==='ArrowLeft')next=(index-1+links.length)%links.length;
+   else if(event.key==='Home')next=0;
+   else if(event.key==='End')next=links.length-1;
+   else return;
+   event.preventDefault();
+   activate(links[next].dataset.siteTab,{focus:true});
+  });
+ });
+
+ document.querySelectorAll('a[href="#soluciones"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#nosotros"]').forEach(link=>{
+  if(link.hasAttribute('data-site-tab'))return;
+  link.addEventListener('click',event=>{
+   const view=link.getAttribute('href').slice(1);
+   if(!panels[view])return;
+   event.preventDefault();activate(view);
+  });
+ });
+
+ const initial=location.hash.slice(1);
+ const initialView=panels[initial]?initial:'inicio';
+ activate(initialView,{updateHash:false,scroll:false});
+})();
+
+/* NOFEKI Motion Engine — native, lightweight and accessible */
+(()=>{
+ const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const body=document.body;
+ const progress=document.createElement('div');
+ progress.className='motion-progress';progress.setAttribute('aria-hidden','true');body.appendChild(progress);
+ const nav=document.querySelector('.nav');
+ const updateScroll=()=>{
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  progress.style.transform='scaleX('+(max>0?window.scrollY/max:0)+')';
+  if(nav)nav.classList.toggle('is-scrolled',window.scrollY>24);
+ };
+ updateScroll();window.addEventListener('scroll',updateScroll,{passive:true});window.addEventListener('resize',updateScroll,{passive:true});
+ if(reduce)return;
+ body.classList.add('motion-ready');
+ const hero=document.querySelector('header.hero');
+ requestAnimationFrame(()=>requestAnimationFrame(()=>hero&&hero.classList.add('is-visible')));
+ const selectors=['.value-intro','.value-item','#soluciones .container > .eyebrow','#soluciones .container > h2','#soluciones .container > .lead','#soluciones .card','#ops .micro-hero > div:first-child > .eyebrow','#ops .micro-hero > div:first-child > h2','#ops .micro-hero > div:first-child > .lead','#ops .step','#ops .mock','#microapps .container > *','#contacto .container > *'];
+ const nodes=[...new Set(selectors.flatMap(sel=>Array.from(document.querySelectorAll(sel))))];
+ nodes.forEach(node=>{
+  node.setAttribute('data-reveal',node.matches('#soluciones .card,#ops .step,#ops .mock')?'scale':'up');
+  if(node.matches('#soluciones .card,#ops .step')){
+   const siblings=Array.from(node.parentElement.children);
+   node.style.setProperty('--reveal-delay',(siblings.indexOf(node)%6)*95+'ms');
+  }
+ });
+ if('IntersectionObserver'in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+   if(entry.isIntersecting){entry.target.classList.add('is-visible');observer.unobserve(entry.target);}
+  }),{threshold:.14,rootMargin:'0px 0px -45px 0px'});
+  nodes.forEach(node=>observer.observe(node));
+ }else nodes.forEach(node=>node.classList.add('is-visible'));
+ if(window.matchMedia('(hover:hover) and (min-width:801px)').matches){
+  const heroBg=document.querySelector('header.hero');let bgRaf=0;
+  window.addEventListener('pointermove',e=>{
+   if(bgRaf)return;
+   bgRaf=requestAnimationFrame(()=>{
+    const x=(e.clientX/window.innerWidth-.5)*7,y=(e.clientY/window.innerHeight-.5)*5;
+    if(heroBg)heroBg.style.backgroundPosition='calc(50% + '+x+'px) calc(48% + '+y+'px)';
+    bgRaf=0;
+   });
+  },{passive:true});
+  const cursor=document.createElement('span');cursor.className='motion-cursor';cursor.setAttribute('aria-hidden','true');body.appendChild(cursor);
+  let cursorRaf=0;
+  window.addEventListener('pointermove',e=>{
+   if(cursorRaf)return;
+   cursorRaf=requestAnimationFrame(()=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';cursor.classList.add('is-active');cursorRaf=0;});
+  },{passive:true});
+  window.addEventListener('pointerout',e=>{if(!e.relatedTarget)cursor.classList.remove('is-active');});
+  document.querySelectorAll('a,button,[role="button"]').forEach(el=>{
+   el.addEventListener('pointerenter',()=>cursor.classList.add('is-hover'));
+   el.addEventListener('pointerleave',()=>cursor.classList.remove('is-hover'));
+  });
+ }
+})();
+</script>
+
+
+<!-- GSAP: controlled, lightweight motion system -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+<script>
+window.addEventListener('load',function(){
+  if(!window.gsap || !window.ScrollTrigger || window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('gsap-hero-ready');
+  const hero=document.querySelector('header.hero');
+  if(hero){
+    const copy=hero.querySelectorAll('.hero-copy .eyebrow,.hero-copy h1,.hero-copy p,.hero-copy .hero-actions');
+    const photo=null;
+    gsap.set(copy,{y:26,autoAlpha:0});
+    
+    const intro=gsap.timeline({defaults:{ease:'power3.out'}});
+    intro.to(copy,{y:0,autoAlpha:1,duration:.85,stagger:.13},.12);
+    
+  }
+  function animatePanel(panel){
+    if(!panel || panel.hidden)return;
+    const targets=panel.querySelectorAll('.eyebrow,h2,.lead,.card,.product,.step,.mock,.app-shell');
+    if(!targets.length)return;
+    gsap.killTweensOf(targets);
+    gsap.fromTo(targets,{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.65,stagger:.055,ease:'power2.out',overwrite:true});
+    ScrollTrigger.refresh();
+  }
+  window.addEventListener('nofeki:viewchange',function(event){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const view=event.detail&&event.detail.view;
+      const panel=document.getElementById(view);
+      animatePanel(panel);
+      if(view==='microapps')animatePanel(document.getElementById('app'));
+    }));
+  });
+  document.querySelectorAll('.section').forEach(section=>{
+    if(section.hidden)return;
+    section.querySelectorAll('.eyebrow,h2,.lead,.card,.product,.step').forEach(el=>{
+      ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>gsap.to(el,{y:0,autoAlpha:1,duration:.55,ease:'power2.out'})});
+    });
+  });
+});
 </script>
 
 </body>
