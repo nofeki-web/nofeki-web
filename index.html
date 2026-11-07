@@ -1808,6 +1808,9 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
  .nosotros-impact-card:hover{transform:translateY(-5px);border-color:rgba(94,234,212,.42);background:rgba(4,25,39,.72)}
 }
 
+
+/* Hide the homepage hero when another navigation tab is active */
+header.hero[hidden]{display:none!important}
 </style>
 </head>
 
@@ -3190,6 +3193,8 @@ render();
  });
 
  function activate(view,{updateHash=true,scroll=true,focus=false}={}){
+  const hero=document.querySelector('header.hero');
+  if(hero)hero.hidden=(view!=='inicio');
   if(!panels[view])view='inicio';
   allIds.forEach(id=>{
    const visible=panels[view].includes(id);
