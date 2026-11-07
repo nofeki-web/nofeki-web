@@ -1705,6 +1705,23 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
   .footer{border:0!important;border-top:0!important;box-shadow:none!important;outline:0!important}
   .footer:before,.footer:after{border:0!important;box-shadow:none!important}
 }
+
+/* Mobile header wordmark: increase logo visibility while preserving menu space */
+@media(max-width:800px){
+  .nav>.container{gap:8px!important}
+  .nav .brand{flex:0 1 auto!important;min-width:0!important;max-width:calc(100% - 126px)!important}
+  .nav .brand-logo{
+    width:clamp(176px,48vw,204px)!important;
+    max-width:100%!important;
+    max-height:54px!important;
+    height:auto!important;
+    object-fit:contain!important;
+    object-position:left center!important;
+  }
+}
+@media(max-width:390px){
+  .nav .brand-logo{width:clamp(164px,47vw,184px)!important;max-height:50px!important}
+}
 </style>
 </head>
 
