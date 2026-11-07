@@ -3059,3 +3059,65 @@ window.addEventListener('load',function(){
 
 </body>
 </html>
+
+
+/* MOBILE FINAL FIX — preserve a full first-screen hero and prevent footer collision */
+@media (max-width:800px){
+  html,body{max-width:100%;overflow-x:hidden}
+  .nav{height:auto!important;min-height:66px!important;padding:7px 0!important}
+  .nav>.container{min-height:50px!important;gap:8px!important}
+  .nav .brand-logo{width:clamp(132px,38vw,174px)!important;max-width:46vw!important;max-height:40px!important}
+  .menu-toggle{min-height:42px!important;padding:9px 12px!important;font-size:13px!important}
+  header.hero{
+    display:flex!important;
+    align-items:center!important;
+    min-height:calc(100svh - 66px)!important;
+    height:auto!important;
+    padding:0!important;
+    background-position:center center!important;
+    background-size:cover!important;
+  }
+  header.hero .hero-layout{
+    width:calc(100% - 40px)!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:auto!important;
+    display:block!important;
+  }
+  header.hero .hero-copy{
+    width:100%!important;
+    max-width:620px!important;
+    padding:clamp(38px,6vh,64px) 0!important;
+    margin:0!important;
+  }
+  header.hero .hero-copy .eyebrow{
+    max-width:100%!important;
+    white-space:normal!important;
+    font-size:9px!important;
+    letter-spacing:.095em!important;
+    line-height:1.45!important;
+  }
+  header.hero h1{
+    max-width:13ch!important;
+    font-size:clamp(40px,8.2vw,58px)!important;
+    line-height:1.01!important;
+    margin:18px 0!important;
+  }
+  header.hero p{font-size:16px!important;line-height:1.55!important;max-width:48ch!important}
+  header.hero .hero-actions{margin-top:24px!important;gap:10px!important}
+  header.hero .hero-actions .btn{min-height:48px!important;font-size:13px!important;padding:11px 12px!important}
+  .footer{margin-top:0!important}
+}
+@media(max-width:430px){
+  header.hero{min-height:calc(100svh - 66px)!important}
+  header.hero .hero-layout{width:calc(100% - 36px)!important}
+  header.hero .hero-copy{padding:34px 0!important}
+  header.hero h1{font-size:clamp(38px,9.6vw,44px)!important;max-width:12.5ch!important}
+  header.hero p{font-size:15px!important;line-height:1.52!important}
+  header.hero .hero-actions{grid-template-columns:1fr!important}
+  header.hero .hero-actions .btn{width:100%!important;min-height:46px!important;font-size:14px!important}
+}
+@media(orientation:landscape) and (max-height:520px) and (max-width:800px){
+  header.hero{min-height:auto!important}
+  header.hero .hero-copy{padding:28px 0!important}
+}
