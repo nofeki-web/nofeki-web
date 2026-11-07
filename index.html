@@ -1162,6 +1162,12 @@ body{color:var(--navy);letter-spacing:-.018em}
 
 
 
+/* NOFEKI TOP-LEVEL CONTENT TABS */
+.tab-view[hidden]{display:none!important}
+#siteLinks [role="tab"]{position:relative}
+#siteLinks [role="tab"][aria-selected="true"]:after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:2px;border-radius:2px;background:#2DD4BF}
+#siteLinks [role="tab"][aria-selected="true"]{color:#0F766E}
+@media(max-width:800px){#siteLinks [role="tab"][aria-selected="true"]:after{display:none}}
 /* NOFEKI MOTION SYSTEM */
 :root{--motion-ease:cubic-bezier(.22,1,.36,1)}
 html{scroll-behavior:smooth;scroll-padding-top:88px}
@@ -1258,10 +1264,11 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       >
     </a>
 
-    <div class="links" id="siteLinks">
-      <a href="#soluciones">Soluciones</a>
-      <a href="#microapps">Microapps</a>
-      <a href="#ops">NOFEKI OPS</a>
+    <div class="links" id="siteLinks" role="tablist" aria-label="Secciones principales de NOFEKI">
+      <a href="#soluciones" role="tab" aria-selected="true" data-site-tab="soluciones">Soluciones</a>
+      <a href="#ops" role="tab" aria-selected="false" data-site-tab="ops">NOFEKI OPS</a>
+      <a href="#microapps" role="tab" aria-selected="false" data-site-tab="microapps">Microapps</a>
+      <a href="#contacto" role="tab" aria-selected="false" data-site-tab="contacto">Contacto</a>
     </div>
 
     <div class="nav-actions">
@@ -2581,6 +2588,51 @@ render();
 
 
 <script>
+/* NOFEKI top navigation: real content views, not long-page anchors */
+(()=>{
+ const panels={
+  soluciones:['soluciones'],
+  ops:['ops'],
+  microapps:['microapps','app'],
+  contacto:['contacto']
+ };
+ const links=Array.from(document.querySelectorAll('[data-site-tab]'));
+ const allIds=[...new Set(Object.values(panels).flat())];
+ const sections=Object.fromEntries(allIds.map(id=>[id,document.getElementById(id)]));
+ if(!links.length||Object.values(sections).some(x=>!x))return;
+ allIds.forEach(id=>sections[id].classList.add('tab-view'));
+ function activate(view,{updateHash=true,scroll=true}={}){
+  if(!panels[view])view='soluciones';
+  allIds.forEach(id=>{
+   const visible=panels[view].includes(id);
+   sections[id].hidden=!visible;
+   sections[id].setAttribute('aria-hidden',String(!visible));
+  });
+  links.forEach(link=>{
+   const active=link.dataset.siteTab===view;
+   link.setAttribute('aria-selected',String(active));
+   link.tabIndex=active?0:-1;
+  });
+  if(updateHash)history.replaceState(null,'','#'+view);
+  if(scroll)window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+  window.dispatchEvent(new CustomEvent('nofeki:viewchange',{detail:{view}}));
+ }
+ links.forEach(link=>link.addEventListener('click',event=>{
+  event.preventDefault();activate(link.dataset.siteTab);
+ }));
+ document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#contacto"],a[href="#soluciones"]').forEach(link=>{
+  if(link.hasAttribute('data-site-tab'))return;
+  link.addEventListener('click',event=>{
+   const view=link.getAttribute('href').slice(1);
+   if(!panels[view])return;
+   event.preventDefault();activate(view);
+  });
+ });
+ const initial=location.hash.slice(1);
+ const initialView=panels[initial]?initial:'soluciones';
+ activate(initialView,{updateHash:false,scroll:false});
+})();
+
 /* NOFEKI Motion Engine — native, lightweight and accessible */
 (()=>{
  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
