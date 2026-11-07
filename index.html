@@ -1298,6 +1298,39 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 /* GSAP-ready states */
 .gsap-hero-ready .hero-copy>*{will-change:transform,opacity}
 @media(prefers-reduced-motion:reduce){.gsap-hero-ready .hero-copy>*,.gsap-hero-ready .hero-image{opacity:1!important;transform:none!important;clip-path:none!important}}
+
+/* ===== HERO FULL-BLEED: one photographic layer, no side card ===== */
+@media(min-width:801px){
+ header.hero{
+  position:relative!important;isolation:isolate!important;
+  min-height:clamp(650px,calc(100svh - 78px),820px)!important;height:auto!important;
+  display:flex!important;align-items:center!important;overflow:hidden!important;
+  background-image:linear-gradient(90deg,rgba(7,18,32,.90) 0%,rgba(7,18,32,.78) 34%,rgba(7,18,32,.28) 68%,rgba(7,18,32,.12) 100%),linear-gradient(0deg,rgba(7,18,32,.22),transparent 45%),url("assets/hero-supply-chain-clean.jpg")!important;
+  background-size:cover!important;background-position:center 52%!important;background-repeat:no-repeat!important;
+ }
+ header.hero:before{content:none!important;display:none!important}
+ header.hero .hero-layout{
+  position:relative!important;z-index:2!important;
+  width:min(1280px,90%)!important;min-height:0!important;height:auto!important;
+  margin:0 auto!important;display:block!important;
+ }
+ header.hero .hero-copy{width:min(650px,62%)!important;max-width:650px!important;padding:100px 0!important}
+ header.hero h1{max-width:680px!important;font-size:clamp(54px,6vw,82px)!important;line-height:1!important}
+ header.hero p{max-width:550px!important;font-size:19px!important}
+}
+@media(max-width:800px){
+ header.hero{
+  min-height:650px!important;height:auto!important;position:relative!important;isolation:isolate!important;
+  background-image:linear-gradient(180deg,rgba(7,18,32,.93) 0%,rgba(7,18,32,.82) 48%,rgba(7,18,32,.36) 100%),url("assets/hero-supply-chain-clean.jpg")!important;
+  background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;
+ }
+ header.hero:before{content:none!important;display:none!important}
+ header.hero .hero-layout{width:90%!important;min-height:0!important;display:block!important;margin:auto!important}
+ header.hero .hero-copy{width:100%!important;max-width:620px!important;padding:76px 0 90px!important}
+ header.hero h1{font-size:clamp(43px,9vw,62px)!important}
+ header.hero p{font-size:17px!important}
+}
+@media(prefers-reduced-motion:reduce){header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
 </style>
 </head>
 
@@ -1388,9 +1421,6 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 
     </div>
 
-    <div class="hero-image" aria-label="Centro logístico y operación de cadena de suministro">
-      <img src="assets/hero-supply-chain-clean.jpg" alt="Centro logístico moderno con estanterías de almacenamiento" width="1100" height="819" fetchpriority="high" decoding="async">
-    </div>
 
   </div>
 
@@ -2725,12 +2755,12 @@ window.addEventListener('load',function(){
   const hero=document.querySelector('header.hero');
   if(hero){
     const copy=hero.querySelectorAll('.hero-copy .eyebrow,.hero-copy h1,.hero-copy p,.hero-copy .hero-actions');
-    const photo=hero.querySelector('.hero-image');
+    const photo=null;
     gsap.set(copy,{y:26,autoAlpha:0});
-    if(photo)gsap.set(photo,{x:28,autoAlpha:0,scale:.985,clipPath:'inset(0 0 0 8% round 24px)'});
+    
     const intro=gsap.timeline({defaults:{ease:'power3.out'}});
     intro.to(copy,{y:0,autoAlpha:1,duration:.85,stagger:.13},.12);
-    if(photo)intro.to(photo,{x:0,autoAlpha:1,scale:1,clipPath:'inset(0 0 0 0% round 24px)',duration:1.15},.2);
+    
   }
   function animatePanel(panel){
     if(!panel || panel.hidden)return;
