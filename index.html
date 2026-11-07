@@ -1811,6 +1811,18 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
 
 /* Hide the homepage hero when another navigation tab is active */
 header.hero[hidden]{display:none!important}
+
+/* SOLUCIONES portfolio framing */
+.solutions-intro{max-width:850px;margin:0 0 48px}
+.solutions-intro .eyebrow{color:#16b9a8}
+.solutions-intro h2{max-width:760px;margin:14px 0 18px;letter-spacing:-.055em}
+.solutions-intro .lead{max-width:760px}
+@media(max-width:600px){
+ .solutions-intro{margin-bottom:32px}
+ .solutions-intro h2{font-size:clamp(32px,8.5vw,42px);line-height:1.08}
+ .solutions-intro .lead{font-size:15px;line-height:1.6}
+}
+
 </style>
 </head>
 
@@ -1841,14 +1853,14 @@ header.hero[hidden]{display:none!important}
 
     <div class="links" id="siteLinks" role="tablist" aria-label="Secciones principales de NOFEKI">
       <a href="#nosotros" role="tab" aria-selected="false" data-site-tab="nosotros">Nosotros</a>
-      <a href="#ops" role="tab" aria-selected="false" data-site-tab="ops">NOFEKI OPS</a>
+      <a href="#soluciones" role="tab" aria-selected="false" data-site-tab="soluciones">Soluciones</a>
       <a href="#microapps" role="tab" aria-selected="false" data-site-tab="microapps">Microapps</a>
       <a href="#servicios" role="tab" aria-selected="false" data-site-tab="servicios">Servicios</a>
       <a href="#contacto" role="tab" aria-selected="false" data-site-tab="contacto">Contacto</a>
     </div>
 
     <div class="nav-actions">
-      <a class="btn primary nav-cta" href="/gastos.html">Abrir NOFEKI Gastos</a>
+      <a class="btn primary nav-cta" href="#soluciones">Explorar soluciones</a>
       <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="siteLinks">Menú <span aria-hidden="true">☰</span></button>
     </div>
 
@@ -1885,9 +1897,9 @@ header.hero[hidden]{display:none!important}
 
         <a
           class="btn primary"
-          href="#ops"
+          href="#soluciones"
         >
-          Conocer NOFEKI OPS
+          Explorar soluciones
         </a>
 
         <a
@@ -1982,7 +1994,7 @@ header.hero[hidden]{display:none!important}
     <div class="nosotros-manifesto">
       <p>NO SE TRATA DE HACER MÁS.</p>
       <h3>Se trata de <em>generar más valor.</em></h3>
-      <a href="#ops" class="btn btn-primary">Conoce lo que estamos construyendo <span aria-hidden="true">↗</span></a>
+      <a href="#soluciones" class="btn btn-primary">Conoce lo que estamos construyendo <span aria-hidden="true">↗</span></a>
     </div>
   </div>
 </section>
@@ -2111,16 +2123,22 @@ header.hero[hidden]{display:none!important}
      NOFEKI OPS
 ========================= -->
 
-<section id="ops" class="section alt" hidden>
+<section id="soluciones" class="section alt" hidden>
 
   <div class="container">
+
+    <div class="solutions-intro">
+      <div class="eyebrow">Portafolio NOFEKI</div>
+      <h2>Soluciones digitales para transformar la operación.</h2>
+      <p class="lead">Creamos productos y herramientas que responden a retos reales de negocio. Cada solución tiene un propósito: simplificar procesos, mejorar la visibilidad y ayudar a tomar mejores decisiones.</p>
+    </div>
 
     <div class="micro-hero">
 
       <div>
 
         <div class="eyebrow">
-          Producto principal
+          Solución empresarial
         </div>
 
         <h2>
@@ -3167,7 +3185,7 @@ render();
  const panels={
   inicio:[],
   nosotros:['nosotros'],
-  ops:['ops'],
+  soluciones:['soluciones'], 
   microapps:['microapps','app'],
   servicios:['servicios'],
   contacto:['contacto']
@@ -3231,7 +3249,7 @@ render();
   });
  });
 
- document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#nosotros"]').forEach(link=>{
+ document.querySelectorAll('a[href="#soluciones"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#nosotros"]').forEach(link=>{
   if(link.hasAttribute('data-site-tab'))return;
   link.addEventListener('click',event=>{
    const view=link.getAttribute('href').slice(1);
