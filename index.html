@@ -1243,6 +1243,61 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 .solution-shortcuts{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
 .services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:700px){.services-grid{grid-template-columns:1fr}}
+
+/* ===== NOFEKI HERO — single image, natural proportions ===== */
+@media(min-width:801px){
+  header.hero{
+    min-height:680px!important;height:auto!important;
+    display:flex!important;align-items:center!important;
+    background:radial-gradient(ellipse at 82% 46%,rgba(20,184,166,.12),transparent 34%),linear-gradient(120deg,#0C1728 0%,#13263A 62%,#0D1B2C 100%)!important;
+    overflow:hidden!important;
+  }
+  header.hero:before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(8,18,31,.28),transparent 70%);pointer-events:none}
+  header.hero .hero-layout{
+    width:min(1280px,90%)!important;min-height:0!important;height:auto!important;
+    margin:0 auto!important;display:grid!important;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;
+    align-items:center!important;gap:clamp(32px,5vw,76px)!important;
+    position:relative;z-index:1;
+  }
+  header.hero .hero-copy{width:auto!important;max-width:590px!important;padding:76px 0!important;z-index:2!important}
+  header.hero .hero-copy .eyebrow{color:#8CE9DE!important;background:rgba(20,184,166,.10)!important;border:1px solid rgba(94,234,212,.28)!important}
+  header.hero h1{font-size:clamp(48px,5.2vw,76px)!important;max-width:620px!important;line-height:1.01!important;letter-spacing:-.065em!important}
+  header.hero p{font-size:18px!important;line-height:1.72!important;max-width:510px!important}
+  header.hero .hero-image{
+    position:relative!important;inset:auto!important;
+    width:100%!important;height:auto!important;min-height:0!important;
+    aspect-ratio:16/11!important;display:flex!important;align-items:center!important;
+    justify-content:center!important;overflow:hidden!important;
+    border:1px solid rgba(255,255,255,.16)!important;border-radius:24px!important;
+    background:rgba(255,255,255,.035)!important;
+    box-shadow:0 28px 75px rgba(0,0,0,.24)!important;
+  }
+  header.hero .hero-image img{
+    display:block!important;width:100%!important;height:100%!important;
+    max-height:none!important;object-fit:contain!important;object-position:center!important;
+    transform:none!important;
+  }
+  header.hero .hero-image:before,header.hero .hero-image:after{display:none!important;content:none!important}
+}
+@media(max-width:800px){
+  header.hero{height:auto!important;min-height:0!important;padding:0!important;background:linear-gradient(160deg,#0C1728,#142B3D)!important}
+  header.hero:before{display:none!important}
+  header.hero .hero-layout{width:90%!important;display:flex!important;flex-direction:column!important;gap:22px!important}
+  header.hero .hero-copy{width:100%!important;max-width:640px!important;padding:54px 0 12px!important}
+  header.hero h1{font-size:clamp(42px,9vw,60px)!important}
+  header.hero .hero-image{
+    position:relative!important;inset:auto!important;width:100%!important;height:auto!important;
+    min-height:0!important;aspect-ratio:16/9!important;margin:0 0 30px!important;
+    display:flex!important;overflow:hidden!important;border-radius:18px!important;
+    border:1px solid rgba(255,255,255,.16)!important;background:rgba(255,255,255,.04)!important;
+  }
+  header.hero .hero-image img{width:100%!important;height:100%!important;object-fit:contain!important;transform:none!important}
+  header.hero .hero-image:before,header.hero .hero-image:after{display:none!important;content:none!important}
+}
+/* GSAP-ready states */
+.gsap-hero-ready .hero-copy>*{will-change:transform,opacity}
+@media(prefers-reduced-motion:reduce){.gsap-hero-ready .hero-copy>*,.gsap-hero-ready .hero-image{opacity:1!important;transform:none!important;clip-path:none!important}}
 </style>
 </head>
 
@@ -1331,6 +1386,12 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 
       </div>
 
+    </div>
+
+  </div>
+
+<div class="hero-image" aria-label="Centro logístico y operación de cadena de suministro">
+      <img src="assets/hero-supply-chain-clean.jpg" alt="Centro logístico moderno con estanterías de almacenamiento" width="1100" height="819" fetchpriority="high" decoding="async">
     </div>
 
   </div>
@@ -2652,6 +2713,49 @@ render();
   });
  }
 })();
+</script>
+
+
+<!-- GSAP: controlled, lightweight motion system -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
+<script>
+window.addEventListener('load',function(){
+  if(!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  gsap.registerPlugin(ScrollTrigger);
+  document.documentElement.classList.add('gsap-hero-ready');
+  const hero=document.querySelector('header.hero');
+  if(hero){
+    const copy=hero.querySelectorAll('.hero-copy .eyebrow,.hero-copy h1,.hero-copy p,.hero-copy .hero-actions');
+    const photo=hero.querySelector('.hero-image');
+    gsap.set(copy,{y:26,autoAlpha:0});
+    if(photo)gsap.set(photo,{x:28,autoAlpha:0,scale:.985,clipPath:'inset(0 0 0 8% round 24px)'});
+    const intro=gsap.timeline({defaults:{ease:'power3.out'}});
+    intro.to(copy,{y:0,autoAlpha:1,duration:.85,stagger:.13},.12);
+    if(photo)intro.to(photo,{x:0,autoAlpha:1,scale:1,clipPath:'inset(0 0 0 0% round 24px)',duration:1.15},.2);
+  }
+  function animatePanel(panel){
+    if(!panel || panel.hidden)return;
+    const targets=panel.querySelectorAll('.eyebrow,h2,.lead,.card,.product,.step,.mock,.app-shell');
+    if(!targets.length)return;
+    gsap.killTweensOf(targets);
+    gsap.fromTo(targets,{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.65,stagger:.055,ease:'power2.out',overwrite:true});
+    ScrollTrigger.refresh();
+  }
+  document.querySelectorAll('[data-site-tab]').forEach(tab=>tab.addEventListener('click',function(){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      const panel=document.getElementById(this.dataset.siteTab);
+      animatePanel(panel);
+      if(this.dataset.siteTab==='microapps')animatePanel(document.getElementById('app'));
+    }));
+  }));
+  document.querySelectorAll('.section').forEach(section=>{
+    if(section.hidden)return;
+    section.querySelectorAll('.eyebrow,h2,.lead,.card,.product,.step').forEach(el=>{
+      ScrollTrigger.create({trigger:el,start:'top 88%',once:true,onEnter:()=>gsap.to(el,{y:0,autoAlpha:1,duration:.55,ease:'power2.out'})});
+    });
+  });
+});
 </script>
 
 </body>
