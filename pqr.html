@@ -196,6 +196,28 @@
       opacity: 0.9;
     }
 
+
+    .pqr-form{margin-top:24px;display:grid;gap:18px}
+    .pqr-form label{display:grid;gap:7px;color:#fff;font-size:14px;font-weight:600}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .pqr-form input:not([type=checkbox]):not([type=file]),.pqr-form select,.pqr-form textarea{
+      width:100%;padding:13px 14px;border:1px solid #4B5563;border-radius:9px;background:#fff;color:#111827;font:inherit;font-weight:400
+    }
+    .pqr-form input[type=file]{width:100%;padding:10px;border:1px dashed #6B7280;border-radius:9px;color:#E5E7EB;font-weight:400}
+    .pqr-form textarea{resize:vertical;min-height:140px}
+    .pqr-form input:focus,.pqr-form select:focus,.pqr-form textarea:focus{outline:3px solid rgba(20,184,166,.35);border-color:#14B8A6}
+    .pqr-form .field-help{color:#D1D5DB;font-size:12px;font-weight:400}
+    .pqr-form .consent-row{display:flex;align-items:flex-start;gap:10px;font-weight:400;line-height:1.5}
+    .pqr-form .consent-row input{margin-top:4px;flex:0 0 auto}
+    .pqr-form a,.pqr-alternative a{color:#5EEAD4;text-decoration:underline}
+    .pqr-form button:disabled{opacity:.65;cursor:wait}
+    .pqr-status{min-height:24px;margin:0;font-weight:600}
+    .pqr-status.success{color:#A7F3D0}
+    .pqr-status.error{color:#FCA5A5}
+    .pqr-alternative{margin:22px 0 0;color:#D1D5DB;font-size:14px}
+    .hp-field{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+    @media(max-width:700px){.form-grid{grid-template-columns:1fr}.contact-box{padding:22px}}
+
     .footer {
       background: var(--navy);
       color: #D1D5DB;
@@ -723,25 +745,49 @@
       </section>
 
 
-      <!-- CONTACTO -->
+      <!-- RADICACIÓN EN LÍNEA -->
+      <section class="contact-box" id="radicar">
+        <h2>Radica tu solicitud en línea</h2>
+        <p>Completa los datos y recibirás un número de radicado en pantalla para hacer seguimiento por nuestros canales de atención.</p>
 
-      <section class="contact-box">
-
-        <h2>
-          ¿Necesitas presentar una solicitud?
-        </h2>
-
-        <p>
-          Escríbenos indicando claramente el motivo de tu comunicación
-          y los datos necesarios para poder responderte.
-        </p>
-
-        <a
-          class="contact-button"
-          href="mailto:nofeki07@gmail.com">
-          Contactar a NOFEKI
-        </a>
-
+        <form id="pqrForm" class="pqr-form" novalidate>
+          <div class="form-grid">
+            <label>Tipo de solicitud
+              <select name="request_type" required>
+                <option value="">Selecciona una opción</option>
+                <option>Petición</option><option>Queja</option><option>Reclamo</option>
+                <option>Sugerencia</option><option>Protección de datos</option><option>Otra solicitud</option>
+              </select>
+            </label>
+            <label>Nombre completo
+              <input name="full_name" type="text" maxlength="120" autocomplete="name" required>
+            </label>
+            <label>Correo electrónico
+              <input name="email" type="email" maxlength="254" autocomplete="email" required>
+            </label>
+            <label>Asunto
+              <input name="subject" type="text" minlength="3" maxlength="160" required>
+            </label>
+          </div>
+          <label>Describe tu solicitud
+            <textarea name="message" rows="6" minlength="10" maxlength="5000" required placeholder="Cuéntanos qué ocurrió o qué necesitas. No incluyas contraseñas ni información financiera sensible."></textarea>
+            <small class="field-help">Entre 10 y 5.000 caracteres.</small>
+          </label>
+          <label>Adjuntar soporte (opcional)
+            <input id="pqrAttachment" name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+            <small class="field-help">Un archivo PDF, JPG o PNG. Tamaño máximo: 5 MB.</small>
+          </label>
+          <label class="consent-row">
+            <input type="checkbox" name="consent" required>
+            <span>Autorizo el tratamiento de mis datos personales para recibir, gestionar y responder esta solicitud, conforme a la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad de NOFEKI</a>. Declaro que la información suministrada es veraz.</span>
+          </label>
+          <div class="hp-field" aria-hidden="true">
+            <label>No diligencies este campo<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+          </div>
+          <button class="contact-button" id="pqrSubmit" type="submit">Radicar solicitud</button>
+          <p id="pqrStatus" class="pqr-status" role="status" aria-live="polite"></p>
+        </form>
+        <p class="pqr-alternative">¿Prefieres el correo? También puedes escribirnos a <a href="mailto:nofeki07@gmail.com">nofeki07@gmail.com</a>.</p>
       </section>
 
 
@@ -816,10 +862,71 @@
 
 
   <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    document.getElementById("year").textContent =
-      new Date().getFullYear();
+    const pqrForm = document.getElementById("pqrForm");
+    if (pqrForm) {
+      const submitButton = document.getElementById("pqrSubmit");
+      const statusBox = document.getElementById("pqrStatus");
+      const attachmentInput = document.getElementById("pqrAttachment");
+      const endpoint = "https://bxjgodhqseoxrnshqtfr.supabase.co/functions/v1/pqr-submit";
 
+      const fileToBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+        reader.onerror = () => reject(new Error("No fue posible leer el archivo adjunto."));
+        reader.readAsDataURL(file);
+      });
+
+      pqrForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        statusBox.textContent = "";
+        statusBox.className = "pqr-status";
+        if (!pqrForm.reportValidity()) return;
+
+        const file = attachmentInput.files[0];
+        const allowed = ["application/pdf", "image/jpeg", "image/png"];
+        if (file && (!allowed.includes(file.type) || file.size > 5 * 1024 * 1024)) {
+          statusBox.textContent = "El adjunto debe ser PDF, JPG o PNG y no superar 5 MB.";
+          statusBox.classList.add("error");
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Enviando solicitud…";
+        try {
+          const form = new FormData(pqrForm);
+          const payload = {
+            request_type: form.get("request_type"),
+            full_name: form.get("full_name"),
+            email: form.get("email"),
+            subject: form.get("subject"),
+            message: form.get("message"),
+            consent: form.get("consent") === "on",
+            website: form.get("website") || ""
+          };
+          if (file) payload.attachment = { name: file.name, mime: file.type, base64: await fileToBase64(file) };
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          if (!response.ok || !result.ok) throw new Error(result.error || "No fue posible radicar la solicitud.");
+
+          statusBox.textContent = "Solicitud recibida. Tu número de radicado es " + result.reference + ". Conserva este número para futuras consultas.";
+          statusBox.classList.add("success");
+          pqrForm.reset();
+        } catch (error) {
+          statusBox.textContent = error.message || "Ocurrió un error. Intenta nuevamente o escríbenos al correo de contacto.";
+          statusBox.classList.add("error");
+        } finally {
+          submitButton.disabled = false;
+          submitButton.textContent = "Radicar solicitud";
+        }
+      });
+    }
   </script>
 
 </body>
