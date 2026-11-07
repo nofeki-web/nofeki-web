@@ -1,0 +1,1 @@
+Source mirror for the deployed Supabase Edge Function pqr-submit. Deploy only after configuring Resend secrets and reviewing the matching index.ts.
