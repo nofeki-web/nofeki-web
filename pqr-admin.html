@@ -81,7 +81,33 @@ async function boot(){clearPrivatePqrData();try{const {data:{session},error}=awa
 $("logout").onclick=async()=>{await client.auth.signOut();boot();};$("refresh").onclick=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("statusFilter").onchange=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("search").onkeydown=e=>{if(e.key==="Enter")load().catch(err=>msg("listMsg",err.message,"error"));};$("closeDetail").onclick=()=>{$("detail").style.display="none";selected=null;};
 $("saveStatus").onclick=async()=>{if(!selected)return;try{await api("",{action:"status",reference:selected.reference_code,status:$("newStatus").value});msg("detailMsg","Estado actualizado.","success");await load();await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
 $("saveNote").onclick=async()=>{if(!selected)return;try{await api("",{action:"note",reference:selected.reference_code,note:$("note").value});$("note").value="";msg("detailMsg","Nota guardada.","success");await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
-$("sendResponse").onclick=async()=>{if(!selected)return;try{const d=await api("",{action:"respond",reference:selected.reference_code,response:$("response").value});msg("detailMsg",d.message,d.email_status==="sent"?"success":"error");await openDetail(selected.reference_code);await load();}catch(e){msg("detailMsg",e.message,"error");}};
+$("sendResponse").onclick=async()=>{
+  if(!selected)return;
+  const button=$("sendResponse");
+  const reference=selected.reference_code;
+  const responseText=$("response").value.trim();
+  if(responseText.length<5){msg("detailMsg","La respuesta debe tener al menos 5 caracteres.","error");return;}
+  button.disabled=true;
+  button.textContent="Enviando…";
+  msg("detailMsg","Enviando respuesta y registrando el movimiento…");
+  try{
+    const d=await api("",{action:"respond",reference,response:responseText});
+    $("response").value="";
+    msg("detailMsg",d.message||"La respuesta fue procesada.",d.email_status==="sent"&&d.history_saved!==false?"success":"error");
+    // The send operation is already committed. A secondary refresh failure must
+    // never be reported as if the email itself had failed.
+    try{await openDetail(reference);await load();}
+    catch(refreshError){
+      console.warn("PQR response succeeded; refresh failed:",refreshError);
+      msg("detailMsg",(d.message||"Respuesta procesada.")+" El panel no pudo actualizar la vista; pulsa Actualizar para refrescar.",d.email_status==="sent"?"success":"error");
+    }
+  }catch(e){
+    msg("detailMsg",e.message||"No fue posible procesar la solicitud.", "error");
+  }finally{
+    button.disabled=false;
+    button.textContent="Enviar respuesta";
+  }
+};
 boot();
 
 })().catch(error=>{
