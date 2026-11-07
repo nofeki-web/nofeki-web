@@ -1856,6 +1856,14 @@ header.hero[hidden]{display:none!important}
  #soluciones,#microapps,#servicios,#contacto,#app{background:#F4F7F8!important}
 }
 
+
+/* Microapps: remove the empty decorative image placeholder from product cards */
+#microapps .product:before{display:none!important;content:none!important}
+#microapps .product{padding-top:30px!important}
+@media(max-width:800px){
+ #microapps .product{padding-top:24px!important}
+}
+
 </style>
 </head>
 
