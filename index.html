@@ -2804,6 +2804,7 @@ render();
 
  links.forEach(link=>{
   const view=link.dataset.siteTab;
+  link.id='tab-'+view;
   const panelId=panels[view]?.[0];
   if(panelId)link.setAttribute('aria-controls',panelId);
   link.setAttribute('tabindex','-1');
@@ -2813,7 +2814,7 @@ render();
   panel.classList.add('tab-view');
   panel.setAttribute('role','tabpanel');
   panel.setAttribute('tabindex','0');
-  panel.setAttribute('aria-labelledby',id==='app'?'microapps':id);
+  panel.setAttribute('aria-labelledby','tab-'+(id==='app'?'microapps':id));
  });
 
  function activate(view,{updateHash=true,scroll=true,focus=false}={}){
@@ -2930,7 +2931,7 @@ render();
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js" defer></script>
 <script>
 window.addEventListener('load',function(){
-  if(!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  if(!window.gsap || !window.ScrollTrigger || window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   gsap.registerPlugin(ScrollTrigger);
   document.documentElement.classList.add('gsap-hero-ready');
   const hero=document.querySelector('header.hero');
