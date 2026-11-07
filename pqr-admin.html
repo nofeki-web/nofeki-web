@@ -33,9 +33,26 @@ tr[data-ref]{cursor:pointer}tr[data-ref]:hover{background:#f8fafc}.muted{color:#
 <h3>Respuesta al solicitante</h3><textarea id="response" rows="5" placeholder="Redacta la respuesta que se enviará al correo registrado…"></textarea><div class="actions"><button id="sendResponse">Enviar respuesta</button></div><p id="detailMsg" class="muted" role="status"></p>
 <h3>Historial</h3><div id="timeline" class="timeline"></div></section>
 </section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>if(!window.supabase?.createClient){document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\\/script>');}</script>
 <script>
+window.loginPqr=async()=>{const m=document.getElementById("loginMsg");m.textContent="Cargando el módulo de acceso…";m.className="muted";};
+(async()=>{
+  const loadSdk=(src)=>new Promise((resolve,reject)=>{
+    const s=document.createElement("script");s.src=src;s.async=true;
+    s.onload=()=>window.supabase?.createClient?resolve():reject(new Error("El SDK cargó sin inicializar."));
+    s.onerror=()=>reject(new Error("No se pudo cargar "+src));
+    document.head.appendChild(s);
+  });
+  try {
+    await loadSdk("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
+  } catch(firstError) {
+    try { await loadSdk("https://unpkg.com/@supabase/supabase-js@2"); }
+    catch(secondError) {
+      const m=document.getElementById("loginMsg");
+      m.textContent="No se pudo cargar el servicio de acceso desde los dos proveedores. Verifica la conexión o el bloqueo de contenido del navegador.";
+      m.className="error";
+      throw secondError;
+    }
+  }
 const $=id=>document.getElementById(id);let selected=null,submissions=[];
 function msg(id,text,cls="muted"){$(id).textContent=text;$(id).className=cls}
 if(!window.supabase?.createClient){msg("loginMsg","No se cargó el servicio de autenticación. Verifica tu conexión y recarga la página.","error");$("login").disabled=true;throw new Error("Supabase JS CDN no disponible");}
@@ -52,4 +69,10 @@ $("saveStatus").onclick=async()=>{if(!selected)return;try{await api("",{action:"
 $("saveNote").onclick=async()=>{if(!selected)return;try{await api("",{action:"note",reference:selected.reference_code,note:$("note").value});$("note").value="";msg("detailMsg","Nota guardada.","success");await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
 $("sendResponse").onclick=async()=>{if(!selected)return;try{const d=await api("",{action:"respond",reference:selected.reference_code,response:$("response").value});msg("detailMsg",d.message,d.email_status==="sent"?"success":"error");await openDetail(selected.reference_code);await load();}catch(e){msg("detailMsg",e.message,"error");}};
 boot();
+
+})().catch(error=>{
+  const m=document.getElementById("loginMsg");
+  if(m){m.textContent="Error al iniciar el panel: "+(error?.message||"error inesperado");m.className="error";}
+  console.error("NOFEKI PQR admin:",error);
+});
 </script></body></html>
