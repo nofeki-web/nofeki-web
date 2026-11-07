@@ -1722,6 +1722,92 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
 @media(max-width:390px){
   .nav .brand-logo{width:clamp(164px,47vw,184px)!important;max-height:50px!important}
 }
+
+
+/* NOSOTROS — responsive brand story and impact narrative */
+.nosotros-page{
+  color:#f5f8fb!important;
+  background:
+    radial-gradient(ellipse at 82% 8%,rgba(20,184,166,.12),transparent 36%),
+    linear-gradient(145deg,#071827 0%,#0b2032 55%,#102b3c 100%)!important;
+  min-height:calc(100svh - 70px);
+  padding-top:clamp(64px,8vw,112px)!important;
+  padding-bottom:clamp(64px,8vw,112px)!important;
+}
+.nosotros-page .nosotros-content{max-width:1200px!important}
+.nosotros-intro{max-width:940px;margin:0 auto clamp(72px,9vw,124px);text-align:left}
+.nosotros-page .eyebrow{color:#66e2d3!important;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+.nosotros-kicker{margin:28px 0 14px;color:#b7c9d4;font-size:clamp(15px,1.5vw,19px);font-weight:600;letter-spacing:.02em}
+.nosotros-intro h2{max-width:900px;margin:0;color:#fff!important;font-size:clamp(44px,7.2vw,88px)!important;line-height:.99!important;letter-spacing:-.075em!important;font-weight:850!important}
+.nosotros-intro h2 em,.nosotros-manifesto h3 em{color:#58d9cb;font-style:normal}
+.nosotros-lead{max-width:760px;margin:30px 0 0;color:rgba(237,245,249,.78);font-size:clamp(17px,1.65vw,21px);line-height:1.75}
+.nosotros-signature{display:flex;align-items:center;gap:12px;margin-top:34px;color:#b9d1da;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
+.nosotros-signature span{width:34px;height:2px;background:#45d5c5;flex:0 0 auto}
+.nosotros-impact{padding:clamp(30px,5vw,62px);border:1px solid rgba(255,255,255,.12);border-radius:28px;background:rgba(255,255,255,.035);backdrop-filter:blur(12px)}
+.nosotros-section-heading{display:grid;grid-template-columns:1fr 1fr;column-gap:48px;align-items:end;margin-bottom:34px}
+.nosotros-section-heading .eyebrow{grid-column:1/-1;margin-bottom:16px}
+.nosotros-section-heading h3,.nosotros-method h3,.nosotros-capabilities>h3{margin:0;color:#fff;font-size:clamp(27px,3.2vw,42px);line-height:1.08;letter-spacing:-.045em}
+.nosotros-section-heading p{margin:0;color:rgba(237,245,249,.68);font-size:15px;line-height:1.7}
+.nosotros-impact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.nosotros-impact-card{position:relative;min-height:260px;padding:24px 20px;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:rgba(4,18,31,.48);overflow:hidden}
+.nosotros-index{color:#7ce4d7;font-size:10px;font-weight:850;letter-spacing:.13em}
+.nosotros-symbol{display:grid;place-items:center;width:42px;height:42px;margin:27px 0 20px;border-radius:13px;background:rgba(45,212,191,.12);color:#63e2d2;font-size:25px}
+.nosotros-impact-card h4,.nosotros-capability-grid h4{margin:0 0 10px;color:#fff;font-size:18px;line-height:1.2;letter-spacing:-.025em}
+.nosotros-impact-card p,.nosotros-capability-grid p{margin:0;color:rgba(237,245,249,.67);font-size:13px;line-height:1.65}
+.nosotros-method{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,7vw,90px);align-items:start;padding:clamp(66px,9vw,112px) 0}
+.nosotros-method-copy h3{margin:16px 0 18px}
+.nosotros-method-copy>p{max-width:430px;color:rgba(237,245,249,.7);font-size:16px;line-height:1.75}
+.nosotros-steps{border-top:1px solid rgba(255,255,255,.16)}
+.nosotros-steps>div{display:grid;grid-template-columns:48px 1fr;gap:18px;padding:23px 0;border-bottom:1px solid rgba(255,255,255,.16)}
+.nosotros-steps>div>span,.nosotros-capability-grid article>span{color:#5ee2d2;font-size:12px;font-weight:850;letter-spacing:.12em}
+.nosotros-steps h4{margin:0 0 6px;color:#fff;font-size:18px}
+.nosotros-steps p{margin:0;color:rgba(237,245,249,.68);font-size:14px;line-height:1.65}
+.nosotros-capabilities{padding:clamp(34px,5vw,58px);border-radius:26px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11)}
+.nosotros-capabilities>h3{margin:15px 0 32px}
+.nosotros-capability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+.nosotros-capability-grid article{padding-top:20px;border-top:1px solid rgba(94,234,212,.38)}
+.nosotros-capability-grid h4{margin:18px 0 9px}
+.nosotros-manifesto{padding:clamp(76px,10vw,132px) 20px 10px;text-align:center}
+.nosotros-manifesto>p{margin:0 0 14px;color:#a8c0ca;font-size:11px;font-weight:850;letter-spacing:.2em}
+.nosotros-manifesto h3{margin:0 auto 32px;color:#fff;font-size:clamp(34px,5.5vw,66px);line-height:1.05;letter-spacing:-.06em}
+.nosotros-manifesto .btn{display:inline-flex;align-items:center;justify-content:center;gap:14px;min-height:54px;padding:14px 22px}
+@media(max-width:900px){
+ .nosotros-impact-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nosotros-section-heading{grid-template-columns:1fr;gap:14px}
+ .nosotros-method{grid-template-columns:1fr;gap:24px}
+}
+@media(max-width:600px){
+ .nosotros-page{padding-top:48px!important;padding-bottom:56px!important}
+ .nosotros-intro{margin-bottom:52px}
+ .nosotros-kicker{margin-top:20px;font-size:14px}
+ .nosotros-intro h2{font-size:clamp(39px,10.5vw,52px)!important;line-height:1.02!important;letter-spacing:-.065em!important}
+ .nosotros-lead{margin-top:20px;font-size:16px;line-height:1.65}
+ .nosotros-signature{align-items:flex-start;font-size:9px;line-height:1.5;letter-spacing:.09em}
+ .nosotros-signature span{margin-top:6px}
+ .nosotros-impact{padding:22px 16px;border-radius:20px}
+ .nosotros-section-heading{margin-bottom:22px}
+ .nosotros-section-heading h3,.nosotros-method h3,.nosotros-capabilities>h3{font-size:29px}
+ .nosotros-section-heading p{font-size:14px}
+ .nosotros-impact-grid{grid-template-columns:1fr;gap:10px}
+ .nosotros-impact-card{min-height:0;padding:20px}
+ .nosotros-symbol{margin:18px 0 14px}
+ .nosotros-impact-card h4{font-size:18px}
+ .nosotros-method{padding:58px 0;gap:20px}
+ .nosotros-steps>div{grid-template-columns:34px 1fr;gap:12px;padding:19px 0}
+ .nosotros-capabilities{padding:25px 19px;border-radius:20px}
+ .nosotros-capabilities>h3{margin-bottom:24px}
+ .nosotros-capability-grid{grid-template-columns:1fr;gap:20px}
+ .nosotros-capability-grid article{padding-top:17px}
+ .nosotros-capability-grid h4{margin-top:12px}
+ .nosotros-manifesto{padding:68px 0 0}
+ .nosotros-manifesto h3{font-size:clamp(34px,9vw,44px)}
+ .nosotros-manifesto .btn{width:100%;font-size:13px;padding:13px 16px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .nosotros-impact-card{transition:transform .25s ease,border-color .25s ease,background .25s ease}
+ .nosotros-impact-card:hover{transform:translateY(-5px);border-color:rgba(94,234,212,.42);background:rgba(4,25,39,.72)}
+}
+
 </style>
 </head>
 
@@ -1823,15 +1909,77 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
      SOLUCIONES
 ========================= -->
 
-<section id="nosotros" class="section" hidden>
+<section id="nosotros" class="section nosotros-page" hidden>
   <div class="container nosotros-content">
-    <div class="eyebrow">Quiénes somos</div>
-    <h2>Tecnología con criterio operativo.</h2>
-    <p class="lead">En NOFEKI conectamos experiencia en operaciones, inventarios y tecnología para crear herramientas digitales que simplifican el trabajo y mejoran la toma de decisiones.</p>
-    <div class="nosotros-pillars">
-      <article><span>01</span><h3>Entendemos la operación</h3><p>Partimos de los retos reales de empresas y equipos que necesitan visibilidad, control y eficiencia.</p></article>
-      <article><span>02</span><h3>Diseñamos soluciones útiles</h3><p>Convertimos procesos complejos en productos digitales claros, prácticos y fáciles de adoptar.</p></article>
-      <article><span>03</span><h3>Impulsamos mejores decisiones</h3><p>Unimos datos, automatización e inteligencia para que la tecnología genere valor medible.</p></article>
+    <div class="nosotros-intro">
+      <div class="eyebrow">NOFEKI · Nuestra esencia</div>
+      <p class="nosotros-kicker">Transformamos la forma de operar.</p>
+      <h2>Menos tiempo operando.<br><em>Más tiempo generando valor.</em></h2>
+      <p class="nosotros-lead">Creemos que detrás de cada operación hay oportunidades para hacer las cosas mejor. En NOFEKI unimos conocimiento operativo, análisis y tecnología para convertir problemas cotidianos en soluciones prácticas y decisiones que impulsan resultados.</p>
+      <div class="nosotros-signature"><span></span> Supply chain · Inventarios · Operaciones · Tecnología</div>
+    </div>
+
+    <div class="nosotros-impact">
+      <div class="nosotros-section-heading">
+        <div class="eyebrow">El impacto que buscamos</div>
+        <h3>La tecnología importa cuando mejora lo que sucede en el mundo real.</h3>
+        <p>No medimos el valor por la cantidad de herramientas, sino por lo que ayudan a simplificar, comprender y transformar.</p>
+      </div>
+      <div class="nosotros-impact-grid">
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">01 / TIEMPO</span>
+          <div class="nosotros-symbol" aria-hidden="true">↗</div>
+          <h4>Más tiempo para lo importante</h4>
+          <p>Simplificamos tareas y reducimos fricciones para que las personas puedan concentrarse en actividades que generan valor.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">02 / VISIBILIDAD</span>
+          <div class="nosotros-symbol" aria-hidden="true">◎</div>
+          <h4>Información que se entiende</h4>
+          <p>Organizamos datos y procesos para convertir información dispersa en una visión más clara de lo que ocurre.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">03 / CONTROL</span>
+          <div class="nosotros-symbol" aria-hidden="true">⌁</div>
+          <h4>Operaciones bajo control</h4>
+          <p>Diseñamos herramientas que facilitan el seguimiento, la gestión y la identificación de oportunidades de mejora.</p>
+        </article>
+        <article class="nosotros-impact-card">
+          <span class="nosotros-index">04 / DECISIONES</span>
+          <div class="nosotros-symbol" aria-hidden="true">↗</div>
+          <h4>Decisiones con fundamento</h4>
+          <p>Conectamos análisis y criterio operativo para pasar de reaccionar ante los problemas a actuar con intención.</p>
+        </article>
+      </div>
+    </div>
+
+    <div class="nosotros-method">
+      <div class="nosotros-method-copy">
+        <div class="eyebrow">Cómo generamos valor</div>
+        <h3>Del reto operativo al resultado.</h3>
+        <p>Escuchamos, entendemos el contexto y construimos soluciones que responden a necesidades reales. La tecnología es el medio; la mejora es el propósito.</p>
+      </div>
+      <div class="nosotros-steps">
+        <div><span>01</span><section><h4>Comprendemos</h4><p>Identificamos necesidades, puntos críticos y oportunidades en cada proceso.</p></section></div>
+        <div><span>02</span><section><h4>Diseñamos</h4><p>Traducimos el problema en una solución clara, útil y fácil de adoptar.</p></section></div>
+        <div><span>03</span><section><h4>Impulsamos</h4><p>Integramos datos, automatización y tecnología para facilitar mejores acciones.</p></section></div>
+      </div>
+    </div>
+
+    <div class="nosotros-capabilities">
+      <div class="eyebrow">Lo que conectamos</div>
+      <h3>Tres capacidades. Un mismo propósito.</h3>
+      <div class="nosotros-capability-grid">
+        <article><span>01</span><h4>Criterio operativo</h4><p>Experiencia aplicada a supply chain, inventarios y procesos para entender lo que realmente necesita mejorar.</p></article>
+        <article><span>02</span><h4>Inteligencia y análisis</h4><p>Información estructurada y pensamiento analítico para revelar oportunidades y orientar decisiones.</p></article>
+        <article><span>03</span><h4>Tecnología útil</h4><p>Soluciones digitales y microapps diseñadas para resolver necesidades concretas sin añadir complejidad.</p></article>
+      </div>
+    </div>
+
+    <div class="nosotros-manifesto">
+      <p>NO SE TRATA DE HACER MÁS.</p>
+      <h3>Se trata de <em>generar más valor.</em></h3>
+      <a href="#ops" class="btn btn-primary">Conoce lo que estamos construyendo <span aria-hidden="true">↗</span></a>
     </div>
   </div>
 </section>
