@@ -1699,6 +1699,12 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
   .footer:before,.footer:after{display:none!important;content:none!important}
 }
 
+
+/* Desktop: remove visible footer divider without changing mobile footer */
+@media(min-width:801px){
+  .footer{border:0!important;border-top:0!important;box-shadow:none!important;outline:0!important}
+  .footer:before,.footer:after{border:0!important;box-shadow:none!important}
+}
 </style>
 </head>
 
