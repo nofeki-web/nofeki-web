@@ -785,6 +785,10 @@
           <div class="hp-field" aria-hidden="true">
             <label>No diligencies este campo<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
           </div>
+          <div class="turnstile-wrap" style="margin:22px 0 16px">
+            <div id="pqr-turnstile" aria-label="Verificación de seguridad"></div>
+            <small class="field-help">Completa la verificación de seguridad para enviar tu solicitud.</small>
+          </div>
           <button class="contact-button" id="pqrSubmit" type="submit">Radicar solicitud</button>
           <p id="pqrStatus" class="pqr-status" role="status" aria-live="polite"></p>
         </form>
@@ -865,6 +869,47 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    let pqrTurnstileToken = "";
+    let pqrTurnstileWidget = null;
+
+    const loadPqrTurnstile = () => new Promise((resolve, reject) => {
+      if (window.turnstile) return resolve();
+      const existing = document.querySelector('script[data-pqr-turnstile]');
+      if (existing) {
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", () => reject(new Error("No se pudo cargar Cloudflare Turnstile.")), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.dataset.pqrTurnstile = "true";
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("No se pudo cargar Cloudflare Turnstile."));
+      document.head.appendChild(script);
+    });
+
+    const renderPqrTurnstile = async () => {
+      await loadPqrTurnstile();
+      const container = document.getElementById("pqr-turnstile");
+      if (!container || pqrTurnstileWidget !== null) return;
+      pqrTurnstileWidget = window.turnstile.render(container, {
+        sitekey: "0x4AAAAAAFl9gZWmFMMpoxsB",
+        callback: (token) => { pqrTurnstileToken = token; },
+        "expired-callback": () => { pqrTurnstileToken = ""; },
+        "error-callback": () => { pqrTurnstileToken = ""; }
+      });
+    };
+
+    renderPqrTurnstile().catch((error) => {
+      const status = document.getElementById("pqrStatus");
+      if (status) {
+        status.textContent = error.message || "No fue posible cargar la verificación de seguridad.";
+        status.classList.add("error");
+      }
+    });
+
     const pqrForm = document.getElementById("pqrForm");
     if (pqrForm) {
       const submitButton = document.getElementById("pqrSubmit");
@@ -884,6 +929,11 @@
         statusBox.textContent = "";
         statusBox.className = "pqr-status";
         if (!pqrForm.reportValidity()) return;
+        if (!pqrTurnstileToken) {
+          statusBox.textContent = "Completa la verificación de seguridad e inténtalo nuevamente.";
+          statusBox.classList.add("error");
+          return;
+        }
 
         const file = attachmentInput.files[0];
         const allowed = ["application/pdf", "image/jpeg", "image/png"];
@@ -904,7 +954,8 @@
             subject: form.get("subject"),
             message: form.get("message"),
             consent: form.get("consent") === "on",
-            website: form.get("website") || ""
+            website: form.get("website") || "",
+            turnstileToken: pqrTurnstileToken
           };
           if (file) payload.attachment = { name: file.name, mime: file.type, base64: await fileToBase64(file) };
 
@@ -923,6 +974,8 @@
           statusBox.textContent = error.message || "Ocurrió un error. Intenta nuevamente o escríbenos al correo de contacto.";
           statusBox.classList.add("error");
         } finally {
+          pqrTurnstileToken = "";
+          if (window.turnstile && pqrTurnstileWidget !== null) window.turnstile.reset(pqrTurnstileWidget);
           submitButton.disabled = false;
           submitButton.textContent = "Radicar solicitud";
         }
