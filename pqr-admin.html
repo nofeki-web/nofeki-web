@@ -33,7 +33,8 @@ tr[data-ref]{cursor:pointer}tr[data-ref]:hover{background:#f8fafc}.muted{color:#
 <h3>Respuesta al solicitante</h3><textarea id="response" rows="5" placeholder="Redacta la respuesta que se enviará al correo registrado…"></textarea><div class="actions"><button id="sendResponse">Enviar respuesta</button></div><p id="detailMsg" class="muted" role="status"></p>
 <h3>Historial</h3><div id="timeline" class="timeline"></div></section>
 </section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="document.getElementById('loginMsg').textContent='No se pudo cargar el servicio de autenticación. Recarga la página.';document.getElementById('loginMsg').className='error'"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>if(!window.supabase?.createClient){document.write('<script src="https://unpkg.com/@supabase/supabase-js@2"><\\/script>');}</script>
 <script>
 const $=id=>document.getElementById(id);let selected=null,submissions=[];
 function msg(id,text,cls="muted"){$(id).textContent=text;$(id).className=cls}
