@@ -2787,7 +2787,7 @@ render();
 
 
 <script>
-/* NOFEKI top navigation: real content views, not long-page anchors */
+/* NOFEKI top navigation: accessible content tabs */
 (()=>{
  const panels={
   inicio:[],
@@ -2801,8 +2801,22 @@ render();
  const allIds=[...new Set(Object.values(panels).flat())];
  const sections=Object.fromEntries(allIds.map(id=>[id,document.getElementById(id)]));
  if(!links.length||Object.values(sections).some(x=>!x))return;
- allIds.forEach(id=>sections[id].classList.add('tab-view'));
- function activate(view,{updateHash=true,scroll=true}={}){
+
+ links.forEach(link=>{
+  const view=link.dataset.siteTab;
+  const panelId=panels[view]?.[0];
+  if(panelId)link.setAttribute('aria-controls',panelId);
+  link.setAttribute('tabindex','-1');
+ });
+ allIds.forEach(id=>{
+  const panel=sections[id];
+  panel.classList.add('tab-view');
+  panel.setAttribute('role','tabpanel');
+  panel.setAttribute('tabindex','0');
+  panel.setAttribute('aria-labelledby',id==='app'?'microapps':id);
+ });
+
+ function activate(view,{updateHash=true,scroll=true,focus=false}={}){
   if(!panels[view])view='inicio';
   allIds.forEach(id=>{
    const visible=panels[view].includes(id);
@@ -2813,15 +2827,32 @@ render();
    const active=link.dataset.siteTab===view;
    link.setAttribute('aria-selected',String(active));
    link.tabIndex=active?0:-1;
+   if(active&&focus)link.focus();
   });
   if(updateHash)history.replaceState(null,'','#'+view);
   if(scroll)window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
   window.dispatchEvent(new CustomEvent('nofeki:viewchange',{detail:{view}}));
  }
- document.querySelectorAll('.brand[href="#inicio"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();activate('inicio');}));
- links.forEach(link=>link.addEventListener('click',event=>{
-  event.preventDefault();activate(link.dataset.siteTab);
+
+ document.querySelectorAll('.brand[href="#inicio"]').forEach(link=>link.addEventListener('click',event=>{
+  event.preventDefault();activate('inicio');
  }));
+ links.forEach((link,index)=>{
+  link.addEventListener('click',event=>{
+   event.preventDefault();activate(link.dataset.siteTab);
+  });
+  link.addEventListener('keydown',event=>{
+   let next=index;
+   if(event.key==='ArrowRight')next=(index+1)%links.length;
+   else if(event.key==='ArrowLeft')next=(index-1+links.length)%links.length;
+   else if(event.key==='Home')next=0;
+   else if(event.key==='End')next=links.length-1;
+   else return;
+   event.preventDefault();
+   activate(links[next].dataset.siteTab,{focus:true});
+  });
+ });
+
  document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#nosotros"]').forEach(link=>{
   if(link.hasAttribute('data-site-tab'))return;
   link.addEventListener('click',event=>{
@@ -2830,6 +2861,7 @@ render();
    event.preventDefault();activate(view);
   });
  });
+
  const initial=location.hash.slice(1);
  const initialView=panels[initial]?initial:'inicio';
  activate(initialView,{updateHash:false,scroll:false});
@@ -2919,13 +2951,14 @@ window.addEventListener('load',function(){
     gsap.fromTo(targets,{y:22,autoAlpha:0},{y:0,autoAlpha:1,duration:.65,stagger:.055,ease:'power2.out',overwrite:true});
     ScrollTrigger.refresh();
   }
-  document.querySelectorAll('[data-site-tab]').forEach(tab=>tab.addEventListener('click',function(){
+  window.addEventListener('nofeki:viewchange',function(event){
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      const panel=document.getElementById(this.dataset.siteTab);
+      const view=event.detail&&event.detail.view;
+      const panel=document.getElementById(view);
       animatePanel(panel);
-      if(this.dataset.siteTab==='microapps')animatePanel(document.getElementById('app'));
+      if(view==='microapps')animatePanel(document.getElementById('app'));
     }));
-  }));
+  });
   document.querySelectorAll('.section').forEach(section=>{
     if(section.hidden)return;
     section.querySelectorAll('.eyebrow,h2,.lead,.card,.product,.step').forEach(el=>{
