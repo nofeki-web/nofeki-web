@@ -3,7 +3,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-const ADMIN_EMAILS = (Deno.env.get("PQR_ADMIN_EMAILS") || "").split(",").map(v => v.trim().toLowerCase()).filter(Boolean);
+const ADMIN_EMAILS = ["nofeki07@gmail.com"];
 const RESEND_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const FROM_EMAIL = Deno.env.get("PQR_FROM_EMAIL") || "";
 const db = createClient(URL, SERVICE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
@@ -42,7 +42,7 @@ Deno.serve(async req => {
       if (ref) {
         const {data:row,error} = await db.from("pqr_submissions").select("*").eq("reference_code",ref).maybeSingle();
         if (error) throw error;
-        if (!row) return reply({ok:false,error:"Radicado no encontrado."},404);
+        if (!row) return reply({ok:false,error:"Radicado no encontrado."},404,origin);
         const {data:events,error:eventError} = await db.from("pqr_events").select("*").eq("submission_id",row.id).order("created_at",{ascending:true});
         if (eventError) throw eventError;
         let attachmentUrl = null;
@@ -66,14 +66,14 @@ Deno.serve(async req => {
     const body = await req.json();
     const reference = String(body.reference||"").trim();
     const action = String(body.action||"");
-    if (!reference) return reply({ok:false,error:"Falta el radicado."},400);
+    if (!reference) return reply({ok:false,error:"Falta el radicado."},400,origin);
     const {data:row,error:lookupError} = await db.from("pqr_submissions").select("*").eq("reference_code",reference).maybeSingle();
     if (lookupError) throw lookupError;
     if (!row) return reply({ok:false,error:"Radicado no encontrado."},404);
 
     if (action === "status") {
       const next = String(body.status||"");
-      if (!statuses.includes(next)) return reply({ok:false,error:"Estado no válido."},400);
+      if (!statuses.includes(next)) return reply({ok:false,error:"Estado no válido."},400,origin);
       const {error} = await db.from("pqr_submissions").update({status:next,updated_at:new Date().toISOString(),...(next==="Respondida"?{responded_at:new Date().toISOString()}:{})}).eq("id",row.id);
       if (error) throw error;
       const {error:eventError} = await db.from("pqr_events").insert({submission_id:row.id,actor_email:user.email,event_type:"status_changed",old_status:row.status,new_status:next,note:String(body.note||"").slice(0,2000)||null});
@@ -83,15 +83,15 @@ Deno.serve(async req => {
 
     if (action === "note") {
       const note=String(body.note||"").trim().slice(0,4000);
-      if (!note) return reply({ok:false,error:"Escribe la nota interna."},400);
+      if (!note) return reply({ok:false,error:"Escribe la nota interna."},400,origin);
       const {error}=await db.from("pqr_events").insert({submission_id:row.id,actor_email:user.email,event_type:"internal_note",note});
       if(error) throw error;
-      return reply({ok:true});
+      return reply({ok:true},200,origin);
     }
 
     if (action === "respond") {
       const response=String(body.response||"").trim().slice(0,5000);
-      if(response.length<5) return reply({ok:false,error:"La respuesta debe tener al menos 5 caracteres."},400);
+      if(response.length<5) return reply({ok:false,error:"La respuesta debe tener al menos 5 caracteres."},400,origin);
       let emailStatus="not_configured";
       try {
         emailStatus=await sendMail(row.email,"Respuesta a tu solicitud "+reference,
@@ -114,9 +114,9 @@ Deno.serve(async req => {
       await db.from("pqr_events").insert({submission_id:row.id,actor_email:user.email,event_type:"notification_retry",email_status});
       return reply({ok:true,email_status},200,origin);
     }
-    return reply({ok:false,error:"Acción no reconocida."},400);
+    return reply({ok:false,error:"Acción no reconocida."},400,origin);
   } catch(e) {
     console.error("pqr-admin error",e);
-    return reply({ok:false,error:"No fue posible procesar la solicitud."},500);
+    return reply({ok:false,error:"No fue posible procesar la solicitud."},500,origin);
   }
 });
