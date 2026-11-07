@@ -1373,6 +1373,32 @@ body{
  body{background-attachment:scroll!important}
  .nav .brand-logo{width:190px!important;max-width:42vw!important}
 }
+
+/* Final correction: ONE shared warehouse background for the whole document */
+html{background:#081827!important}
+body{
+  background-color:#081827!important;
+  background-image:linear-gradient(rgba(5,17,30,.20),rgba(5,17,30,.20)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;background-position:center center!important;
+  background-repeat:no-repeat!important;background-attachment:fixed!important;
+}
+header.hero,.hero{
+  background:transparent!important;
+  background-image:none!important;
+  background-color:transparent!important;
+}
+header.hero:before,header.hero:after{display:none!important;content:none!important}
+.footer{
+  background:transparent!important;
+  background-image:none!important;
+  background-color:transparent!important;
+  border-top:0!important;
+  box-shadow:none!important;
+}
+.footer:before,.footer:after{display:none!important;content:none!important}
+@media(max-width:800px){
+ body{background-attachment:scroll!important}
+}
 </style>
 </head>
 
