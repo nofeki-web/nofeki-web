@@ -1236,6 +1236,8 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 @media(hover:none),(max-width:800px){.motion-cursor{display:none!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.motion-progress,.motion-cursor{display:none!important}.motion-ready [data-reveal],.motion-ready header.hero .hero-copy>*{opacity:1!important;transform:none!important}}
 
+/* Inactive tabs are hidden from the initial HTML render too. */
+[hidden]{display:none!important}
 </style>
 </head>
 
@@ -1537,7 +1539,7 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
      NOFEKI OPS
 ========================= -->
 
-<section id="ops" class="section alt">
+<section id="ops" class="section alt" hidden>
 
   <div class="container">
 
@@ -1678,7 +1680,7 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
      MICROAPPS
 ========================= -->
 
-<section id="microapps" class="section">
+<section id="microapps" class="section" hidden>
 
   <div class="container">
 
@@ -1795,7 +1797,7 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
      NOFEKI GASTOS
 ========================= -->
 
-<section id="app" class="section alt">
+<section id="app" class="section alt" hidden>
 
   <div class="container">
 
@@ -2120,7 +2122,7 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
      CONTACTO
 ========================= -->
 
-<section id="contacto" class="section">
+<section id="contacto" class="section" hidden>
 
   <div
     class="container"
