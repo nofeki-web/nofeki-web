@@ -1670,6 +1670,35 @@ header.hero:before,header.hero:after{display:none!important;content:none!importa
   .footer{background:#0b1928!important;background-image:none!important}
 }
 
+
+/* DESKTOP ONLY: continuous warehouse photograph behind the full page and footer */
+@media(min-width:801px){
+  html{background:#081827!important}
+  body{
+    background-color:#081827!important;
+    background-image:
+      linear-gradient(rgba(5,17,30,.34),rgba(5,17,30,.34)),
+      url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+    background-size:cover!important;
+    background-position:center center!important;
+    background-repeat:no-repeat!important;
+    background-attachment:fixed!important;
+  }
+  header.hero{
+    background:transparent!important;
+    background-image:none!important;
+    background-color:transparent!important;
+  }
+  header.hero:before,header.hero:after{display:none!important;content:none!important}
+  .footer{
+    background:transparent!important;
+    background-image:none!important;
+    background-color:transparent!important;
+    border-top:1px solid rgba(255,255,255,.18)!important;
+  }
+  .footer:before,.footer:after{display:none!important;content:none!important}
+}
+
 </style>
 </head>
 
