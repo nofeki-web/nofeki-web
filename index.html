@@ -441,9 +441,8 @@ a{
 
 .footer{
   position:relative;isolation:isolate;overflow:hidden;
-  background-image:linear-gradient(180deg,rgba(5,17,30,.88),rgba(5,17,30,.94)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png");
-  background-size:cover;background-position:center 68%;background-repeat:no-repeat;
-  color:white;padding:64px 0 42px;border-top:1px solid rgba(255,255,255,.12)
+  background:linear-gradient(180deg,rgba(5,17,30,.34),rgba(5,17,30,.72))!important;
+  color:white;padding:64px 0 42px;border-top:1px solid rgba(255,255,255,.16)
 }
 
 .footer .legal-links{
@@ -1360,6 +1359,20 @@ header.hero .eyebrow{color:#c7fff7!important}
 .nosotros-pillars p{color:rgba(255,255,255,.7);line-height:1.7;font-size:14px}
 .footer{background-color:#0b1928}
 @media(max-width:700px){.nosotros-pillars{grid-template-columns:1fr}#nosotros{min-height:0}}
+
+/* Full-page photographic continuity and larger primary brand mark */
+body{
+ background-color:#081827!important;
+ background-image:linear-gradient(rgba(5,17,30,.18),rgba(5,17,30,.18)),url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+ background-size:cover!important;background-position:center center!important;background-repeat:no-repeat!important;background-attachment:fixed!important
+}
+.nav .brand-logo{width:252px!important;max-width:30vw!important;height:auto!important}
+.footer{background-image:linear-gradient(180deg,rgba(5,17,30,.34),rgba(5,17,30,.72))!important;background-color:transparent!important}
+.footer .brand-logo{width:170px!important}
+@media(max-width:800px){
+ body{background-attachment:scroll!important}
+ .nav .brand-logo{width:190px!important;max-width:42vw!important}
+}
 </style>
 </head>
 
