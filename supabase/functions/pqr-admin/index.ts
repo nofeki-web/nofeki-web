@@ -8,8 +8,8 @@ const RESEND_KEY = Deno.env.get("RESEND_API_KEY") || "";
 const FROM_EMAIL = Deno.env.get("PQR_FROM_EMAIL") || "";
 const db = createClient(URL, SERVICE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 const statuses = ["Recibida","En revisión","En gestión","Respondida","Cerrada"];
-const headers = { "Content-Type":"application/json; charset=utf-8", "Cache-Control":"no-store" };
-const reply = (body: unknown, status=200) => new Response(JSON.stringify(body), { status, headers });
+const cors = (origin: string | null) => ({ "Access-Control-Allow-Origin": origin === "https://nofeki.com" ? origin : "https://www.nofeki.com", "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info", "Access-Control-Allow-Methods": "GET,POST,OPTIONS", "Vary":"Origin", "Content-Type":"application/json; charset=utf-8", "Cache-Control":"no-store" });
+const reply = (body: unknown, status=200, origin: string | null=null) => new Response(JSON.stringify(body), { status, headers:cors(origin) });
 const escapeHtml = (s: string) => s.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]!));
 
 async function sendMail(to:string, subject:string, html:string) {
@@ -24,18 +24,16 @@ async function sendMail(to:string, subject:string, html:string) {
 }
 
 Deno.serve(async req => {
-  if (req.method === "OPTIONS") return new Response("ok", {headers:{
-    "Access-Control-Allow-Origin":"https://www.nofeki.com",
-    "Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info",
-    "Access-Control-Allow-Methods":"GET,POST,OPTIONS","Vary":"Origin"
-  }});
-  if (!["GET","POST"].includes(req.method)) return reply({ok:false,error:"Método no permitido."},405);
+  const origin = req.headers.get("origin");
+  if (origin && !["https://nofeki.com","https://www.nofeki.com"].includes(origin)) return reply({ok:false,error:"Origen no autorizado."},403,origin);
+  if (req.method === "OPTIONS") return new Response("ok", {headers:cors(origin)});
+  if (!["GET","POST"].includes(req.method)) return reply({ok:false,error:"Método no permitido."},405,origin);
   const auth = req.headers.get("Authorization") || "";
   const token = auth.replace(/^Bearer\s+/i,"");
-  if (!token) return reply({ok:false,error:"Inicia sesión."},401);
+  if (!token) return reply({ok:false,error:"Inicia sesión."},401,origin);
   const {data:{user},error:userError} = await db.auth.getUser(token);
-  if (userError || !user?.email) return reply({ok:false,error:"Sesión inválida."},401);
-  if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) return reply({ok:false,error:"No tienes permisos para administrar PQR."},403);
+  if (userError || !user?.email) return reply({ok:false,error:"Sesión inválida."},401,origin);
+  if (!ADMIN_EMAILS.includes(user.email.toLowerCase())) return reply({ok:false,error:"No tienes permisos para administrar PQR."},403,origin);
 
   try {
     if (req.method === "GET") {
@@ -53,7 +51,7 @@ Deno.serve(async req => {
           if (signedError) throw signedError;
           attachmentUrl = signed.signedUrl;
         }
-        return reply({ok:true,submission:row,events:events||[],attachment_url:attachmentUrl});
+        return reply({ok:true,submission:row,events:events||[],attachment_url:attachmentUrl},200,origin);
       }
       const status = url.searchParams.get("status");
       const q = (url.searchParams.get("q")||"").trim().slice(0,100);
@@ -62,7 +60,7 @@ Deno.serve(async req => {
       if (q) query=query.or("reference_code.ilike.%"+q+"%,full_name.ilike.%"+q+"%,email.ilike.%"+q+"%,subject.ilike.%"+q+"%");
       const {data,error} = await query;
       if (error) throw error;
-      return reply({ok:true,submissions:data||[]});
+      return reply({ok:true,submissions:data||[]},200,origin);
     }
 
     const body = await req.json();
@@ -80,7 +78,7 @@ Deno.serve(async req => {
       if (error) throw error;
       const {error:eventError} = await db.from("pqr_events").insert({submission_id:row.id,actor_email:user.email,event_type:"status_changed",old_status:row.status,new_status:next,note:String(body.note||"").slice(0,2000)||null});
       if (eventError) throw eventError;
-      return reply({ok:true});
+      return reply({ok:true},200,origin);
     }
 
     if (action === "note") {
@@ -114,7 +112,7 @@ Deno.serve(async req => {
       catch(e){emailStatus="failed";console.error("PQR retry email failed",e);}
       await db.from("pqr_submissions").update({notification_status:emailStatus,notification_sent_at:emailStatus==="sent"?new Date().toISOString():null,notification_error:emailStatus==="failed"?"No fue posible enviar el correo":null}).eq("id",row.id);
       await db.from("pqr_events").insert({submission_id:row.id,actor_email:user.email,event_type:"notification_retry",email_status});
-      return reply({ok:true,email_status});
+      return reply({ok:true,email_status},200,origin);
     }
     return reply({ok:false,error:"Acción no reconocida."},400);
   } catch(e) {
