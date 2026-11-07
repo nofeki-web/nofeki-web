@@ -1635,6 +1635,41 @@ button:focus-visible,a:focus-visible{outline:3px solid #2DD4BF;outline-offset:3p
   header.hero .hero-copy{padding:30px 0!important}
 }
 
+
+/* IMAGE SEPARATION FIX: photo belongs only to the hero, never to the page/footer */
+html,body{
+  background-color:#081827!important;
+  background-image:none!important;
+  background-attachment:initial!important;
+}
+header.hero{
+  background-color:#0b1b2c!important;
+  background-image:
+    linear-gradient(90deg,rgba(5,17,30,.82) 0%,rgba(5,17,30,.56) 48%,rgba(5,17,30,.24) 100%),
+    url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+header.hero:before,header.hero:after{display:none!important;content:none!important}
+.footer{
+  background:#0b1928!important;
+  background-image:none!important;
+  background-color:#0b1928!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;
+}
+.footer:before,.footer:after{display:none!important;content:none!important}
+@media(max-width:800px){
+  header.hero{
+    background-image:
+      linear-gradient(180deg,rgba(5,17,30,.72),rgba(5,17,30,.50) 58%,rgba(5,17,30,.62)),
+      url("https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png")!important;
+    background-size:cover!important;
+    background-position:center center!important;
+  }
+  .footer{background:#0b1928!important;background-image:none!important}
+}
+
 </style>
 </head>
 
