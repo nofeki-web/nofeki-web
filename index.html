@@ -1238,6 +1238,11 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
 
 /* Inactive tabs are hidden from the initial HTML render too. */
 [hidden]{display:none!important}
+
+/* Soluciones compactas: el resto del catálogo vive en su propia pestaña */
+.solution-shortcuts{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px}
+.services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:700px){.services-grid{grid-template-columns:1fr}}
 </style>
 </head>
 
@@ -1270,6 +1275,7 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       <a href="#soluciones" role="tab" aria-selected="true" data-site-tab="soluciones">Soluciones</a>
       <a href="#ops" role="tab" aria-selected="false" data-site-tab="ops">NOFEKI OPS</a>
       <a href="#microapps" role="tab" aria-selected="false" data-site-tab="microapps">Microapps</a>
+      <a href="#servicios" role="tab" aria-selected="false" data-site-tab="servicios">Servicios</a>
       <a href="#contacto" role="tab" aria-selected="false" data-site-tab="contacto">Contacto</a>
     </div>
 
@@ -1377,58 +1383,25 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       necesitan más claridad, menos trabajo manual y mejores decisiones.
     </p>
 
-    <div class="grid">
+    <div class="solution-shortcuts">
+      <a class="btn primary" href="#ops">Explorar NOFEKI OPS</a>
+      <a class="btn light" href="#microapps">Ver microapps</a>
+    </div>
 
-      <div class="card">
+  </div>
 
-        <span class="tag">
-          Empresas
-        </span>
-
-        <h3>
-          NOFEKI OPS
-        </h3>
-
-        <p>
-          Gestión de inventarios y operaciones con dashboard,
-          movimientos, compras, análisis, alertas y recomendaciones.
-        </p>
-
-        <a
-          class="btn light"
-          href="#ops"
-        >
-          Ver solución
-        </a>
-
-      </div>
+</section>
 
 
-      <div class="card">
-
-        <span class="tag">
-          Personal + empresa
-        </span>
-
-        <h3>
-          Microapps
-        </h3>
-
-        <p>
-          Pequeñas aplicaciones enfocadas en un problema específico:
-          gastos, seguimiento, control, análisis y productividad.
-        </p>
-
-        <a
-          class="btn light"
-          href="#microapps"
-        >
-          Ver catálogo
-        </a>
-
-      </div>
-
-
+<!-- =========================
+     SERVICIOS
+========================= -->
+<section id="servicios" class="section" hidden>
+  <div class="container">
+    <div class="eyebrow">Servicios NOFEKI</div>
+    <h2>Capacidades para llevar tus ideas a la acción.</h2>
+    <p class="lead">Explora nuestros servicios digitales y operativos sin mezclar sus contenidos con la vista principal de Soluciones.</p>
+    <div class="grid services-grid">
       <div class="card">
 
         <span class="tag">
@@ -1454,7 +1427,9 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Inteligencia artificial
@@ -1479,7 +1454,9 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Eficiencia operativa
@@ -1504,7 +1481,9 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       </div>
 
 
-      <div class="card">
+      
+
+<div class="card">
 
         <span class="tag">
           Presencia digital
@@ -1529,11 +1508,9 @@ a.btn:hover,button.btn:hover{transform:translateY(-3px)}
       </div>
 
     </div>
-
+    </div>
   </div>
-
 </section>
-
 
 <!-- =========================
      NOFEKI OPS
@@ -2596,6 +2573,7 @@ render();
   soluciones:['soluciones'],
   ops:['ops'],
   microapps:['microapps','app'],
+  servicios:['servicios'],
   contacto:['contacto']
  };
  const links=Array.from(document.querySelectorAll('[data-site-tab]'));
@@ -2622,7 +2600,7 @@ render();
  links.forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();activate(link.dataset.siteTab);
  }));
- document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#contacto"],a[href="#soluciones"]').forEach(link=>{
+ document.querySelectorAll('a[href="#ops"],a[href="#microapps"],a[href="#servicios"],a[href="#contacto"],a[href="#soluciones"]').forEach(link=>{
   if(link.hasAttribute('data-site-tab'))return;
   link.addEventListener('click',event=>{
    const view=link.getAttribute('href').slice(1);
