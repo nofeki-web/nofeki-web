@@ -195,13 +195,28 @@ Deno.serve(async (req: Request) => {
       notificationError = "No fue posible completar las notificaciones.";
       console.error("pqr notification error", mailError);
     }
-    await admin.from("pqr_submissions").update({
+    const { error: notificationUpdateError } = await admin.from("pqr_submissions").update({
       notification_status: notificationStatus,
       notification_error: notificationError,
       notification_sent_at: notificationStatus === "sent" ? new Date().toISOString() : null,
     }).eq("id", id);
 
-    return json({ ok: true, reference, notification_status: notificationStatus, message: "Tu solicitud fue radicada correctamente." }, 201, origin);
+    if (notificationUpdateError) {
+      // The PQR itself is already stored. Do not tell the applicant that
+      // submission failed; expose the persistence warning for operational review.
+      console.error("PQR created but notification status could not be saved", {
+        reference,
+        code: notificationUpdateError.code,
+      });
+    }
+
+    return json({
+      ok: true,
+      reference,
+      notification_status: notificationStatus,
+      notification_status_persisted: !notificationUpdateError,
+      message: "Tu solicitud fue radicada correctamente.",
+    }, 201, origin);
   } catch (error) {
     console.error("pqr-submit error", error);
     return json({ error: "No fue posible radicar tu solicitud. Intenta nuevamente o escríbenos a nofeki07@gmail.com." }, 500, origin);
