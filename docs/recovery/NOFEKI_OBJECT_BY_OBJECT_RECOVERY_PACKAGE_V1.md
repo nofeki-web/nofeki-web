@@ -202,3 +202,11 @@ Estas capturas reducen los objetos PARTIAL cuya definición ya se pudo recuperar
 - Performance Advisor: dos índices reportados sin uso; no se eliminan sin análisis de consultas/planes.
 - Comparación GitHub: la rama tiene 45 commits ahead y 0 behind al momento de la comparación previa a este documento; incluye 8 paths de Edge Functions además de documentación. No integrar la rama completa como documental sin separar y revisar esos cambios de código.
 - No se modificó Auth, no se revocaron grants, no se eliminaron índices, no se crearon policies y no se desplegaron funciones.
+
+
+## 12. Preparación de validación y captura Auth/Storage — 2026-11-08
+
+- [Script SQL de validación read-only](scripts/NOFEKI_RECOVERY_VALIDATION_READ_ONLY.sql): consultas de catálogo, sin DDL/DML ni lectura de datos de negocio. Ejecutar únicamente después de una restauración en instancia aislada.
+- [Plan de captura Auth/Storage](NOFEKI_AUTH_STORAGE_CONFIGURATION_CAPTURE_PLAN_2026-11-08.md): detalla los metadatos verificados, los ajustes no accesibles desde las herramientas actuales y la lista segura para captura manual/Management API.
+- No se generó DDL de restauración aproximado. Los objetos sin fuente exacta siguen bloqueados hasta obtener definición completa y revisar owner/ACL/dependencias.
+- La herramienta conectada no ofrece una operación para leer el endpoint Management API `/config/auth` ni los ajustes globales de Storage. No se solicitó ni se copiaron credenciales.
