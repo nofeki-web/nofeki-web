@@ -169,3 +169,12 @@ La recuperación solo podrá marcarse **TESTED** después de:
 ## 8. Próxima acción técnica
 
 Completar la extracción de DDL y ACL exactos que faltan (incluyendo sequences, extensiones, default privileges y event trigger completo), y generar scripts reconstruidos por objeto únicamente cuando exista evidencia suficiente. Después solicitar autorización para usar una instancia aislada, cotizar costo si aplica y ejecutar la matriz de regresión. Hasta entonces no hay restauración demostrada.
+
+
+## 9. Capturas complementarias generadas el 2026-11-07
+
+- [Definiciones exactas de rutinas, triggers, event trigger e índice](../audit/NOFEKI_ROUTINE_TRIGGER_INDEX_DEFINITIONS_SNAPSHOT_2026-11-07.md). Incluye `pg_get_functiondef`, atributos, owner y ACL observados.
+- [Extensiones, secuencias y default privileges](../audit/NOFEKI_EXTENSIONS_SEQUENCES_DEFAULT_PRIVILEGES_SNAPSHOT_2026-11-07.md).
+- [SQL de referencia comentario-only](../audit/reference-sql/NOFEKI_RECOVERY_REFERENCE_ONLY_NOT_EXECUTABLE.sql).
+
+Estas capturas reducen los objetos PARTIAL cuya definición ya se pudo recuperar desde el catálogo. Aun así, el paquete completo sigue sin equivaler a backup ni a restauración: faltan las ACL efectivas completas de todos los objetos, policies/constraints exhaustivas y validación en instancia aislada.
