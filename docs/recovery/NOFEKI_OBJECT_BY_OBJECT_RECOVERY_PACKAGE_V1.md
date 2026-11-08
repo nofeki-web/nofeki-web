@@ -178,3 +178,8 @@ Completar la extracción de DDL y ACL exactos que faltan (incluyendo sequences, 
 - [SQL de referencia comentario-only](../audit/reference-sql/NOFEKI_RECOVERY_REFERENCE_ONLY_NOT_EXECUTABLE.sql).
 
 Estas capturas reducen los objetos PARTIAL cuya definición ya se pudo recuperar desde el catálogo. Aun así, el paquete completo sigue sin equivaler a backup ni a restauración: faltan las ACL efectivas completas de todos los objetos, policies/constraints exhaustivas y validación en instancia aislada.
+
+
+- [Policies RLS, constraints, índices y ACL efectivas](../audit/NOFEKI_RLS_POLICIES_CONSTRAINTS_INDEXES_ACL_SNAPSHOT_2026-11-07.md): 24 policies, 64 constraints validadas, 30 índices válidos/listos, privilegios efectivos SELECT/INSERT/UPDATE/DELETE y secuencia pública.
+
+**Cobertura documental actual:** catálogo de las 12 tablas públicas, policies, constraints, índices, grants efectivos principales, rutinas, triggers, event trigger, extensiones, secuencias y default privileges. Sigue pendiente restauración/pruebas aisladas y comparar ACL extendidas (TRUNCATE/REFERENCES/TRIGGER/MAINTAIN), grants de schemas y configuración exacta de Auth/Storage del entorno de destino.
