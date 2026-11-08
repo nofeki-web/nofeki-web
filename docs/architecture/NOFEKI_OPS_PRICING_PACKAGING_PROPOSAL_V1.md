@@ -1,6 +1,6 @@
 # NOFEKI OPS — Pricing, Packaging & Licensing Proposal v1
 
-**Status:** Commercial proposal for validation; prices are hypotheses, not approved public prices.  
+**Status:** Commercial proposal v1.1; user-selected price anchors and billing cadence, still subject to market, legal, tax, and unit-economics validation.  
 **Currency:** COP. All prices below are proposed before any applicable taxes.  
 **Scope:** NOFEKI OPS launch packaging and commercial rules inside NOFEKI Platforms.  
 **Safety:** No checkout, payment gateway, production database, Auth, or license provisioning has been implemented.
@@ -94,8 +94,18 @@ Avoid charging for a seat that is merely invited but has not accepted or been ac
 
 ## 4. Billing cadence and incentives
 
+**Confirmed decision:** offer both monthly and annual billing.
+
 - Monthly: list price, billed in advance.
-- Annual: propose 10% discount against 12 monthly list-price payments, billed in advance.
+- Annual: 10% discount against 12 monthly list-price payments, billed in advance (proposal to validate financially).
+
+| Plan | Monthly | Annual before discount | Annual with 10% discount | Monthly equivalent when paid annually |
+|---|---:|---:|---:|---:|
+| Essential | $299.000 | $3.588.000 | $3.229.200 | $269.100 |
+| Growth | $599.000 | $7.188.000 | $6.469.200 | $539.100 |
+| Scale | $1.199.000 | $14.388.000 | $12.949.200 | $1.079.100 |
+
+Amounts are COP, before applicable taxes and any separately agreed onboarding or integration fees.
 - No lifetime license at launch.
 - No automatic price increase during a committed annual period.
 - Price changes apply at renewal with advance notice and explicit customer communication.
@@ -106,8 +116,8 @@ Annual discount calculation should be server-side from the versioned price catal
 
 ## 5. Trial policy
 
-Recommended launch policy:
-- 14-day trial for Growth capabilities.
+Confirmed launch decision:
+- 7-day trial for Growth capabilities.
 - No payment card required to start.
 - One trial per verified organization, with abuse controls based on organization identity and verified owner—not email alone.
 - Trial start timestamp and end timestamp stored explicitly.
@@ -230,4 +240,13 @@ These amounts are simple plan-price multiplication before taxes, discounts, refu
 9. Confirm whether Essential includes ABC/rotation in the first product release.
 10. Confirm actual OPS capabilities against the current product roadmap before marketing any feature.
 
-**No prices in this document are approved for public display until these decisions are signed off.**
+## 13. Confirmed user decisions and remaining approvals
+
+Confirmed by the NOFEKI owner for this proposal:
+1. Retain the three proposed monthly price anchors: Essential $299.000, Growth $599.000, Scale $1.199.000 COP.
+2. Offer both monthly and annual billing.
+3. Set the initial trial duration to 7 days.
+
+Still not approved for public launch: final tax treatment, public price display, annual discount economics, provider selection, refund/proration terms, grace period, support SLAs, and feature availability against the shipped OPS product. Prices remain proposal values pending those gates.
+
+**Do not publish checkout or activate paid licenses until the remaining approvals and technical acceptance tests are complete.**
