@@ -234,6 +234,37 @@ CREATE TABLE platform.audit_events (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 
+
+
+-- Product-specific role assignments. Organizational membership alone does not
+-- imply a product role; the target membership must be active at authorization time.
+CREATE TABLE platform.role_assignments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  role_id uuid NOT NULL REFERENCES platform.roles(id) ON DELETE RESTRICT,
+  subject_type text NOT NULL CHECK (subject_type IN ('user', 'organization')),
+  subject_user_id uuid REFERENCES auth.users(id) ON DELETE RESTRICT,
+  subject_organization_id uuid REFERENCES platform.organizations(id) ON DELETE RESTRICT,
+  assigned_by uuid REFERENCES auth.users(id) ON DELETE RESTRICT,
+  status text NOT NULL DEFAULT 'active'
+    CHECK (status IN ('active', 'suspended', 'revoked')),
+  valid_from timestamptz NOT NULL DEFAULT now(),
+  valid_until timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  CHECK (valid_until IS NULL OR valid_until > valid_from),
+  CHECK (
+    (subject_type = 'user' AND subject_user_id IS NOT NULL AND subject_organization_id IS NULL)
+    OR
+    (subject_type = 'organization' AND subject_organization_id IS NOT NULL AND subject_user_id IS NULL)
+  )
+);
+
+CREATE INDEX platform_role_assignments_user_idx
+  ON platform.role_assignments(subject_user_id, role_id, status)
+  WHERE subject_type = 'user';
+CREATE INDEX platform_role_assignments_org_idx
+  ON platform.role_assignments(subject_organization_id, role_id, status)
+  WHERE subject_type = 'organization';
+
 -- Candidate indexes only; review query plans before adoption.
 CREATE INDEX platform_memberships_user_status_idx
   ON platform.organization_memberships(user_id, status);
