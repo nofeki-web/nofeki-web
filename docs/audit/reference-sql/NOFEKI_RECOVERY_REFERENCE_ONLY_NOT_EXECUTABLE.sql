@@ -1,0 +1,183 @@
+-- NOFEKI Gastos — SQL de referencia para recuperación por objeto
+-- ESTADO: RECONSTRUCTED / NOT EXECUTABLE
+-- Este archivo es deliberadamente comentario-only. No contiene DDL ejecutable.
+-- NO mover a supabase/migrations/ ni ejecutar en producción.
+--
+-- Propósito:
+--   1) conservar la lista de objetos que deben reconstruirse;
+--   2) registrar dependencias y evidencia necesaria;
+--   3) evitar inventar definiciones a partir de nombres o resúmenes.
+--
+-- REGLA: convertir un objeto en SQL ejecutable únicamente después de obtener
+-- su definición exacta desde producción, backup o migración fuente verificada,
+-- comparar owner/ACL/search_path/seguridad y probarlo en una instancia aislada.
+
+-- ---------------------------------------------------------------------------
+-- FASE 0 — CAPTURA READ-ONLY ANTES DE RECONSTRUIR
+-- ---------------------------------------------------------------------------
+-- Capturar y versionar (sin datos de negocio ni PII):
+--   * pg_extension / versiones;
+--   * schemas, owners y search_path relevante;
+--   * columnas, tipos, defaults, identity/generated;
+--   * PK, FK, UNIQUE, CHECK y exclusiones;
+--   * índices completos, expresiones y predicates;
+--   * RLS enabled/forced y todas las policies;
+--   * grants de tablas, secuencias, schemas y funciones;
+--   * ALTER DEFAULT PRIVILEGES;
+--   * definiciones completas de rutinas, argumentos, return type, language,
+--     volatility, SECURITY DEFINER/INVOKER, owner, config y ACL;
+--   * triggers, event triggers, enabled mode, owner y función asociada;
+--   * secuencias y estado de propiedad (sin extraer datos sensibles);
+--   * buckets y configuración de Storage, sin enumerar archivos privados.
+--
+-- No usar SELECT sobre tablas de negocio para esta captura. Los snapshots deben
+-- limitarse al catálogo y metadatos necesarios.
+
+-- ---------------------------------------------------------------------------
+-- FASE 1 — DEPENDENCIAS Y ORDEN
+-- ---------------------------------------------------------------------------
+-- 01. Extensiones y schemas requeridos.
+-- 02. Tablas base ligadas a auth.users:
+--     public.budgets
+--     public.gastos
+--     public.financial_profiles
+--     public.income_transactions
+--     public.user_expense_categories
+-- 03. Tablas dependientes:
+--     public.budget_categories -> public.budgets
+--     public.legal_acceptance_audit -> auth.users / trigger
+--     public.shortcut_authorizations -> auth.users
+--     public.shortcut_link_codes -> auth.users
+--     public.pqr_submissions
+--     public.pqr_events -> public.pqr_submissions
+--     public.pqr_rate_limits
+-- 04. Constraints, índices y secuencias.
+-- 05. RLS, policies, grants, owners y default privileges.
+-- 06. Rutinas RPC y rutinas de trigger.
+-- 07. Triggers de tabla.
+-- 08. Storage bucket privado y controles.
+-- 09. Edge Functions y secretos configurados en el entorno aislado.
+-- 10. Frontend y pruebas de integración.
+-- 11. Event trigger global ensure_rls: instalar al final y validar su efecto.
+--
+-- La lista es un orden de trabajo; el orden DDL definitivo debe ajustarse al
+-- grafo de dependencias extraído del catálogo real.
+
+-- ---------------------------------------------------------------------------
+-- FASE 2 — OBJETOS CON EVIDENCIA PARCIAL
+-- ---------------------------------------------------------------------------
+-- TABLA: public.budget_categories
+-- Evidencia conocida:
+--   FK compuesta (budget_id,user_id) -> budgets(id,user_id)
+--   UNIQUE (budget_id,category)
+--   planned >= 0
+-- Pendiente:
+--   DDL completo, defaults, índices y policies exactas.
+--
+-- ÍNDICE: budget_categories_budget_user_fk_idx
+-- Evidencia: presente en producción, ausente en migración local comparada.
+-- Pendiente: definición exacta (columnas/orden/expresión/predicate).
+--
+-- FUNCIÓN: save_monthly_budget(date,text,numeric,numeric,numeric,jsonb)
+-- Evidencia:
+--   SECURITY INVOKER; valida auth.uid(); EXECUTE authenticated;
+--   frontend envía seis argumentos.
+-- Pendiente:
+--   cuerpo SQL íntegro, owner, volatility, config, ACL completa y checksum.
+--
+-- FUNCIÓN: issue_shortcut_authorization(uuid,text,text,timestamptz)
+-- Evidencia:
+--   SECURITY INVOKER; advisory lock por usuario; valida y gestiona expiración;
+--   EXECUTE service_role.
+-- Pendiente:
+--   cuerpo SQL íntegro, owner, volatility, config, ACL completa y checksum.
+--
+-- FUNCIÓN: pqr_consume_rate_limit(text,int,int)
+-- Evidencia:
+--   SECURITY INVOKER; upsert atómico; EXECUTE service_role.
+-- Pendiente:
+--   cuerpo SQL íntegro, owner, volatility, config, ACL completa y checksum.
+--
+-- FUNCIÓN: capture_nofeki_legal_acceptance()
+-- Evidencia:
+--   SECURITY DEFINER; search_path vacío; trigger en auth.users.
+-- Pendiente:
+--   cuerpo exacto, owner, ACL y definición exacta del trigger.
+--
+-- FUNCIÓN: enforce_single_active_shortcut_authorization()
+-- Evidencia:
+--   SECURITY DEFINER; trigger asociado a autorizaciones.
+-- Pendiente:
+--   cuerpo exacto, owner, ACL, nombre y DDL completo del trigger.
+--
+-- FUNCIÓN: rls_auto_enable()
+-- Evidencia:
+--   SECURITY DEFINER; search_path pg_catalog; owner postgres.
+-- Pendiente:
+--   cuerpo exacto y relación con event trigger ensure_rls.
+--
+-- EVENT TRIGGER: ensure_rls
+-- Evidencia:
+--   ddl_command_end; habilitado; owner postgres.
+-- Pendiente:
+--   definición exacta, función, filtros y comportamiento completo.
+--
+-- No crear stubs SQL de estos objetos para producción. Un stub puede dar la
+-- falsa impresión de que la recuperación está completa y puede abrir permisos.
+
+-- ---------------------------------------------------------------------------
+-- FASE 3 — MATRIZ DE SEGURIDAD A REVALIDAR
+-- ---------------------------------------------------------------------------
+-- Tablas públicas observadas con RLS enabled, FORCE RLS false:
+--   budgets, budget_categories, financial_profiles, gastos,
+--   income_transactions, legal_acceptance_audit, pqr_events,
+--   pqr_rate_limits, pqr_submissions, shortcut_authorizations,
+--   shortcut_link_codes, user_expense_categories.
+--
+-- Tablas backend-managed observadas sin policies directas:
+--   pqr_events, pqr_rate_limits, pqr_submissions,
+--   shortcut_authorizations, shortcut_link_codes.
+--
+-- No asumir que RLS sustituye GRANT, ni que GRANT sustituye RLS.
+-- Revalidar cada rol: anon, authenticated, service_role y postgres.
+-- Verificar que no exista EXECUTE para PUBLIC en rutinas internas.
+-- Para SECURITY DEFINER: revisar owner, search_path fijo, SQL y ACL.
+-- No usar user_metadata/raw_user_meta_data para decisiones de autorización.
+
+-- ---------------------------------------------------------------------------
+-- FASE 4 — EDGE FUNCTIONS / STORAGE
+-- ---------------------------------------------------------------------------
+-- Restaurar funciones solo después de tablas, RPC, ACL y secretos de prueba.
+-- Snapshot de código no equivale a configuración completa de despliegue.
+-- Confirmar verify_jwt y autenticación interna por endpoint.
+--
+-- Storage:
+--   bucket pqr-attachments, privado, límite 5 MB,
+--   MIME PDF/JPEG/PNG; signed URL observada de 300 segundos.
+-- Pendiente de prueba: upload, limpieza ante fallo, acceso no autorizado,
+-- expiración real de signed URL. Usar archivos sintéticos.
+--
+-- No copiar adjuntos de producción ni valores secretos a este paquete.
+
+-- ---------------------------------------------------------------------------
+-- FASE 5 — VALIDACIÓN Y EVIDENCIA
+-- ---------------------------------------------------------------------------
+-- Ejecutar solo en una instancia aislada aprobada:
+--   * dos usuarios sintéticos para comprobar aislamiento RLS;
+--   * llamadas RPC con sesión válida, inválida y ausente;
+--   * pruebas de revocación, expiración e idempotencia del atajo;
+--   * pruebas de rate limit y reintento PQR;
+--   * pruebas de upload/cleanup/signed URL;
+--   * Security, Performance y Health Advisors;
+--   * comparación de catálogo pre/post y checksum de definiciones.
+--
+-- Resultado por objeto:
+--   [ ] DDL exacto capturado
+--   [ ] dependencias satisfechas
+--   [ ] owner y ACL revisados
+--   [ ] restaurado en instancia aislada
+--   [ ] prueba positiva
+--   [ ] prueba negativa
+--   [ ] evidencia registrada y saneada
+--
+-- Ningún objeto debe marcarse TESTED solo porque su CREATE terminó sin error.
