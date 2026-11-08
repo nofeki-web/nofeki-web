@@ -182,4 +182,14 @@ Estas capturas reducen los objetos PARTIAL cuya definición ya se pudo recuperar
 
 - [Policies RLS, constraints, índices y ACL efectivas](../audit/NOFEKI_RLS_POLICIES_CONSTRAINTS_INDEXES_ACL_SNAPSHOT_2026-11-07.md): 24 policies, 64 constraints validadas, 30 índices válidos/listos, privilegios efectivos SELECT/INSERT/UPDATE/DELETE y secuencia pública.
 
-**Cobertura documental actual:** catálogo de las 12 tablas públicas, policies, constraints, índices, grants efectivos principales, rutinas, triggers, event trigger, extensiones, secuencias y default privileges. Sigue pendiente restauración/pruebas aisladas y comparar ACL extendidas (TRUNCATE/REFERENCES/TRIGGER/MAINTAIN), grants de schemas y configuración exacta de Auth/Storage del entorno de destino.
+**Cobertura documental actual:** catálogo de las 12 tablas públicas, policies, constraints, índices, grants efectivos principales, rutinas, triggers, event trigger, extensiones, secuencias, default privileges, privilegios extendidos de tablas y grants de schemas. Sigue pendiente restauración/pruebas aisladas y obtener configuración Auth/Storage completa desde panel o Management API autorizada. La captura complementaria documenta concesiones REFERENCES/TRIGGER inusuales para anon/authenticated en `budget_categories`, `budgets` e `income_transactions`; no se revocaron porque falta validar procedencia y dependencias.
+
+
+## 10. Captura complementaria del 2026-11-08
+
+- [ACL extendidas, grants de schemas y metadatos exactos del bucket Storage](../audit/NOFEKI_EXTENDED_ACL_STORAGE_METADATA_SNAPSHOT_2026-11-08.md).
+- Confirmado: schemas `auth`, `public` y `storage` conceden USAGE y no CREATE a anon/authenticated/service_role.
+- Confirmado: no hay TRUNCATE para anon/authenticated; service_role tiene TRUNCATE en las 12 tablas públicas.
+- Hallazgo a revisar, sin remediación aplicada: REFERENCES y TRIGGER concedidos a anon/authenticated en `budget_categories`, `budgets` e `income_transactions`.
+- Storage: bucket `pqr-attachments` privado, límite 5 MiB y MIME PDF/JPEG/PNG.
+- Auth settings y pruebas funcionales de Storage siguen UNVERIFIED/TEST-PENDING. No se accedió a secretos ni se realizaron escrituras.
