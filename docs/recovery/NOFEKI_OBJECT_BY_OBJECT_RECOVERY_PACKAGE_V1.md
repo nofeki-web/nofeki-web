@@ -193,3 +193,12 @@ Estas capturas reducen los objetos PARTIAL cuya definición ya se pudo recuperar
 - Hallazgo a revisar, sin remediación aplicada: REFERENCES y TRIGGER concedidos a anon/authenticated en `budget_categories`, `budgets` e `income_transactions`.
 - Storage: bucket `pqr-attachments` privado, límite 5 MiB y MIME PDF/JPEG/PNG.
 - Auth settings y pruebas funcionales de Storage siguen UNVERIFIED/TEST-PENDING. No se accedió a secretos ni se realizaron escrituras.
+
+
+## 11. Advisors y revisión de integración — 2026-11-08
+
+- [Security/Performance Advisors y comparación de rama](../audit/NOFEKI_ADVISORS_AND_RECOVERY_BRANCH_REVIEW_2026-11-08.md).
+- Security Advisor: aviso INFO por RLS sin policies en cinco tablas backend-managed; WARN por leaked password protection desactivada.
+- Performance Advisor: dos índices reportados sin uso; no se eliminan sin análisis de consultas/planes.
+- Comparación GitHub: la rama tiene 45 commits ahead y 0 behind al momento de la comparación previa a este documento; incluye 8 paths de Edge Functions además de documentación. No integrar la rama completa como documental sin separar y revisar esos cambios de código.
+- No se modificó Auth, no se revocaron grants, no se eliminaron índices, no se crearon policies y no se desplegaron funciones.
