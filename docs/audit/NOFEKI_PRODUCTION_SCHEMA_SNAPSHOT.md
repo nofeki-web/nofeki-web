@@ -62,7 +62,10 @@ Funciones encontradas:
 - `issue_shortcut_authorization(uuid,text,text,timestamptz)`: valida parámetros, toma advisory lock por usuario, limpia expiradas y emite autorización si no hay otra activa. SECURITY INVOKER.
 - `pqr_consume_rate_limit(text,integer,integer)`: incrementa contador de forma atómica y devuelve si sigue bajo límite. SECURITY INVOKER.
 - `save_monthly_budget(date,text,numeric,numeric,numeric,jsonb)`: exige auth.uid(), valida periodo/modo/importes/categorías y reemplaza presupuesto/categorías en una transacción. SECURITY INVOKER.
-- `rls_auto_enable()`: función SECURITY DEFINER para activar RLS en tablas nuevas de public; revisar su trigger de evento y propietario en una inspección específica.
+- `rls_auto_enable()`: función SECURITY DEFINER para activar RLS en tablas nuevas de public. Se confirmó el event trigger `ensure_rls`, evento `ddl_command_end`, habilitado (O), propietario postgres.
+
+Event trigger confirmado:
+- `ensure_rls`: `ddl_command_end`, habilitado, propietario postgres; ejecuta la rutina de habilitación automática de RLS.
 
 Trigger de tabla confirmado:
 - `trg_single_active_shortcut_authorization`: AFTER INSERT en `shortcut_authorizations`, ejecuta `enforce_single_active_shortcut_authorization()`.
