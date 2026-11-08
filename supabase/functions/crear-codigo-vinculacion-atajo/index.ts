@@ -1,0 +1,15 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+const allowedOrigins = new Set(["https://nofeki.com","https://www.nofeki.com"]);
+function cors(req:Request){const origin=req.headers.get("Origin")??"";return {"Access-Control-Allow-Origin":allowedOrigins.has(origin)?origin:"https://nofeki.com","Access-Control-Allow-Headers":"authorization, apikey, content-type, x-client-info","Access-Control-Allow-Methods":"POST, OPTIONS","Content-Type":"application/json; charset=utf-8","Vary":"Origin"}}
+function out(req:Request,status:number,data:Record<string,unknown>){return new Response(JSON.stringify(data),{status,headers:cors(req)})}
+async function hash(v:string){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("")}
+Deno.serve(async(req:Request)=>{if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(req)});if(req.method!=="POST")return out(req,405,{ok:false,error:"method_not_allowed"});
+const url=Deno.env.get("SUPABASE_URL"),key=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");if(!url||!key)return out(req,500,{ok:false,error:"server_configuration_error"});
+const access=req.headers.get("Authorization")?.match(/^Bearer\s+(.+)$/i)?.[1];if(!access)return out(req,401,{ok:false,error:"login_required"});
+const u=await fetch(url+"/auth/v1/user",{headers:{apikey:key,Authorization:"Bearer "+access}});if(!u.ok)return out(req,401,{ok:false,error:"invalid_session"});const user=await u.json();if(!user?.id)return out(req,401,{ok:false,error:"invalid_session"});
+let device="iPhone NOFEKI";try{const b=await req.json();if(typeof b.device_name==="string"&&b.device_name.trim())device=b.device_name.trim().slice(0,80)}catch{}
+const active=new URL(url+"/rest/v1/shortcut_authorizations");active.searchParams.set("select","id");active.searchParams.set("user_id","eq."+user.id);active.searchParams.set("revoked_at","is.null");active.searchParams.set("expires_at","gt."+new Date().toISOString());active.searchParams.set("limit","1");
+const ar=await fetch(active,{headers:{apikey:key,Authorization:"Bearer "+key}});if(!ar.ok)return out(req,500,{ok:false,error:"authorization_check_failed"});if((await ar.json()).length)return out(req,409,{ok:false,error:"active_authorization_exists",message:"Ya existe una autorización activa. Revócala antes de vincular otra."});
+const raw=Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b=>b.toString(16).padStart(2,"0")).join("");const expires=new Date(Date.now()+5*60*1000).toISOString();
+const ins=await fetch(url+"/rest/v1/shortcut_link_codes",{method:"POST",headers:{apikey:key,Authorization:"Bearer "+key,"Content-Type":"application/json",Prefer:"return=minimal"},body:JSON.stringify({user_id:user.id,code_hash:await hash(raw),device_name:device,expires_at:expires})});if(!ins.ok){console.error("code insert",ins.status,(await ins.text()).slice(0,200));return out(req,500,{ok:false,error:"code_creation_failed"})}
+return out(req,201,{ok:true,code:raw,expires_at:expires,expires_in_seconds:300,message:"Código de un solo uso. No lo compartas."})});
