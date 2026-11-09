@@ -19,7 +19,7 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 2. Aplicar el SQL base candidato completo.
 3. Aplicar el addendum administrativo.
 4. Ejecutar `supabase test db`.
-5. Ejecutar pruebas Deno del worker y Edge Function con servicios simulados.
+5. Ejecutar `deno test docs/recovery/outbox-implementation-candidate/pqr-outbox-worker/core_test.ts` para las reglas puras del worker; después añadir mocks de red/DB para la función completa y ejecutar pruebas Deno del worker y Edge Function.
 6. Ejecutar pruebas de concurrencia contra PostgreSQL temporal.
 7. Ejecutar pruebas de navegador con usuario administrador sintético y usuario fuera de allowlist.
 8. Guardar logs sin correos, tokens, contenido PQR ni datos personales.
@@ -67,6 +67,11 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 | UI-04 | Doble click/timeout | Repetir mismo POST | Misma Idempotency-Key; una operación |
 | UI-05 | Sesión expirada | Abrir panel sin sesión válida | Cierra acceso y limpia datos privados visibles |
 
+## Pruebas unitarias preparadas
+- `pqr-outbox-worker/core.ts`: reglas puras exportadas, sin acceso a red, secretos ni base de datos.
+- `pqr-outbox-worker/core_test.ts`: 8 pruebas Deno para comparación de secreto, escape HTML, confirmación, respuesta formal, destinatario interno obligatorio, backoff acotado y sanitización de errores.
+- Estado de ejecución: no ejecutadas en este entorno; Deno no está instalado aquí. Solo se verificaron estáticamente las referencias y los casos declarados.
+
 ## Criterios de aprobación
 - Todos los escenarios DB-01 a DB-20, EDGE-01 a EDGE-05, WORK-01 a WORK-07 y UI-01 a UI-05 pasan.
 - Ninguna respuesta formal duplica evento o job.
@@ -85,7 +90,7 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 6. El formulario y panel deben probarse en navegador contra funciones del entorno temporal.
 
 ## Comandos — solo en equipo/entorno aislado
-Consultar primero las opciones de la versión instalada: `supabase --version`, `supabase test db --help`, `deno test --help`.
+Consultar primero las opciones de la versión instalada: `supabase --version`, `supabase test db --help`, `deno test --help`. Ejecutar la prueba unitaria indicada arriba antes de iniciar la batería integrada.
 Después de instalar y arrancar stack local: `supabase start`, `supabase test db`.
 Ejecutar tests Deno con permisos mínimos y mocks; definir ruta/imports reales al preparar el entorno.
 No ejecutar estos comandos apuntando a producción.
