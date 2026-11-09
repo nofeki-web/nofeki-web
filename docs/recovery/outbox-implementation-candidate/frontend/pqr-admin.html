@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestión PQR | NOFEKI</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#111827;background:#f5f7fa}
+*{box-sizing:border-box}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:32px 20px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
+h1{font-size:28px;letter-spacing:-.04em;margin:0}p{color:#64748b}
+.panel{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:22px;margin-bottom:18px;box-shadow:0 8px 30px #11182708}
+input,select,textarea,button{font:inherit;border-radius:9px;padding:11px 12px;border:1px solid #d1d5db}
+input,select,textarea{width:100%;background:#fff}button{cursor:pointer;background:#111827;color:white;border-color:#111827;font-weight:700}
+button.secondary{background:#fff;color:#111827}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.filters{display:grid;grid-template-columns:1fr 220px auto;gap:10px}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid #edf0f3;font-size:14px}th{color:#64748b;font-weight:700}
+tr[data-ref]{cursor:pointer}tr[data-ref]:hover{background:#f8fafc}.muted{color:#64748b;font-size:13px}.status{display:inline-block;padding:4px 8px;border-radius:20px;background:#eef2ff;font-size:12px}
+#detail{display:none}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.timeline{border-left:2px solid #e5e7eb;margin:16px 0;padding-left:16px}.event{margin:0 0 16px}.error{color:#b91c1c}.success{color:#047857}
+@media(max-width:700px){.wrap{padding:20px 12px}.grid,.filters{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}#app .panel{padding:16px 12px}#app .panel table{display:block;width:100%;white-space:normal;overflow:visible}#app .panel table thead{display:none}#app .panel table tbody{display:grid;gap:12px}#app .panel table tr[data-ref]{display:block;border:1px solid #e5e7eb;border-radius:12px;padding:8px 12px;background:#fff}#app .panel table td{display:grid;grid-template-columns:92px minmax(0,1fr);gap:8px;padding:9px 2px;border-bottom:1px solid #edf0f3;white-space:normal;overflow-wrap:anywhere;font-size:14px}#app .panel table td:last-child{border-bottom:0}#app .panel table td:before{content:attr(data-label);font-weight:700;color:#64748b}#detail .grid{gap:4px}}
+</style></head>
+<body><main class="wrap">
+<header><div><p style="margin:0 0 5px">NOFEKI · OPERACIONES</p><h1>Gestión de solicitudes PQR</h1></div><button id="logout" class="secondary" style="display:none">Cerrar sesión</button></header>
+<section class="panel" id="loginPanel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h2 style="margin:0">Acceso administrativo</h2><a class="secondary" href="/" style="display:inline-flex;align-items:center;justify-content:center;text-decoration:none;padding:10px 14px;border-radius:10px">← Volver a página principal</a></div><p>Ingresa con tu cuenta autorizada de NOFEKI.</p><div class="grid"><input id="email" type="email" placeholder="Correo electrónico" autocomplete="username"><input id="password" type="password" placeholder="Contraseña" autocomplete="current-password"></div><div id="pqr-turnstile" style="margin-top:16px"></div><div class="actions"><button id="login" type="button" onclick="if(typeof window.loginPqr==='function'){window.loginPqr()}else{document.getElementById('loginMsg').textContent='El módulo de acceso no terminó de cargar. Recarga la página e inténtalo de nuevo.';document.getElementById('loginMsg').className='error'}">Iniciar sesión</button></div><p id="loginMsg" class="muted" role="status"></p></section>
+<section id="app" style="display:none">
+<div class="panel"><div class="filters"><input id="search" placeholder="Buscar radicado, nombre, correo o asunto"><select id="statusFilter"><option value="">Todos los estados</option><option>Recibida</option><option>En revisión</option><option>En gestión</option><option value="Respondida" disabled>Respondida (se asigna al responder)</option><option>Cerrada</option></select><button id="refresh">Actualizar</button></div></div>
+<div class="panel"><div style="overflow-x:auto"><table><thead><tr><th>Radicado</th><th>Solicitante</th><th>Asunto</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="rows"><tr><td colspan="5">Cargando…</td></tr></tbody></table></div><p id="listMsg" class="muted"></p></div>
+<section class="panel" id="detail"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><p class="muted" id="detailRef"></p><h2 id="detailTitle"></h2></div><button class="secondary" id="closeDetail">Cerrar detalle</button></div>
+<div class="grid"><div><p class="muted">Solicitante</p><strong id="detailName"></strong><p id="detailEmail"></p></div><div><p class="muted">Tipo de solicitud</p><strong id="detailType"></strong><p id="detailDate" class="muted"></p></div></div>
+<h3>Descripción</h3><p id="detailMessage" style="white-space:pre-wrap"></p><p id="attachment"></p>
+<div class="grid"><label>Estado<select id="newStatus"><option>Recibida</option><option>En revisión</option><option>En gestión</option><option>Respondida</option><option>Cerrada</option></select></label><label>Nota interna<textarea id="note" rows="2" placeholder="Observación de gestión (solo equipo NOFEKI)"></textarea></label></div>
+<div class="actions"><button id="saveStatus">Guardar estado</button><button id="saveNote" class="secondary">Agregar nota</button></div>
+<hr style="border:0;border-top:1px solid #e5e7eb;margin:22px 0">
+<h3>Respuesta al solicitante</h3><textarea id="response" rows="5" placeholder="Redacta la respuesta que se enviará al correo registrado…"></textarea><div class="actions"><button id="sendResponse">Enviar respuesta</button></div><p id="detailMsg" class="muted" role="status"></p>
+<h3>Historial</h3><div id="timeline" class="timeline"></div></section>
+</section></main>
+<script>
+window.loginPqr=async()=>{const m=document.getElementById("loginMsg");m.textContent="Cargando el módulo de acceso…";m.className="muted";};
+(async()=>{
+  const loadSdk=(src)=>new Promise((resolve,reject)=>{
+    const s=document.createElement("script");s.src=src;s.async=true;
+    s.onload=()=>window.supabase?.createClient?resolve():reject(new Error("El SDK cargó sin inicializar."));
+    s.onerror=()=>reject(new Error("No se pudo cargar "+src));
+    document.head.appendChild(s);
+  });
+  try {
+    await loadSdk("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2");
+  } catch(firstError) {
+    try { await loadSdk("https://unpkg.com/@supabase/supabase-js@2"); }
+    catch(secondError) {
+      const m=document.getElementById("loginMsg");
+      m.textContent="No se pudo cargar el servicio de acceso desde los dos proveedores. Verifica la conexión o el bloqueo de contenido del navegador.";
+      m.className="error";
+      throw secondError;
+    }
+  }
+const $=id=>document.getElementById(id);let selected=null,submissions=[];
+let pqrCaptchaToken="",pqrTurnstileWidget=null;
+await new Promise((resolve,reject)=>{
+  const s=document.createElement("script");
+  s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  s.async=true;s.defer=true;s.onload=resolve;s.onerror=()=>reject(new Error("No se pudo cargar Cloudflare Turnstile."));
+  document.head.appendChild(s);
+});
+pqrTurnstileWidget=window.turnstile.render("#pqr-turnstile",{
+  sitekey:"0x4AAAAAAFl9gZWmFMMpoxsB",
+  callback:(token)=>{pqrCaptchaToken=token;msg("loginMsg","Verificación de seguridad completada. Ya puedes iniciar sesión.","success");},
+  "expired-callback":()=>{pqrCaptchaToken="";msg("loginMsg","La verificación expiró. Completa nuevamente el CAPTCHA.","error");},
+  "error-callback":()=>{pqrCaptchaToken="";msg("loginMsg","No fue posible completar Cloudflare Turnstile. Recarga e inténtalo nuevamente.","error");}
+});
+function msg(id,text,cls="muted"){$(id).textContent=text;$(id).className=cls}
+if(!window.supabase?.createClient){msg("loginMsg","No se cargó el servicio de autenticación. Verifica tu conexión y recarga la página.","error");$("login").disabled=true;throw new Error("Supabase JS CDN no disponible");}
+const URL="https://bxjgodhqseoxrnshqtfr.supabase.co",KEY="sb_publishable_OuwKu3ke886VK9g7AtVADA_MsUw5Y3z";
+const client=supabase.createClient(URL,KEY,{auth:{storageKey:"nofeki-pqr-admin-auth-v1",persistSession:true,autoRefreshToken:true}});
+const clearPrivatePqrData=()=>{submissions=[];selected=null;$("rows").innerHTML="";$("listMsg").textContent="";$("detail").style.display="none";$("timeline").innerHTML="";$("detailMessage").textContent="";$("attachment").textContent="";$("response").value="";$("note").value="";$("app").style.display="none";};
+const api=async(path="",body=null)=>{const {data:{session}}=await client.auth.getSession();if(!session)throw Error("Tu sesión expiró. Inicia sesión nuevamente.");let idempotencyKey=null,storageKey=null,payloadText=null;if(body){payloadText=JSON.stringify(body);storageKey="nofeki:pqr-admin:pending:"+body.reference+":"+body.action;let pending=null;try{pending=JSON.parse(sessionStorage.getItem(storageKey)||"null")}catch{}if(pending&&pending.payload===payloadText&&pending.key)idempotencyKey=pending.key;else{idempotencyKey=crypto.randomUUID();sessionStorage.setItem(storageKey,JSON.stringify({payload:payloadText,key:idempotencyKey}));}}const headers={apikey:KEY,Authorization:"Bearer "+session.access_token,"Content-Type":"application/json"};if(idempotencyKey)headers["Idempotency-Key"]=idempotencyKey;const r=await fetch(URL+"/functions/v1/pqr-admin"+path,{method:body?"POST":"GET",headers,...(body?{body:payloadText}:{})});const d=await r.json();if(r.status===401||r.status===403){clearPrivatePqrData();await client.auth.signOut();$("loginPanel").style.display="block";msg("loginMsg",d.error||"Cuenta sin permisos para administrar PQR. Sesión cerrada y datos protegidos.","error");throw Error(d.error||"Acceso no autorizado.");}if(!r.ok||!d.ok)throw Error(d.error||"Error de servicio");if(storageKey)sessionStorage.removeItem(storageKey);return d};
+async function load(){const params=new URLSearchParams();if($("search").value.trim())params.set("q",$("search").value.trim());if($("statusFilter").value)params.set("status",$("statusFilter").value);const d=await api("?"+params.toString());submissions=d.submissions;$("rows").innerHTML=submissions.length?submissions.map(x=>'<tr data-ref="'+x.reference_code+'"><td data-label="Radicado"><strong>'+x.reference_code+'</strong></td><td data-label="Solicitante">'+esc(x.full_name)+'<br><span class="muted">'+esc(x.email)+'</span></td><td data-label="Asunto">'+esc(x.subject)+'</td><td data-label="Estado"><span class="status">'+esc(x.status)+'</span></td><td data-label="Fecha">'+new Date(x.created_at).toLocaleString("es-CO")+'</td></tr>').join(""):'<tr><td colspan="5">No hay solicitudes para estos filtros.</td></tr>';document.querySelectorAll("tr[data-ref]").forEach(tr=>tr.onclick=()=>openDetail(tr.dataset.ref));msg("listMsg",submissions.length+" solicitudes");}
+function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function openDetail(ref){const d=await api("?reference="+encodeURIComponent(ref));selected=d.submission;$("detail").style.display="block";$("detailRef").textContent=selected.reference_code;$("detailTitle").textContent=selected.subject;$("detailName").textContent=selected.full_name;$("detailEmail").textContent=selected.email;$("detailType").textContent=selected.request_type;$("detailDate").textContent=new Date(selected.created_at).toLocaleString("es-CO");$("detailMessage").textContent=selected.message;$("newStatus").value=selected.status;$("attachment").innerHTML=d.attachment_url?'<a target="_blank" rel="noopener" href="'+d.attachment_url+'">Ver adjunto (enlace privado, vence en 5 minutos)</a>':"Sin adjunto";$("timeline").innerHTML=(d.events||[]).map(e=>'<div class="event"><strong>'+esc(({status_changed:"Cambio de estado",internal_note:"Nota interna",response_sent:"Respuesta enviada",notification_retry:"Reenvío de notificación"})[e.event_type]||"Actualización")+'</strong><p>'+esc(e.note||e.response||e.new_status||({sent:"Correo enviado",failed:"Error de envío",not_configured:"Correo no configurado"}[e.email_status])||"")+'</p><span class="muted">'+new Date(e.created_at).toLocaleString("es-CO")+' · '+esc(e.actor_email)+'</span></div>').join("")||'<p class="muted">Sin movimientos registrados todavía.</p>';$("detail").scrollIntoView({behavior:"smooth",block:"start"});}
+window.loginPqr=async()=>{const email=$("email").value.trim(),password=$("password").value;if(!email||!password){msg("loginMsg","Ingresa tu correo y contraseña.","error");return;}const button=$("login");button.disabled=true;button.textContent="Validando…";msg("loginMsg","Conectando con el acceso administrativo…");try{if(!pqrCaptchaToken)throw new Error("Completa la verificación de seguridad de Cloudflare antes de continuar.");const {data,error}=await client.auth.signInWithPassword({email,password,options:{captchaToken:pqrCaptchaToken}});if(error)throw error;if(!data.session)throw new Error("No se pudo establecer la sesión.");msg("loginMsg","Acceso validado. Cargando solicitudes…","success");await boot();}catch(error){msg("loginMsg",error.message||"No fue posible iniciar sesión. Revisa la conexión e inténtalo nuevamente.","error");}finally{pqrCaptchaToken="";if(window.turnstile&&pqrTurnstileWidget!==null)window.turnstile.reset(pqrTurnstileWidget);button.disabled=false;button.textContent="Iniciar sesión";}};
+async function boot(){clearPrivatePqrData();try{const {data:{session},error}=await client.auth.getSession();if(error)throw error;if(!session){$("loginPanel").style.display="block";$("app").style.display="none";$("logout").style.display="none";return;}try{await load();$("loginPanel").style.display="none";$("app").style.display="block";$("logout").style.display="block";}catch(e){clearPrivatePqrData();msg("loginMsg",e.message||"No fue posible validar los permisos administrativos.","error");$("loginPanel").style.display="block";$("logout").style.display="none";}}catch(e){clearPrivatePqrData();msg("loginMsg",e.message||"No se pudo comprobar la sesión.","error");$("loginPanel").style.display="block";$("logout").style.display="none";}}
+$("logout").onclick=async()=>{await client.auth.signOut();boot();};$("refresh").onclick=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("statusFilter").onchange=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("search").onkeydown=e=>{if(e.key==="Enter")load().catch(err=>msg("listMsg",err.message,"error"));};$("closeDetail").onclick=()=>{$("detail").style.display="none";selected=null;};
+$("saveStatus").onclick=async()=>{if(!selected)return;try{await api("",{action:"status",reference:selected.reference_code,status:$("newStatus").value});msg("detailMsg","Estado actualizado.","success");await load();await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
+$("saveNote").onclick=async()=>{if(!selected)return;try{await api("",{action:"note",reference:selected.reference_code,note:$("note").value});$("note").value="";msg("detailMsg","Nota guardada.","success");await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
+$("sendResponse").onclick=async()=>{
+  if(!selected)return;
+  const button=$("sendResponse");
+  const reference=selected.reference_code;
+  const responseText=$("response").value.trim();
+  if(responseText.length<5){msg("detailMsg","La respuesta debe tener al menos 5 caracteres.","error");return;}
+  button.disabled=true;
+  button.textContent="Enviando…";
+  msg("detailMsg","Enviando respuesta y registrando el movimiento…");
+  try{
+    const d=await api("",{action:"respond",reference,response:responseText});
+    $("response").value="";
+    msg("detailMsg",d.message||"La respuesta fue procesada.",d.email_status==="sent"&&d.history_saved!==false?"success":"error");
+    // The send operation is already committed. A secondary refresh failure must
+    // never be reported as if the email itself had failed.
+    try{await openDetail(reference);await load();}
+    catch(refreshError){
+      console.warn("PQR response succeeded; refresh failed:",refreshError);
+      msg("detailMsg",(d.message||"Respuesta procesada.")+" El panel no pudo actualizar la vista; pulsa Actualizar para refrescar.",d.email_status==="sent"?"success":"error");
+    }
+  }catch(e){
+    msg("detailMsg",e.message||"No fue posible procesar la solicitud.", "error");
+  }finally{
+    button.disabled=false;
+    button.textContent="Enviar respuesta";
+  }
+};
+boot();
+
+})().catch(error=>{
+  const m=document.getElementById("loginMsg");
+  if(m){m.textContent="Error al iniciar el panel: "+(error?.message||"error inesperado");m.className="error";}
+  console.error("NOFEKI PQR admin:",error);
+});
+</script></body></html>
