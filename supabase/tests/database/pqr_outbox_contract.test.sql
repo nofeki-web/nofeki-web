@@ -3,7 +3,7 @@
 -- Supabase CLI: supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(20);
+select plan(21);
 
 select has_schema('private', 'private schema exists');
 select has_table('private', 'pqr_admin_requests', 'admin idempotency table exists');
@@ -26,6 +26,10 @@ select ok(not pg_catalog.has_function_privilege('authenticated', 'public.pqr_adm
 select ok(pg_catalog.has_function_privilege('service_role', 'public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)', 'EXECUTE'), 'service_role can execute formal response RPC');
 select ok(not pg_catalog.has_table_privilege('anon','private.pqr_outbox','SELECT'), 'anon cannot read private outbox');
 select ok(not pg_catalog.has_table_privilege('authenticated','private.pqr_admin_requests','SELECT'), 'authenticated cannot read admin idempotency table');
+
+
+select ok(not (select p.prosecdef from pg_catalog.pg_proc p where p.oid = 'public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)'::regprocedure), 'formal response RPC is SECURITY INVOKER');
+select ok((select p.proconfig @> ARRAY['search_path=""'] from pg_catalog.pg_proc p where p.oid = 'public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)'::regprocedure), 'formal response RPC has empty search_path');
 
 select * from finish();
 rollback;
