@@ -9,7 +9,8 @@ create table if not exists private.pqr_request_keys (
   request_fingerprint text not null
     check (request_fingerprint ~ '^[0-9a-f]{64}$'),
   submission_id uuid not null unique
-    references public.pqr_submissions(id) on delete restrict,
+    references public.pqr_submissions(id) on delete restrict
+    deferrable initially deferred,
   created_at timestamptz not null default pg_catalog.now()
 );
 
