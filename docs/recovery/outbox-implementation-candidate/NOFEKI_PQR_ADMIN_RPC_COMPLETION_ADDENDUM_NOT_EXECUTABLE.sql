@@ -242,7 +242,7 @@ begin
     end if;
     if v_event_type = 'applicant_confirmation' then
       update public.pqr_submissions
-      set notification_status = 'failed',
+      set notification_status = case when v_status = 'dead' then 'failed' else 'pending' end,
           notification_sent_at = null,
           notification_error = 'No fue posible enviar el correo'
       where id = v_submission_id;
