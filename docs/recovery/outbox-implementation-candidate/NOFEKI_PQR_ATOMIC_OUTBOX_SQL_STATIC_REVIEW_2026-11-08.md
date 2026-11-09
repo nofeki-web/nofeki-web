@@ -40,3 +40,32 @@ Antes de preparar una migración:
 - comprobar Advisors/RLS;
 - revisar el flujo de adjuntos y la creación inicial de Outbox;
 - reconciliar código de Edge Functions desplegadas 6/9 con el repo.
+
+## Revisión complementaria — 2026-11-09
+
+Se inspeccionó el SQL candidato completo (533 líneas) y se contrastó con las Edge Functions recuperadas de la misma rama.
+
+### Defecto estático corregido
+- En `public.pqr_outbox_finish`, el terminador del cuerpo PL/pgSQL estaba escrito como `$;` en lugar de `$$;`.
+- Esto impedía compilar la función y, por tanto, el archivo completo.
+- Se corrigió únicamente el delimitador en el commit `839844d9230444be1e41e48f46847d724fbde26c`.
+- El cambio es una corrección estática; no equivale a compilación PostgreSQL ni prueba de ejecución.
+
+### Brechas de integración confirmadas al comparar con las Edge Functions
+1. `pqr-submit` todavía inserta la PQR y envía los dos correos directamente desde la Edge Function. No usa clave idempotente, RPC de creación ni Outbox.
+2. `pqr-admin` todavía cambia estados mediante UPDATE directo y luego inserta el evento por separado; permite saltos no alineados con la política aprobada y no usa expected_version.
+3. La respuesta administrativa todavía llama a Resend antes de persistir el evento; un timeout ambiguo o un fallo de historial puede causar duplicados o pérdida de trazabilidad.
+4. `retry_notification` todavía vuelve a enviar una confirmación genérica directamente desde la Edge Function; no identifica un evento Outbox concreto ni registra una operación idempotente.
+5. No se encontró un worker Edge Function conectado a las RPC claim/finish/retry.
+6. El SQL candidato implementa las RPC administrativas y la cola para respuestas, pero no la RPC idempotente de creación inicial ni la generación de los dos eventos iniciales de correo.
+7. El panel/formulario aún requieren integración coordinada: claves estables, versión esperada, presentación del estado individual de cada correo y acción de reintento vinculada a un evento.
+
+### Próximas acciones técnicas
+- Diseñar e implementar la RPC de creación PQR idempotente, incluyendo la política de adjuntos y compensación de Storage.
+- Añadir en una misma transacción los eventos Outbox independientes `applicant_confirmation` e `internal_alert`.
+- Implementar worker con claim/lease/fencing, Resend idempotency key estable, tratamiento de resultado incierto y límites de reintento.
+- Migrar `pqr-admin` a las RPC administrativas solo después de probarlas en PostgreSQL aislado.
+- Actualizar formulario y panel en un despliegue coordinado, sin ventana de incompatibilidad.
+- Ejecutar compilación SQL, pruebas multi-sesión, rollback, grants/RLS y Advisors en entorno aislado.
+
+**Estado:** el defecto de delimitador fue corregido en la rama. La solución sigue siendo candidata y no desplegable hasta superar todas las puertas de validación indicadas.
