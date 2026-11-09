@@ -82,6 +82,23 @@ create table if not exists private.pqr_outbox (
   )
 );
 
+alter table private.pqr_outbox
+  add column if not exists source_event_id uuid references public.pqr_events(id) on delete restrict;
+
+do $
+begin
+  if not exists (
+    select 1 from pg_catalog.pg_constraint
+    where conname = 'pqr_outbox_admin_response_source_check'
+      and conrelid = 'private.pqr_outbox'::pg_catalog.regclass
+  ) then
+    alter table private.pqr_outbox
+      add constraint pqr_outbox_admin_response_source_check
+      check (event_type <> 'admin_response' or source_event_id is not null);
+  end if;
+end;
+$;
+
 create index if not exists pqr_outbox_ready_idx
   on private.pqr_outbox (available_at, created_at)
   where status = 'pending';
@@ -144,7 +161,8 @@ begin
   if v_actor is null or v_actor = '' or pg_catalog.length(v_actor) > 254 then
     raise exception 'invalid_actor' using errcode = '22023';
   end if;
-  if p_expected_status not in ('Recibida','En revisión','En gestión','Respondida','Cerrada')
+  if p_expected_status is null or p_target_status is null
+     or p_expected_status not in ('Recibida','En revisión','En gestión','Respondida','Cerrada')
      or p_target_status not in ('Recibida','En revisión','En gestión','Respondida','Cerrada') then
     raise exception 'invalid_status' using errcode = '22023';
   end if;
@@ -427,7 +445,7 @@ declare
 begin
   update private.pqr_outbox
   set status = 'delivered',
-      provider_message_id = pg_catalog.nullif(pg_catalog.left(p_provider_message_id, 200), ''),
+      provider_message_id = nullif(pg_catalog.left(p_provider_message_id, 200), ''),
       delivered_at = pg_catalog.now(),
       lock_token = null,
       locked_until = null,
@@ -465,7 +483,7 @@ begin
       available_at = pg_catalog.now() + pg_catalog.make_interval(secs => p_delay_seconds),
       lock_token = null,
       locked_until = null,
-      last_error_code = pg_catalog.left(pg_catalog.coalesce(p_error_code, 'provider_error'), 80),
+      last_error_code = pg_catalog.left(coalesce(p_error_code, 'provider_error'), 80),
       last_error_at = pg_catalog.now(),
       updated_at = pg_catalog.now()
   where id = p_outbox_id
@@ -473,7 +491,7 @@ begin
     and lock_token = p_lease_token
   returning status into v_status;
 
-  return pg_catalog.coalesce(v_status, 'stale_lease');
+  return coalesce(v_status, 'stale_lease');
 end;
 $$;
 
