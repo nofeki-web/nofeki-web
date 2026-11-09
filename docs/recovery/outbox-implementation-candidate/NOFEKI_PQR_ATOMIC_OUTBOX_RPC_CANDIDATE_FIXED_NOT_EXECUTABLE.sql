@@ -396,18 +396,38 @@ begin
   -- automatic retry window measured from original Outbox creation.
   -- Expired pending work and expired leases become dead-letter; never send
   -- again automatically with a provider key that may have expired.
-  update private.pqr_outbox
-  set status = 'dead',
-      lock_token = null,
-      locked_until = null,
-      last_error_code = 'idempotency_window_expired',
-      last_error_at = pg_catalog.now(),
-      updated_at = pg_catalog.now()
-  where created_at <= pg_catalog.now() - interval '23 hours'
-    and (
-      status = 'pending'
-      or (status = 'processing' and locked_until <= pg_catalog.now())
-    );
+  with expired as (
+    update private.pqr_outbox
+    set status = 'dead',
+        lock_token = null,
+        locked_until = null,
+        last_error_code = 'idempotency_window_expired',
+        last_error_at = pg_catalog.now(),
+        updated_at = pg_catalog.now()
+    where created_at <= pg_catalog.now() - interval '23 hours'
+      and (
+        status = 'pending'
+        or (status = 'processing' and locked_until <= pg_catalog.now())
+      )
+    returning submission_id, source_event_id, event_type
+  )
+  update public.pqr_submissions s
+  set notification_status = 'failed',
+      notification_sent_at = null,
+      notification_error = 'El envío requiere verificación manual'
+  from expired e
+  where e.submission_id = s.id and e.event_type = 'applicant_confirmation';
+
+  -- Preserve the formal case status; only the email projection is failed.
+  update public.pqr_events e
+  set email_status = 'failed'
+  where e.id in (
+    select o.source_event_id
+    from private.pqr_outbox o
+    where o.status = 'dead'
+      and o.last_error_code = 'idempotency_window_expired'
+      and o.source_event_id is not null
+  );
 
   return query
   with candidates as (
