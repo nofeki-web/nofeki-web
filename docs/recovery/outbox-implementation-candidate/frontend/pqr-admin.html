@@ -24,7 +24,7 @@ tr[data-ref]{cursor:pointer}tr[data-ref]:hover{background:#f8fafc}.muted{color:#
 <section id="app" style="display:none">
 <div class="panel"><div class="filters"><input id="search" placeholder="Buscar radicado, nombre, correo o asunto"><select id="statusFilter"><option value="">Todos los estados</option><option>Recibida</option><option>En revisión</option><option>En gestión</option><option value="Respondida" disabled>Respondida (se asigna al responder)</option><option>Cerrada</option></select><button id="refresh">Actualizar</button></div></div>
 <div class="panel"><div style="overflow-x:auto"><table><thead><tr><th>Radicado</th><th>Solicitante</th><th>Asunto</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="rows"><tr><td colspan="5">Cargando…</td></tr></tbody></table></div><p id="listMsg" class="muted"></p></div>
-<section class="panel" id="deadOutboxPanel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">Notificaciones que requieren revisión</h2><p class="muted" style="margin:6px 0 0">Los envíos fuera de la ventana automática no se reintentan sin conciliación manual en Resend.</p></div><button id="refreshDead" class="secondary">Actualizar cola</button></div><div id="deadOutboxList" style="margin-top:14px"><p class="muted">Cargando…</p></div></section>
+<section class="panel" id="deadOutboxPanel"><div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">Notificaciones que requieren revisión</h2><p class="muted" style="margin:6px 0 0">Los envíos fuera de la ventana automática no se reintentan sin conciliación manual en Resend.</p></div><button id="refreshDead" class="secondary">Actualizar cola</button></div><div id="deadOutboxList" style="margin-top:14px"><p class="muted">Cargando…</p></div><p id="deadOutboxMsg" class="muted" role="status"></p></section>
 <section class="panel" id="detail"><div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><div><p class="muted" id="detailRef"></p><h2 id="detailTitle"></h2></div><button class="secondary" id="closeDetail">Cerrar detalle</button></div>
 <div class="grid"><div><p class="muted">Solicitante</p><strong id="detailName"></strong><p id="detailEmail"></p></div><div><p class="muted">Tipo de solicitud</p><strong id="detailType"></strong><p id="detailDate" class="muted"></p></div></div>
 <h3>Descripción</h3><p id="detailMessage" style="white-space:pre-wrap"></p><p id="attachment"></p>
@@ -87,10 +87,10 @@ async function retryDeadOutbox(outboxId,reference,button){
   button.disabled=true;button.textContent="Agregando a cola…";
   try{
     const d=await api("",{action:"retry_dead_outbox",reference,outbox_id:outboxId,confirmed_not_sent:true});
-    msg("detailMsg",d.message||"Reintento agregado a la cola. La entrega todavía no está confirmada.","success");
+    msg("deadOutboxMsg",d.message||"Reintento agregado a la cola. La entrega todavía no está confirmada.","success");
     await load();
   }catch(e){
-    msg("detailMsg",e.message||"No fue posible autorizar el reintento.","error");
+    msg("deadOutboxMsg",e.message||"No fue posible autorizar el reintento.","error");
   }finally{button.disabled=false;button.textContent="Revisar y reintentar";}
 }
 function esc(s){return String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
