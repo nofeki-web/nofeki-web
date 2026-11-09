@@ -4,7 +4,7 @@
 -- Resend idempotency retention is 24h. Beyond that, require manual provider reconciliation.
 begin;
 create or replace function public.pqr_admin_retry_dead_outbox_v1(
-  p_request_key uuid, p_outbox_id uuid, p_request_fingerprint text,
+  p_request_key uuid, p_outbox_id uuid, p_submission_id uuid, p_request_fingerprint text,
   p_actor_email text, p_confirmed_not_sent boolean
 ) returns jsonb language plpgsql security invoker set search_path = '' as $$
 declare
@@ -17,15 +17,18 @@ declare
   v_new_event_key text;
   v_result jsonb;
 begin
-  if p_request_key is null or p_outbox_id is null or p_request_fingerprint is null
+  if p_request_key is null or p_outbox_id is null or p_submission_id is null or p_request_fingerprint is null
      or p_request_fingerprint !~ '^[0-9a-f]{64}$'
      or v_actor is null or v_actor = '' or pg_catalog.length(v_actor) > 254
      or p_confirmed_not_sent is distinct from true then
     raise exception 'invalid_recovery_confirmation' using errcode = '22023';
   end if;
+  select o.* into v_old from private.pqr_outbox o where o.id=p_outbox_id for update;
+  if not found or v_old.submission_id <> p_submission_id then
+    raise exception 'outbox_not_found' using errcode='P0002';
+  end if;
   insert into private.pqr_admin_requests(request_id,submission_id,operation_type,request_fingerprint)
-  select p_request_key,o.submission_id,'notification_retry',p_request_fingerprint
-  from private.pqr_outbox o where o.id=p_outbox_id
+  values(p_request_key,p_submission_id,'notification_retry',p_request_fingerprint)
   on conflict(request_id) do nothing;
   get diagnostics v_inserted = row_count;
   if v_inserted = 0 then
@@ -38,8 +41,6 @@ begin
     if v_existing.result is null then raise exception 'request_in_progress' using errcode='PT409'; end if;
     return v_existing.result || pg_catalog.jsonb_build_object('replayed',true);
   end if;
-  select o.* into v_old from private.pqr_outbox o where o.id=p_outbox_id for update;
-  if not found then raise exception 'outbox_not_found' using errcode='P0002'; end if;
   if v_old.status <> 'dead' then raise exception 'outbox_not_dead' using errcode='PT409'; end if;
   if v_old.provider_message_id is not null then raise exception 'provider_already_confirmed_delivery' using errcode='PT409'; end if;
   if v_old.event_type='admin_response' and v_old.source_event_id is null then
@@ -60,7 +61,7 @@ begin
   where request_id=p_request_key;
   return v_result;
 end; $$;
-revoke all on function public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,text,text,boolean) from public,anon,authenticated;
-grant execute on function public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,text,text,boolean) to service_role;
+revoke all on function public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,uuid,text,text,boolean) from public,anon,authenticated;
+grant execute on function public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,uuid,text,text,boolean) to service_role;
 commit;
 -- END CANDIDATE. Compile and test in disposable PostgreSQL before integration.
