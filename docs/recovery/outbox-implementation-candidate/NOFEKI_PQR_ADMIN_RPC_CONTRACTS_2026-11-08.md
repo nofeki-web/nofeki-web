@@ -1,54 +1,72 @@
 # NOFEKI PQR — contratos RPC administrativos v2
 
-**Estado:** contrato de implementación candidato; no ejecutar ni desplegar.  
+**Estado:** contrato candidato; no ejecutar ni desplegar.  
 **Rama:** `recovery/pqr-outbox-implementation-20261108`.
 
 ## Decisión funcional aplicada
 
-- Una respuesta formal registrada desde `En gestión` cambia el caso a `Respondida` dentro de la misma transacción que crea el evento `response_sent` y el trabajo Outbox `admin_response`.
-- El envío del correo es independiente del estado del caso. Un fallo deja el caso `Respondida` y el Outbox reintentable.
-- El cambio manual de estado no puede asignar `Respondida`.
-- `Cerrada` sigue siendo una acción administrativa separada. Un caso cerrado no admite una nueva respuesta en esta primera versión.
-- Las operaciones mutables deben ser idempotentes: misma clave y mismo contenido devuelve el resultado original; misma clave con contenido distinto devuelve conflicto.
-- La lista/detalle/adjunto siguen siendo lecturas del Edge Function, con enlace firmado de 5 minutos y autorización administrativa.
+- Una respuesta formal desde `En gestión` cambia el caso a `Respondida` dentro de la misma transacción que crea `response_sent` y el trabajo Outbox `admin_response`.
+- La entrega del correo es independiente del estado del caso. Un fallo de entrega no revierte `Respondida`; el Outbox conserva el reintento.
+- Un cambio manual nunca asigna `Respondida`.
+- `Cerrada` es una acción administrativa separada; un caso cerrado no admite nueva respuesta en esta primera versión.
+- Misma clave + misma huella devuelve el resultado original; misma clave con contenido distinto produce conflicto.
+- El Edge Function valida sesión con `auth.getUser(token)` y allowlist antes de invocar RPC. Las RPC solo se conceden a `service_role`.
 
-## Contratos invocados por el Edge Function candidato
+## Contratos exactos invocados por `pqr-admin`
 
-Todas las funciones se llaman desde `pqr-admin` con la clave `service_role`, después de validar sesión mediante `auth.getUser(token)` y verificar `ADMIN_EMAILS`. Ninguna se expone al navegador.
-
-| Función | Parámetros | Efecto atómico |
+| Acción HTTP | RPC | Firma de argumentos |
 |---|---|---|
-| `public.pqr_admin_change_status_v2` | `p_request_key uuid, p_submission_id uuid, p_next_status text, p_note text, p_actor_email text` | Comprueba transición; prohíbe `Respondida`; actualiza estado/updated_at y agrega `status_changed`; registra clave idempotente. |
-| `public.pqr_admin_add_note_v2` | `p_request_key uuid, p_submission_id uuid, p_note text, p_actor_email text` | Agrega `internal_note`; no cambia estado; registra clave idempotente. |
-| `public.pqr_admin_respond_v2` | `p_request_key uuid, p_submission_id uuid, p_response text, p_actor_email text` | Solo desde `En gestión`; cambia a `Respondida`, fija `responded_at`, agrega `response_sent` con `email_status='not_configured'`/estado pendiente según contrato final y encola `admin_response`; todo en una transacción. |
-| `public.pqr_admin_retry_notification_v2` | `p_request_key uuid, p_submission_id uuid, p_actor_email text` | Encola una nueva entrega de la notificación de radicación sin enviar correo dentro de la petición; registra evento de reintento y clave idempotente. |
+| `status` | `public.pqr_admin_transition_status` | `p_submission_id uuid, p_expected_status text, p_expected_version bigint, p_target_status text, p_request_id uuid, p_request_fingerprint text, p_actor_email text, p_reason text` |
+| `note` | `public.pqr_admin_add_note_v2` | `p_request_key uuid, p_submission_id uuid, p_request_fingerprint text, p_note text, p_actor_email text` |
+| `respond` | `public.pqr_admin_create_response` | `p_submission_id uuid, p_expected_version bigint, p_request_id uuid, p_request_fingerprint text, p_actor_email text, p_response text` |
+| `retry_notification` | `public.pqr_admin_retry_notification_v2` | `p_request_key uuid, p_submission_id uuid, p_request_fingerprint text, p_actor_email text` |
 
-## Requisitos de seguridad de las funciones
+La transición y la respuesta reciben estado/versión esperados desde la lectura del caso. La base SQL candidata agrega `pqr_submissions.version bigint not null default 1`; por tanto, el Edge candidato requiere aplicar primero ese esquema en un entorno aislado. La consulta real del esquema confirmó que las columnas `notification_status`, `notification_sent_at` y `notification_error` ya existen en producción.
 
-- `SECURITY INVOKER`, `SET search_path = ''`, relaciones totalmente cualificadas.
-- Revocar `EXECUTE` de `PUBLIC`, `anon` y `authenticated`; conceder solo a `service_role`.
-- No aceptar el email del actor como prueba de autorización: el Edge Function es quien lo deriva de la sesión verificada y lo pasa solo para auditoría.
-- No conceder acceso de navegador a `private.pqr_outbox` ni a tablas de idempotencia.
-- Usar huella determinista del contenido normalizado para detectar reutilización de clave con payload distinto.
-- Bloquear la fila de `pqr_submissions` con `FOR UPDATE` durante cada transición para evitar respuestas simultáneas y cambios de estado perdidos.
+## Contratos del worker
 
-## Dependencia que impide cerrar el SQL hoy
+| RPC | Firma |
+|---|---|
+| `public.pqr_outbox_claim` | `p_batch_size integer, p_lease_seconds integer` |
+| `public.pqr_outbox_finish` | `p_outbox_id uuid, p_lease_token uuid, p_provider_message_id text` |
+| `public.pqr_outbox_retry` | `p_outbox_id uuid, p_lease_token uuid, p_error_code text, p_delay_seconds integer` |
 
-El candidato de creación de PQR confirma únicamente estas columnas de `private.pqr_outbox`: `submission_id`, `event_key`, `event_type`. El esquema completo del Outbox (payload, estado, intentos, lease, timestamps, constraints) y el contrato exacto que consume el worker no están presentes en los archivos recuperados de esta rama. No se debe inventar la forma de insertar `admin_response` o un retry sobre una estructura incompleta.
+El worker usa `event_key` como clave de idempotencia de Resend. Los eventos `admin_response` deben incluir `source_event_id`; `applicant_confirmation` puede tenerlo nulo. El addendum reemplaza `finish/retry` para proyectar el resultado de confirmaciones en las columnas de notificación del caso, sin alterar el estado PQR.
 
-Antes de escribir el SQL ejecutable se debe recuperar y revisar el SQL base del Outbox y el worker real, y confirmar columnas de `pqr_events` y `pqr_submissions` contra una instantánea del esquema. La tabla `pqr_events` conocida no tiene columna `version`; no se añade ninguna suposición de versión aquí.
+## Seguridad exigida
 
-## Pruebas obligatorias en entorno aislado
+- `SECURITY INVOKER`, `SET search_path = ''`, referencias cualificadas.
+- Revocar ejecución de `PUBLIC`, `anon` y `authenticated`; conceder solo a `service_role`.
+- No confiar en el correo del actor como autorización: es un dato de auditoría derivado por el Edge Function tras verificar la sesión y la allowlist.
+- No exponer `private.pqr_outbox` ni `private.pqr_admin_requests` al navegador.
+- Bloquear `pqr_submissions` con `FOR UPDATE` para serializar acciones administrativas.
 
-1. Dos respuestas concurrentes: una sola transición/evento/job; la otra recibe conflicto/estado no permitido.
-2. Repetición idéntica de cada acción: mismo resultado, sin eventos/jobs duplicados.
-3. Misma clave con contenido distinto: conflicto.
-4. Fallo en cualquier inserción: rollback de estado, evento, clave y Outbox.
-5. Respuesta desde `Recibida`, `En revisión`, `Respondida` o `Cerrada`: rechazada salvo `En gestión`.
-6. Cambio manual a `Respondida`: rechazado.
-7. Fallo de Resend en worker: caso permanece `Respondida`; job reintentable.
-8. Retry de confirmación: no envía desde el Edge Function ni cambia el estado del caso.
-9. Actor no incluido en allowlist: 403 antes de invocar RPC.
-10. Lecturas y enlaces firmados mantienen el contrato de respuesta que usa `pqr-admin.html`.
+## Hallazgos de esquema confirmados
 
-**No validado:** compilación SQL, integración PostgreSQL real, Deno, navegador, Edge Function runtime, worker end-to-end. No se ha ejecutado SQL ni se ha desplegado código.
+- `pqr_submissions.notification_status`, `notification_sent_at` y `notification_error` existen.
+- `pqr_events` contiene `response`, `actor_email`, `email_status`; el check de `event_type` admite `status_changed`, `internal_note`, `response_sent`, `notification_retry`.
+- `pqr_events.email_status` admite `sent`, `failed` o `null`.
+- No existen RPC de Outbox instaladas en producción; la consulta de catálogo solo devolvió `pqr_consume_rate_limit`.
+
+## Bloqueos antes de ejecución
+
+- La consulta confirma el esquema de columnas, pero no compila el SQL candidato ni valida las constraints/índices de las tablas privadas que aún no existen.
+- No se ha ejecutado el SQL en PostgreSQL aislado, ni se ha probado concurrencia, rollback, Deno, navegador o envío real.
+- El worker candidato se recuperó de un commit anterior, pero no aparece en la ruta consultada de la rama actual; antes de desplegar debe incorporarse y revisarse como archivo rastreado de esta rama.
+- El retry manual implementado reencola solo `applicant_confirmation`; no reintenta `admin_response` en dead-letter.
+- No hay scheduler/cron configurado.
+
+## Pruebas obligatorias
+
+1. Respuestas concurrentes: solo una transición/evento/job.
+2. Repetición idéntica: resultado original sin duplicados.
+3. Misma clave con payload distinto: conflicto.
+4. Fallo de cualquier inserción: rollback total.
+5. Respuesta solo desde `En gestión`; rechazo desde otros estados.
+6. Cambio manual a `Respondida`: rechazo.
+7. Fallo Resend: caso permanece `Respondida`, Outbox reintentable.
+8. Retry de confirmación: no envía desde el Edge Function ni cambia el estado.
+9. Actor fuera de allowlist: 403 antes de RPC.
+10. Contrato GET/adjuntos compatible con el panel.
+
+**No validado:** compilación SQL, PostgreSQL de integración, Deno, navegador, Edge Function runtime ni worker end-to-end.
