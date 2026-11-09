@@ -30,3 +30,14 @@ Rama: `recovery/pqr-admin-retry-fix-20261108`
 
 ## Resultado
 Se completó el contrato transaccional y la estrategia de pruebas de modelo. La implementación SQL/Edge y la validación PostgreSQL permanecen pendientes; no se declara el flujo listo para producción.
+
+
+## Actualización posterior — SQL candidato completo
+
+- Se creó `NOFEKI_PQR_ATOMIC_OUTBOX_RPC_CANDIDATE_NOT_EXECUTABLE.sql` con la estructura privada, versionado, idempotencia, RPC de transición, RPC de respuesta y capa claim/finish/retry del Outbox.
+- Se agregó `source_event_id` para que el worker relacione una respuesta con su evento exacto.
+- La RPC de respuesta ahora registra `email_status = NULL` mientras está en cola; finish/retry actualizan el evento a sent/failed.
+- Se corrigieron expresiones SQL y se repitió una revisión estática del archivo recuperado desde GitHub.
+- Se creó `NOFEKI_PQR_ATOMIC_OUTBOX_SQL_STATIC_REVIEW_2026-11-08.md` con alcance y limitaciones.
+
+**No validado todavía:** compilación PostgreSQL, pruebas SQL reales, concurrencia, rollback, RLS/ACL en entorno aislado y Advisors. El archivo no se debe ejecutar en producción. No se creó migración ejecutable ni se tocó Supabase activo.
