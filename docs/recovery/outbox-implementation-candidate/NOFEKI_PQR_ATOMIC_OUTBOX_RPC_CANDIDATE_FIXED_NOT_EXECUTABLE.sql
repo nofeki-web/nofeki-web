@@ -392,12 +392,30 @@ begin
     raise exception 'invalid_lease_seconds' using errcode = '22023';
   end if;
 
+  -- Resend idempotency expires after 24h. Use a conservative 23h
+  -- automatic retry window measured from original Outbox creation.
+  -- Expired pending work and expired leases become dead-letter; never send
+  -- again automatically with a provider key that may have expired.
+  update private.pqr_outbox
+  set status = 'dead',
+      lock_token = null,
+      locked_until = null,
+      last_error_code = 'idempotency_window_expired',
+      last_error_at = pg_catalog.now(),
+      updated_at = pg_catalog.now()
+  where created_at <= pg_catalog.now() - interval '23 hours'
+    and (
+      status = 'pending'
+      or (status = 'processing' and locked_until <= pg_catalog.now())
+    );
+
   return query
   with candidates as (
     select o.id
     from private.pqr_outbox as o
-    where (o.status = 'pending' and o.available_at <= pg_catalog.now())
-       or (o.status = 'processing' and o.locked_until <= pg_catalog.now())
+    where o.created_at > pg_catalog.now() - interval '23 hours'
+      and ((o.status = 'pending' and o.available_at <= pg_catalog.now())
+       or (o.status = 'processing' and o.locked_until <= pg_catalog.now()))
     order by o.available_at, o.created_at
     for update skip locked
     limit p_batch_size
