@@ -79,7 +79,7 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 ## Bloqueadores conocidos
 1. El retry administrativo actual reencola solo applicant_confirmation; no existe retry de admin_response en dead-letter.
 2. La retención de idempotencia del proveedor es finita. Impedir reenvío con la misma event_key fuera de la ventana documentada o definir recuperación explícita.
-3. pqr_admin_transition_status permite volver de Respondida a En gestión con motivo. Confirmar si negocio quiere esa reapertura; si no, eliminarla.
+3. Resuelto en candidato: no se permite reabrir Respondida a En gestión. El flujo aprobado queda lineal; cualquier reapertura futura requerirá una operación explícita y auditada.
 4. El retry crea Outbox con source_event_id nulo. Confirmar que el worker solo lo use para applicant_confirmation.
 5. El worker usa secreto compartido y no tiene scheduler. Configurar invocación autenticada y cron solo tras aprobar pruebas.
 6. El formulario y panel deben probarse en navegador contra funciones del entorno temporal.
