@@ -25,7 +25,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors(origin) });
   if (!["GET", "POST"].includes(req.method)) return reply({ ok: false, error: "Método no permitido." }, 405, origin);
 
-  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\\s+/i, "");
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
   if (!token) return reply({ ok: false, error: "Inicia sesión." }, 401, origin);
   const { data: { user }, error: authError } = await db.auth.getUser(token);
   if (authError || !user?.email) return reply({ ok: false, error: "Sesión inválida." }, 401, origin);
