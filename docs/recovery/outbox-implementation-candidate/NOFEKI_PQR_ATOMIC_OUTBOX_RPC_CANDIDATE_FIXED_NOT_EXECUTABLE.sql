@@ -457,7 +457,7 @@ begin
   end if;
   return v_rows = 1;
 end;
-$;
+$$;
 
 create or replace function public.pqr_outbox_retry(
   p_outbox_id uuid,
