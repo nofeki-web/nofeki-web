@@ -102,3 +102,16 @@ Propuesta conservadora para aprobación: permitir avance secuencial y transicion
 - [ ] RPCs y worker implementados y probados en aislamiento.
 - [ ] HTML y Edge Functions integrados.
 - [ ] Despliegue aprobado.
+
+
+## 8. Actualización — 2026-11-08: grafo aprobado
+
+El usuario aprobó la política de transiciones controladas. La fuente de verdad es `NOFEKI_PQR_STATE_TRANSITION_POLICY_2026-11-08.md`.
+
+- Avance secuencial: Recibida → En revisión → En gestión → Respondida → Cerrada.
+- Reapertura permitida: Respondida → En gestión, con motivo obligatorio y auditoría.
+- Cerrada es terminal en esta versión.
+- Saltos de etapa se rechazan; solicitar el mismo estado es no-op idempotente.
+- Respondida significa respuesta formal persistida y notificación encolada; la entrega del correo se muestra por separado.
+- Se creó `supabase/functions/tests/pqr-state-transition-policy.node.test.mjs`; ejecución local Node: 7/7 pruebas aprobadas. Son pruebas de modelo, no integración PostgreSQL.
+- La RPC, la concurrencia real, rollback transaccional y grants/RLS siguen pendientes de PostgreSQL aislado.
