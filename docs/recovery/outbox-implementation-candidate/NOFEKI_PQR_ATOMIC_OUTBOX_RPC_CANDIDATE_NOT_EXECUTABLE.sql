@@ -341,7 +341,7 @@ begin
     (submission_id, actor_email, event_type, old_status, new_status, response, email_status)
   values
     (p_submission_id, v_actor, 'response_sent',
-     v_submission.status, 'Respondida', v_response, 'not_configured')
+     v_submission.status, 'Respondida', v_response, null)
   returning id into v_event_id;
 
   v_event_key := 'pqr:' || p_submission_id::text || ':response:' || v_event_id::text;
@@ -442,6 +442,7 @@ set search_path = ''
 as $$
 declare
   v_rows integer;
+  v_source_event_id uuid;
 begin
   update private.pqr_outbox
   set status = 'delivered',
@@ -453,12 +454,18 @@ begin
       updated_at = pg_catalog.now()
   where id = p_outbox_id
     and status = 'processing'
-    and lock_token = p_lease_token;
+    and lock_token = p_lease_token
+  returning source_event_id into v_source_event_id;
 
   get diagnostics v_rows = row_count;
+  if v_rows = 1 and v_source_event_id is not null then
+    update public.pqr_events
+    set email_status = 'sent'
+    where id = v_source_event_id and event_type = 'response_sent';
+  end if;
   return v_rows = 1;
 end;
-$$;
+$;
 
 create or replace function public.pqr_outbox_retry(
   p_outbox_id uuid,
@@ -473,6 +480,7 @@ set search_path = ''
 as $$
 declare
   v_status text;
+  v_source_event_id uuid;
 begin
   if p_delay_seconds is null or p_delay_seconds < 1 or p_delay_seconds > 86400 then
     raise exception 'invalid_retry_delay' using errcode = '22023';
@@ -489,8 +497,13 @@ begin
   where id = p_outbox_id
     and status = 'processing'
     and lock_token = p_lease_token
-  returning status into v_status;
+  returning status, source_event_id into v_status, v_source_event_id;
 
+  if v_status is not null and v_source_event_id is not null then
+    update public.pqr_events
+    set email_status = 'failed'
+    where id = v_source_event_id and event_type = 'response_sent';
+  end if;
   return coalesce(v_status, 'stale_lease');
 end;
 $$;
