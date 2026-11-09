@@ -975,6 +975,11 @@
             body: JSON.stringify(payload)
           });
           const result = await response.json();
+          if (response.status === 409) {
+            // The same key was reused with edited content; next deliberate
+            // attempt must be a new logical submission.
+            sessionStorage.removeItem("nofeki:pqr:pending-request-key");
+          }
           if (!response.ok || !result.ok) throw new Error(result.error || "No fue posible radicar la solicitud.");
 
           statusBox.textContent = "Solicitud recibida. Tu número de radicado es " + result.reference + ". Conserva este número para futuras consultas.";
