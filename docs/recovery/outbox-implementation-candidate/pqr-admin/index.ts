@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
         return reply({ ok: false, error: "Se requiere un Outbox válido y la confirmación explícita de que el mensaje no fue enviado." }, 400, origin);
       }
       rpcName = "pqr_admin_retry_dead_outbox_v1";
-      rpcArgs = { p_request_key: requestKey, p_outbox_id: outboxId, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_confirmed_not_sent: true };
+      rpcArgs = { p_request_key: requestKey, p_outbox_id: outboxId, p_submission_id: row.id, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_confirmed_not_sent: true };
     } else if (action === "retry_notification") {
       rpcName = "pqr_admin_retry_notification_v2";
       rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_request_fingerprint: fingerprint, p_actor_email: user.email };
