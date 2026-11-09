@@ -66,9 +66,14 @@ Deno.serve(async (req) => {
     if (!reference) return reply({ ok: false, error: "Falta el radicado." }, 400, origin);
     if (!uuidPattern.test(requestKey)) return reply({ ok: false, error: "Falta una clave de idempotencia válida." }, 400, origin);
 
-    const { data: row, error: lookupError } = await db.from("pqr_submissions").select("id,reference_code,status").eq("reference_code", reference).maybeSingle();
+    const { data: row, error: lookupError } = await db.from("pqr_submissions").select("id,reference_code,status,version").eq("reference_code", reference).maybeSingle();
     if (lookupError) throw lookupError;
     if (!row) return reply({ ok: false, error: "Radicado no encontrado." }, 404, origin);
+
+    const fingerprintInput = { action, reference, status: action === "status" ? String(body.status || "") : null, note: action === "note" || action === "status" ? String(body.note || "").trim() : null, response: action === "respond" ? String(body.response || "").trim() : null };
+    const fingerprintBytes = new TextEncoder().encode(JSON.stringify(fingerprintInput));
+    const fingerprintHash = await crypto.subtle.digest("SHA-256", fingerprintBytes);
+    const fingerprint = Array.from(new Uint8Array(fingerprintHash)).map((b) => b.toString(16).padStart(2, "0")).join("");
 
     let rpcName: string;
     let rpcArgs: Record<string, unknown>;
@@ -76,21 +81,21 @@ Deno.serve(async (req) => {
       const next = String(body.status || "");
       if (!statuses.includes(next)) return reply({ ok: false, error: "Estado no válido." }, 400, origin);
       if (next === "Respondida") return reply({ ok: false, error: "El estado Respondida solo se asigna al registrar una respuesta formal." }, 409, origin);
-      rpcName = "pqr_admin_change_status_v2";
-      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_next_status: next, p_note: String(body.note || "").slice(0, 2000) || null, p_actor_email: user.email };
+      rpcName = "pqr_admin_transition_status";
+      rpcArgs = { p_submission_id: row.id, p_expected_status: row.status, p_expected_version: row.version ?? 1, p_target_status: next, p_request_id: requestKey, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_reason: String(body.note || "").slice(0, 2000) || null };
     } else if (action === "note") {
       const note = String(body.note || "").trim().slice(0, 4000);
       if (!note) return reply({ ok: false, error: "Escribe la nota interna." }, 400, origin);
       rpcName = "pqr_admin_add_note_v2";
-      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_note: note, p_actor_email: user.email };
+      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_request_fingerprint: fingerprint, p_note: note, p_actor_email: user.email };
     } else if (action === "respond") {
       const response = String(body.response || "").trim().slice(0, 5000);
       if (response.length < 5) return reply({ ok: false, error: "La respuesta debe tener al menos 5 caracteres." }, 400, origin);
-      rpcName = "pqr_admin_respond_v2";
-      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_response: response, p_actor_email: user.email };
+      rpcName = "pqr_admin_create_response";
+      rpcArgs = { p_submission_id: row.id, p_expected_version: row.version ?? 1, p_request_id: requestKey, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_response: response };
     } else if (action === "retry_notification") {
       rpcName = "pqr_admin_retry_notification_v2";
-      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_actor_email: user.email };
+      rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_request_fingerprint: fingerprint, p_actor_email: user.email };
     } else {
       return reply({ ok: false, error: "Acción no reconocida." }, 400, origin);
     }
