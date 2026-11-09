@@ -85,19 +85,11 @@ create table if not exists private.pqr_outbox (
 alter table private.pqr_outbox
   add column if not exists source_event_id uuid references public.pqr_events(id) on delete restrict;
 
-do $
-begin
-  if not exists (
-    select 1 from pg_catalog.pg_constraint
-    where conname = 'pqr_outbox_admin_response_source_check'
-      and conrelid = 'private.pqr_outbox'::pg_catalog.regclass
-  ) then
-    alter table private.pqr_outbox
-      add constraint pqr_outbox_admin_response_source_check
-      check (event_type <> 'admin_response' or source_event_id is not null);
-  end if;
-end;
-$;
+alter table private.pqr_outbox
+  drop constraint if exists pqr_outbox_admin_response_source_check;
+alter table private.pqr_outbox
+  add constraint pqr_outbox_admin_response_source_check
+  check (event_type <> 'admin_response' or source_event_id is not null);
 
 create index if not exists pqr_outbox_ready_idx
   on private.pqr_outbox (available_at, created_at)
@@ -145,7 +137,7 @@ declare
   v_existing private.pqr_admin_requests%rowtype;
   v_inserted integer;
   v_submission public.pqr_submissions%rowtype;
-  v_reason text := pg_catalog.nullif(pg_catalog.btrim(p_reason), '');
+  v_reason text := nullif(pg_catalog.btrim(p_reason), '');
   v_actor text := pg_catalog.lower(pg_catalog.btrim(p_actor_email));
   v_result jsonb;
   v_event_id uuid;
