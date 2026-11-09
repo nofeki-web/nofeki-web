@@ -11,10 +11,13 @@ Deno.test("constantTimeEqual accepts equal secrets and rejects mismatch/length",
   assertEquals(constantTimeEqual("",""), true);
 });
 Deno.test("buildMail escapes applicant-controlled fields", () => {
-  const mail = buildMail(event("internal_alert"), base, null);
+  const mail = buildMail(event("internal_alert"), base, null, "pqr@nofeki.test");
   assertEquals(mail.html.includes("<script>"), false);
   assertEquals(mail.html.includes("&lt;script&gt;"), true);
   assertEquals(mail.html.includes("&lt;img"), true);
+});
+Deno.test("buildMail requires configured internal recipient", () => {
+  assertThrows(() => buildMail(event("internal_alert"), base, null), Error, "missing_notify_recipient");
 });
 Deno.test("buildMail creates applicant confirmation", () => {
   const mail = buildMail(event("applicant_confirmation"), base, null);
