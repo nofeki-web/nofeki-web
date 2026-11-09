@@ -20,7 +20,7 @@ select function_returns('public', 'pqr_admin_retry_notification_v2', ARRAY['uuid
 select function_returns('public', 'pqr_outbox_claim', ARRAY['integer','integer'], 'record');
 select function_returns('public', 'pqr_outbox_finish', ARRAY['uuid','uuid','text'], 'boolean');
 select function_returns('public', 'pqr_outbox_retry', ARRAY['uuid','uuid','text','integer'], 'text');
-select function_returns('public', 'pqr_admin_retry_dead_outbox_v1', ARRAY['uuid','uuid','text','text','boolean'], 'jsonb');
+select function_returns('public', 'pqr_admin_retry_dead_outbox_v1', ARRAY['uuid','uuid','uuid','text','text','boolean'], 'jsonb');
 
 select function_returns('public', 'pqr_admin_list_dead_outbox_v1', ARRAY[]::text[], 'record');
 select ok(not pg_catalog.has_function_privilege('anon', 'public.pqr_admin_list_dead_outbox_v1()', 'EXECUTE'), 'anon cannot execute dead-letter list RPC');
