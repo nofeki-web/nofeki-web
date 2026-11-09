@@ -28,7 +28,7 @@ tr[data-ref]{cursor:pointer}tr[data-ref]:hover{background:#f8fafc}.muted{color:#
 <div class="grid"><div><p class="muted">Solicitante</p><strong id="detailName"></strong><p id="detailEmail"></p></div><div><p class="muted">Tipo de solicitud</p><strong id="detailType"></strong><p id="detailDate" class="muted"></p></div></div>
 <h3>Descripción</h3><p id="detailMessage" style="white-space:pre-wrap"></p><p id="attachment"></p>
 <div class="grid"><label>Estado<select id="newStatus"><option>Recibida</option><option>En revisión</option><option>En gestión</option><option>Respondida</option><option>Cerrada</option></select></label><label>Nota interna<textarea id="note" rows="2" placeholder="Observación de gestión (solo equipo NOFEKI)"></textarea></label></div>
-<div class="actions"><button id="saveStatus">Guardar estado</button><button id="saveNote" class="secondary">Agregar nota</button></div>
+<div class="actions"><button id="saveStatus">Guardar estado</button><button id="saveNote" class="secondary">Agregar nota</button><button id="retryNotification" class="secondary">Reintentar confirmación</button></div>
 <hr style="border:0;border-top:1px solid #e5e7eb;margin:22px 0">
 <h3>Respuesta al solicitante</h3><textarea id="response" rows="5" placeholder="Redacta la respuesta que se enviará al correo registrado…"></textarea><div class="actions"><button id="sendResponse">Enviar respuesta</button></div><p id="detailMsg" class="muted" role="status"></p>
 <h3>Historial</h3><div id="timeline" class="timeline"></div></section>
@@ -81,6 +81,7 @@ async function boot(){clearPrivatePqrData();try{const {data:{session},error}=awa
 $("logout").onclick=async()=>{await client.auth.signOut();boot();};$("refresh").onclick=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("statusFilter").onchange=()=>load().catch(e=>msg("listMsg",e.message,"error"));$("search").onkeydown=e=>{if(e.key==="Enter")load().catch(err=>msg("listMsg",err.message,"error"));};$("closeDetail").onclick=()=>{$("detail").style.display="none";selected=null;};
 $("saveStatus").onclick=async()=>{if(!selected)return;try{await api("",{action:"status",reference:selected.reference_code,status:$("newStatus").value});msg("detailMsg","Estado actualizado.","success");await load();await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
 $("saveNote").onclick=async()=>{if(!selected)return;try{await api("",{action:"note",reference:selected.reference_code,note:$("note").value});$("note").value="";msg("detailMsg","Nota guardada.","success");await openDetail(selected.reference_code);}catch(e){msg("detailMsg",e.message,"error");}};
+$("retryNotification").onclick=async()=>{if(!selected)return;const reference=selected.reference_code;const button=$("retryNotification");button.disabled=true;button.textContent="Programando…";try{await api("",{action:"retry_notification",reference});msg("detailMsg","Reintento de confirmación agregado a la cola de notificaciones.","success");await openDetail(reference);}catch(e){msg("detailMsg",e.message,"error");}finally{button.disabled=false;button.textContent="Reintentar confirmación";}};
 $("sendResponse").onclick=async()=>{
   if(!selected)return;
   const button=$("sendResponse");
