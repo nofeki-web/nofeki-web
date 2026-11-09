@@ -38,16 +38,19 @@ export function sanitizeErrorCode(error: unknown): string {
     : /^resend_http_\d{3}$/.test(raw) ? raw : "transient_delivery_error";
 }
 
-export function buildMail(event: OutboxEvent, row: Submission, responseText: string | null): Mail {
+export function buildMail(event: OutboxEvent, row: Submission, responseText: string | null, notifyEmail = ""): Mail {
   const reference = escapeHtml(row.reference_code), name = escapeHtml(row.full_name);
   if (event.event_type === "applicant_confirmation") return {
     to: row.email, subject: "Confirmación de radicación " + row.reference_code,
     html: `<p>Hola ${name},</p><p>Tu solicitud fue recibida por NOFEKI.</p><p>Radicado: <strong>${reference}</strong></p><p>Conserva este número para futuras consultas.</p>`,
   };
-  if (event.event_type === "internal_alert") return {
-    to: "", subject: "Nueva solicitud PQR " + row.reference_code,
+  if (event.event_type === "internal_alert") {
+    if (!notifyEmail) throw new Error("missing_notify_recipient");
+    return {
+    to: notifyEmail, subject: "Nueva solicitud PQR " + row.reference_code,
     html: `<p>Radicado: <strong>${reference}</strong></p><p>Tipo: ${escapeHtml(row.request_type)}</p><p>Solicitante: ${name} (${escapeHtml(row.email)})</p><p>Asunto: ${escapeHtml(row.subject)}</p><p>${escapeHtml(row.message).replace(/\\n/g, "<br>")}</p>`,
   };
+  }
   if (!responseText) throw new Error("missing_response_event");
   return {
     to: row.email, subject: "Respuesta a tu solicitud " + row.reference_code,
