@@ -151,3 +151,108 @@ commit;
 -- pqr_submissions.notification_status/notification_sent_at/notification_error
 -- for applicant_confirmation events; the current worker only updates
 -- pqr_events.email_status for response_sent source events.
+
+-- Complete notification status projection for worker delivery/retry.
+-- This keeps notification status independent from the PQR case status.
+create or replace function public.pqr_outbox_finish(
+  p_outbox_id uuid,
+  p_lease_token uuid,
+  p_provider_message_id text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_rows integer;
+  v_source_event_id uuid;
+  v_submission_id uuid;
+  v_event_type text;
+begin
+  update private.pqr_outbox
+  set status = 'delivered',
+      provider_message_id = nullif(pg_catalog.left(p_provider_message_id, 200), ''),
+      delivered_at = pg_catalog.now(),
+      lock_token = null,
+      locked_until = null,
+      last_error_code = null,
+      updated_at = pg_catalog.now()
+  where id = p_outbox_id and status = 'processing' and lock_token = p_lease_token
+  returning source_event_id, submission_id, event_type
+  into v_source_event_id, v_submission_id, v_event_type;
+
+  get diagnostics v_rows = row_count;
+  if v_rows = 1 then
+    if v_source_event_id is not null then
+      update public.pqr_events
+      set email_status = 'sent'
+      where id = v_source_event_id and event_type = 'response_sent';
+    end if;
+    if v_event_type = 'applicant_confirmation' then
+      update public.pqr_submissions
+      set notification_status = 'sent',
+          notification_sent_at = pg_catalog.now(),
+          notification_error = null
+      where id = v_submission_id;
+    end if;
+  end if;
+  return v_rows = 1;
+end;
+$$;
+
+create or replace function public.pqr_outbox_retry(
+  p_outbox_id uuid,
+  p_lease_token uuid,
+  p_error_code text,
+  p_delay_seconds integer
+)
+returns text
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_status text;
+  v_source_event_id uuid;
+  v_submission_id uuid;
+  v_event_type text;
+begin
+  if p_delay_seconds is null or p_delay_seconds < 1 or p_delay_seconds > 86400 then
+    raise exception 'invalid_retry_delay' using errcode = '22023';
+  end if;
+
+  update private.pqr_outbox
+  set status = case when attempts >= max_attempts then 'dead' else 'pending' end,
+      available_at = pg_catalog.now() + pg_catalog.make_interval(secs => p_delay_seconds),
+      lock_token = null,
+      locked_until = null,
+      last_error_code = pg_catalog.left(coalesce(p_error_code, 'provider_error'), 80),
+      last_error_at = pg_catalog.now(),
+      updated_at = pg_catalog.now()
+  where id = p_outbox_id and status = 'processing' and lock_token = p_lease_token
+  returning status, source_event_id, submission_id, event_type
+  into v_status, v_source_event_id, v_submission_id, v_event_type;
+
+  if v_status is not null then
+    if v_source_event_id is not null then
+      update public.pqr_events
+      set email_status = 'failed'
+      where id = v_source_event_id and event_type = 'response_sent';
+    end if;
+    if v_event_type = 'applicant_confirmation' then
+      update public.pqr_submissions
+      set notification_status = 'failed',
+          notification_sent_at = null,
+          notification_error = 'No fue posible enviar el correo'
+      where id = v_submission_id;
+    end if;
+  end if;
+  return coalesce(v_status, 'stale_lease');
+end;
+$$;
+
+revoke all on function public.pqr_outbox_finish(uuid,uuid,text) from public,anon,authenticated;
+revoke all on function public.pqr_outbox_retry(uuid,uuid,text,integer) from public,anon,authenticated;
+grant execute on function public.pqr_outbox_finish(uuid,uuid,text) to service_role;
+grant execute on function public.pqr_outbox_retry(uuid,uuid,text,integer) to service_role;
