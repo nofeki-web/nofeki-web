@@ -43,8 +43,8 @@ const FROM_EMAIL = env("PQR_FROM_EMAIL");
 const NOTIFY_EMAIL = env("PQR_NOTIFY_EMAIL");
 const WORKER_SECRET = env("PQR_OUTBOX_WORKER_SECRET");
 
-const MAX_BATCH = 10;
-const LEASE_SECONDS = 90;
+const MAX_BATCH = 5;
+const LEASE_SECONDS = 180;
 const PROVIDER_TIMEOUT_MS = 12_000;
 
 // Exponential schedule totals less than Resend's documented 24-hour
