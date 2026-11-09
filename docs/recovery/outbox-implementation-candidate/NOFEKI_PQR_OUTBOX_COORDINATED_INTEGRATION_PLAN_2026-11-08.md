@@ -42,7 +42,7 @@ Mover el envío de correos PQR fuera de las solicitudes HTTP de radicación y ad
 2. Mantener GET de listado/detalle y URLs firmadas del adjunto; sustituir `select("*")` por columnas explícitas y preservar el contrato JSON que usa `pqr-admin.html`.
 3. Reemplazar escrituras directas separadas por RPC atómicas con expected version, request id y fingerprint.
 4. Notas y cambios de estado deben escribir evento y actualizar estado dentro de una transacción.
-5. Respuesta administrativa debe crear evento + Outbox atómicamente. **Antes de implementar, el propietario debe decidir si la acción "Responder" también cambia automáticamente el estado a "Respondida".** El comportamiento actual v9 no lo hace.
+5. Respuesta administrativa debe crear evento + Outbox atómicamente. **Decisión aprobada el 2026-11-08:** la acción "Responder" cambia automáticamente el estado a "Respondida" dentro de la misma transacción que crea el evento y el Outbox. El correo se procesa de forma asíncrona; su fallo no revierte el estado. La acción manual de estado no debe permitir establecer "Respondida".
 6. Agregar acción de reintento dead-letter dirigida a un Outbox concreto, con actor auditado, confirmación del operador, nueva clave de idempotencia cuando la clave original haya superado 24 horas y protección contra reenvío inadvertido.
 
 ### Fase 4 — worker y scheduler
@@ -83,3 +83,8 @@ Modelo en memoria cubre exclusión de claim, lease vencido y fencing token, back
 3. Confirmar si responder debe cambiar el estado automáticamente.
 4. Elegir scheduler y estrategia de monitoreo.
 5. Aprobación explícita para cambios en staging y, separadamente, en producción.
+
+
+## Decisión funcional cerrada (2026-11-08)
+
+La semántica de respuesta formal queda aprobada y registrada en `NOFEKI_PQR_RESPONSE_STATUS_DECISION_2026-11-08.md`: `Respondida` significa respuesta guardada; entrega del correo es un estado separado; `Cerrada` requiere acción administrativa posterior. La aprobación habilita integración en rama recovery, no ejecución ni despliegue productivo.
