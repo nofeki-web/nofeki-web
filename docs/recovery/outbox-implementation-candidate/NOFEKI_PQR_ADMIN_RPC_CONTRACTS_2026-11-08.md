@@ -52,7 +52,7 @@ El worker usa `event_key` como clave de idempotencia de Resend. Los eventos `adm
 
 - La consulta confirma el esquema de columnas, pero no compila el SQL candidato ni valida las constraints/índices de las tablas privadas que aún no existen.
 - No se ha ejecutado el SQL en PostgreSQL aislado, ni se ha probado concurrencia, rollback, Deno, navegador o envío real.
-- El worker candidato se recuperó de un commit anterior, pero no aparece en la ruta consultada de la rama actual; antes de desplegar debe incorporarse y revisarse como archivo rastreado de esta rama.
+- El worker ya está incorporado como `docs/recovery/outbox-implementation-candidate/pqr-outbox-worker/index.ts`; continúa siendo candidato sin despliegue ni ejecución.
 - El retry manual implementado reencola solo `applicant_confirmation`; no reintenta `admin_response` en dead-letter.
 - No hay scheduler/cron configurado.
 
@@ -70,3 +70,11 @@ El worker usa `event_key` como clave de idempotencia de Resend. Los eventos `adm
 10. Contrato GET/adjuntos compatible con el panel.
 
 **No validado:** compilación SQL, PostgreSQL de integración, Deno, navegador, Edge Function runtime ni worker end-to-end.
+
+## Revisión de integración adicional — 2026-11-08
+
+- Contraste de solo lectura contra el esquema remoto: las columnas `notification_status`, `notification_sent_at` y `notification_error` existen en `public.pqr_submissions`; `pqr_events` incluye `response`, `actor_email` y los checks actuales admiten `response_sent` / `notification_retry`, y `email_status` acepta `sent` / `failed` / `null`.
+- Se corrigió el GET/listado del Edge Function para seleccionar `version`. Sin esa columna en el `select`, todas las acciones administrativas posteriores a la primera habrían enviado versión 1 y fallado por versión obsoleta.
+- Se corrigió el panel para no permitir seleccionar manualmente `Respondida` y para tratar la respuesta formal como registrada/en cola, porque el Edge Function devuelve `{ ok, result }` y el correo se entrega asincrónicamente; no devuelve `email_status` ni envía el correo en la misma petición.
+- Se verificó que el worker está ahora presente en la rama y que sus nombres/campos de claim coinciden con `pqr_outbox_claim`.
+- El contrato y el panel aún requieren pruebas de integración reales. No se ha compilado SQL ni ejecutado Deno/browser.
