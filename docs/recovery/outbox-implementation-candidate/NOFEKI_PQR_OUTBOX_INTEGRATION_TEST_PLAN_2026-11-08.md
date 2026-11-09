@@ -66,10 +66,21 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 | UI-03 | Retry confirmación | Pulsar reintentar | Se encola; no afirma entrega inmediata |
 | UI-04 | Doble click/timeout | Repetir mismo POST | Misma Idempotency-Key; una operación |
 | UI-05 | Sesión expirada | Abrir panel sin sesión válida | Cierra acceso y limpia datos privados visibles |
+| OUTBOX-38 | Ventana expirada | Claim pending con antigüedad >=23h | Dead-letter; no llamada a Resend |
+| OUTBOX-39 | Lease expirado fuera de ventana | Claim de lease expirado >=23h | Dead-letter y token limpiado |
+| OUTBOX-40 | Retry sin confirmación | RPC manual con false/null | Rechazo sin nuevo Outbox |
+| OUTBOX-41 | Retry verificado | RPC manual con dead + confirmación true | Nuevo Outbox/clave; conserva source_event_id |
+| OUTBOX-42 | Mensaje ya enviado | provider_message_id no nulo | Rechazo del retry |
+| OUTBOX-43 | Retry duplicado | Misma request key y fingerprint | Mismo resultado; un Outbox |
+| OUTBOX-44 | Reintento respuesta formal | Retry de admin_response | Reutiliza evento fuente y no cambia status |
+| OUTBOX-45 | Auditoría | Retry aprobado | Actor y referencia al Outbox original en historial |
+| OUTBOX-46 | Inmutabilidad | Retry aprobado | Outbox original permanece dead |
 
 ## Pruebas unitarias preparadas
 - `pqr-outbox-worker/core.ts`: reglas puras exportadas, sin acceso a red, secretos ni base de datos.
 - `pqr-outbox-worker/core_test.ts`: 8 pruebas Deno para comparación de secreto, escape HTML, confirmación, respuesta formal, destinatario interno obligatorio, backoff acotado y sanitización de errores.
+- `NOFEKI_PQR_DEAD_LETTER_RECOVERY_RPC_NOT_EXECUTABLE.sql`: RPC de recuperación manual auditada, requiere confirmación explícita de no entrega y crea clave nueva sin mutar el Outbox original.
+- `pqr_outbox_claim` marca como `dead` los pendientes/leases vencidos con 23h o más desde creación y nunca los vuelve a reclamar automáticamente.
 - Estado de ejecución: no ejecutadas en este entorno; Deno no está instalado aquí. Solo se verificaron estáticamente las referencias y los casos declarados.
 
 ## Criterios de aprobación
