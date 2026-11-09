@@ -75,11 +75,15 @@ Validar atomicidad de respuesta, idempotencia, control optimista de versión, en
 | OUTBOX-44 | Reintento respuesta formal | Retry de admin_response | Reutiliza evento fuente y no cambia status |
 | OUTBOX-45 | Auditoría | Retry aprobado | Actor y referencia al Outbox original en historial |
 | OUTBOX-46 | Inmutabilidad | Retry aprobado | Outbox original permanece dead |
+| DB-21 | Listado dead-letter | Ejecutar RPC como service_role | Solo metadatos mínimos de filas dead; anon/authenticated sin EXECUTE |
+| EDGE-06 | Asociación caso/Outbox | Enviar outbox_id de otro radicado | 404/409; no crea evento ni Outbox |
+| UI-06 | Confirmación manual | Revisar dead-letter y cancelar o confirmar | Cancelar no modifica nada; confirmar exige aceptación explícita y solo informa “encolado” |
 
 ## Pruebas unitarias preparadas
 - `pqr-outbox-worker/core.ts`: reglas puras exportadas, sin acceso a red, secretos ni base de datos.
 - `pqr-outbox-worker/core_test.ts`: 8 pruebas Deno para comparación de secreto, escape HTML, confirmación, respuesta formal, destinatario interno obligatorio, backoff acotado y sanitización de errores.
-- `NOFEKI_PQR_DEAD_LETTER_RECOVERY_RPC_NOT_EXECUTABLE.sql`: RPC de recuperación manual auditada, requiere confirmación explícita de no entrega y crea clave nueva sin mutar el Outbox original.
+- `NOFEKI_PQR_DEAD_LETTER_RECOVERY_RPC_NOT_EXECUTABLE.sql`: RPC de recuperación manual auditada, requiere confirmación explícita de no entrega, valida que el Outbox pertenece al radicado seleccionado y crea clave nueva sin mutar el Outbox original.
+- `NOFEKI_PQR_ADMIN_DEAD_OUTBOX_LIST_RPC_NOT_EXECUTABLE.sql`: listado limitado a metadatos de los últimos 100 dead-letter; solo service_role puede ejecutarlo.
 - `pqr_outbox_claim` marca como `dead` los pendientes/leases vencidos con 23h o más desde creación y nunca los vuelve a reclamar automáticamente.
 - Estado de ejecución: no ejecutadas en este entorno; Deno no está instalado aquí. Solo se verificaron estáticamente las referencias y los casos declarados.
 
