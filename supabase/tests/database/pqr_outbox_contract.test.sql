@@ -3,7 +3,7 @@
 -- Supabase CLI: supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(25);
+select plan(26);
 
 select has_schema('private', 'private schema exists');
 select has_table('private', 'pqr_admin_requests', 'admin idempotency table exists');
