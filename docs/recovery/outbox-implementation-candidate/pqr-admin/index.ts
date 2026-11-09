@@ -56,7 +56,9 @@ Deno.serve(async (req) => {
       if (q) query = query.or("reference_code.ilike.%"+q+"%,full_name.ilike.%"+q+"%,email.ilike.%"+q+"%,subject.ilike.%"+q+"%");
       const { data, error } = await query;
       if (error) throw error;
-      return reply({ ok: true, submissions: data || [] }, 200, origin);
+      const { data: deadOutbox, error: deadError } = await db.rpc("pqr_admin_list_dead_outbox_v1");
+      if (deadError) throw deadError;
+      return reply({ ok: true, submissions: data || [], dead_outbox: deadOutbox || [] }, 200, origin);
     }
 
     const body = await req.json();
@@ -70,7 +72,7 @@ Deno.serve(async (req) => {
     if (lookupError) throw lookupError;
     if (!row) return reply({ ok: false, error: "Radicado no encontrado." }, 404, origin);
 
-    const fingerprintInput = { action, reference, status: action === "status" ? String(body.status || "") : null, note: action === "note" || action === "status" ? String(body.note || "").trim() : null, response: action === "respond" ? String(body.response || "").trim() : null };
+    const fingerprintInput = { action, reference, status: action === "status" ? String(body.status || "") : null, note: action === "note" || action === "status" ? String(body.note || "").trim() : null, response: action === "respond" ? String(body.response || "").trim() : null, outbox_id: action === "retry_dead_outbox" ? String(body.outbox_id || "") : null, confirmed_not_sent: action === "retry_dead_outbox" ? body.confirmed_not_sent === true : null };
     const fingerprintBytes = new TextEncoder().encode(JSON.stringify(fingerprintInput));
     const fingerprintHash = await crypto.subtle.digest("SHA-256", fingerprintBytes);
     const fingerprint = Array.from(new Uint8Array(fingerprintHash)).map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -93,6 +95,13 @@ Deno.serve(async (req) => {
       if (response.length < 5) return reply({ ok: false, error: "La respuesta debe tener al menos 5 caracteres." }, 400, origin);
       rpcName = "pqr_admin_create_response";
       rpcArgs = { p_submission_id: row.id, p_expected_version: row.version ?? 1, p_request_id: requestKey, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_response: response };
+    } else if (action === "retry_dead_outbox") {
+      const outboxId = String(body.outbox_id || "");
+      if (!uuidPattern.test(outboxId) || body.confirmed_not_sent !== true) {
+        return reply({ ok: false, error: "Se requiere un Outbox válido y la confirmación explícita de que el mensaje no fue enviado." }, 400, origin);
+      }
+      rpcName = "pqr_admin_retry_dead_outbox_v1";
+      rpcArgs = { p_request_key: requestKey, p_outbox_id: outboxId, p_request_fingerprint: fingerprint, p_actor_email: user.email, p_confirmed_not_sent: true };
     } else if (action === "retry_notification") {
       rpcName = "pqr_admin_retry_notification_v2";
       rpcArgs = { p_request_key: requestKey, p_submission_id: row.id, p_request_fingerprint: fingerprint, p_actor_email: user.email };
@@ -107,7 +116,7 @@ Deno.serve(async (req) => {
       console.error("PQR admin RPC failed", { rpcName, code: error.code, message: error.message });
       throw error;
     }
-    return reply({ ok: true, result: data }, 200, origin);
+    return reply({ ok: true, result: data, message: action === "retry_dead_outbox" ? "Reintento autorizado y agregado a la cola; el correo aún no está confirmado como enviado." : undefined }, 200, origin);
   } catch (error) {
     console.error("pqr-admin candidate error", error);
     return reply({ ok: false, error: "No fue posible procesar la solicitud." }, 500, origin);
