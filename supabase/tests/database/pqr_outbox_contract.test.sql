@@ -3,7 +3,7 @@
 -- Supabase CLI: supabase test db
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(21);
+select plan(25);
 
 select has_schema('private', 'private schema exists');
 select has_table('private', 'pqr_admin_requests', 'admin idempotency table exists');
@@ -20,6 +20,13 @@ select function_returns('public', 'pqr_admin_retry_notification_v2', ARRAY['uuid
 select function_returns('public', 'pqr_outbox_claim', ARRAY['integer','integer'], 'record');
 select function_returns('public', 'pqr_outbox_finish', ARRAY['uuid','uuid','text'], 'boolean');
 select function_returns('public', 'pqr_outbox_retry', ARRAY['uuid','uuid','text','integer'], 'text');
+select function_returns('public', 'pqr_admin_retry_dead_outbox_v1', ARRAY['uuid','uuid','text','text','boolean'], 'jsonb');
+
+select ok(not pg_catalog.has_function_privilege('anon', 'public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,text,text,boolean)', 'EXECUTE'), 'anon cannot execute dead-letter recovery RPC');
+select ok(not pg_catalog.has_function_privilege('authenticated', 'public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,text,text,boolean)', 'EXECUTE'), 'authenticated cannot execute dead-letter recovery RPC');
+select ok(pg_catalog.has_function_privilege('service_role', 'public.pqr_admin_retry_dead_outbox_v1(uuid,uuid,text,text,boolean)', 'EXECUTE'), 'service_role can execute dead-letter recovery RPC');
+select ok((select pg_catalog.pg_get_functiondef('public.pqr_outbox_claim(integer,integer)'::regprocedure) like '%23 hours%' and pg_catalog.pg_get_functiondef('public.pqr_outbox_claim(integer,integer)'::regprocedure) like '%idempotency_window_expired%'), 'outbox claim enforces provider idempotency safety window');
+
 
 select ok(not pg_catalog.has_function_privilege('anon', 'public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)', 'EXECUTE'), 'anon cannot execute formal response RPC');
 select ok(not pg_catalog.has_function_privilege('authenticated', 'public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)', 'EXECUTE'), 'authenticated cannot execute formal response RPC');
