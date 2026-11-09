@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       }
       const status = url.searchParams.get("status");
       const q = (url.searchParams.get("q") || "").trim().slice(0, 100);
-      let query = db.from("pqr_submissions").select("id,reference_code,request_type,full_name,email,subject,status,notification_status,created_at,updated_at").order("created_at", { ascending: false }).limit(100);
+      let query = db.from("pqr_submissions").select("id,reference_code,request_type,full_name,email,subject,status,version,notification_status,created_at,updated_at").order("created_at", { ascending: false }).limit(100);
       if (status && statuses.includes(status)) query = query.eq("status", status);
       if (q) query = query.or("reference_code.ilike.%"+q+"%,full_name.ilike.%"+q+"%,email.ilike.%"+q+"%,subject.ilike.%"+q+"%");
       const { data, error } = await query;
