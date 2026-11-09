@@ -69,3 +69,10 @@ La política de reintentos del SQL candidato marca el evento como `dead` al alca
 - Supabase changelog: https://supabase.com/changelog?tags=edge+functions
 
 En el changelog visible no se identificó un cambio incompatible específico para este patrón de Edge Function. La advertencia de Supabase sobre TLS 1.2 del 12 de octubre de 2026 afecta clientes antiguos que no soportan cifrados modernos; no es un motivo para alterar este worker, pero conviene mantener runtimes y clientes actualizados.
+
+
+## Prueba de modelo ejecutada en entorno local (2026-11-08)
+
+Se ejecutó con Node.js un harness independiente de siete escenarios de estado: claim exclusivo, lease vencido/fencing token, backoff, dead-letter, resultado ambiguo del proveedor conservando la clave, evento entregado no reclamable y suma de retardos menor de 24 horas. Resultado: **7 aprobados, 0 fallidos**.
+
+Esta ejecución fue del harness local equivalente, no del archivo versionado completo ni del worker Deno. No valida llamadas reales a Supabase/Resend ni SQL/PostgreSQL. El archivo versionado de pruebas queda como artefacto reproducible para el entorno de desarrollo.
