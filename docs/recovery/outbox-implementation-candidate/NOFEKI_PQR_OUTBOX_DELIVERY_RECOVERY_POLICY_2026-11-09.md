@@ -25,9 +25,9 @@ El mismo mecanismo admite `admin_response` y `applicant_confirmation`. Para `adm
 
 ## 4. Reglas de interfaz
 
-- Acción: **Revisar y reintentar envío**.
-- Confirmación obligatoria: “He revisado la actividad de Resend y confirmo que este correo no fue aceptado ni enviado”.
-- Mostrar tipo de correo y fecha/estado del intento anterior.
+- Acción: **Revisar y reintentar** desde la lista de notificaciones dead-letter del panel administrativo.
+- Confirmación obligatoria mediante diálogo: el administrador declara que revisó la actividad de Resend y verificó que el correo no fue aceptado ni enviado.
+- Mostrar radicado, tipo de correo, fecha, último código de error y si existe identificador del proveedor.
 - No mostrar acción si el Outbox no está `dead` o ya tiene `provider_message_id`.
 - Al aceptar, la UI informa “Reintento encolado”, nunca “correo enviado”.
 - Si no se puede confirmar la no entrega, la única acción disponible es dejar el trabajo en revisión.
