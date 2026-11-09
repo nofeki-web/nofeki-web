@@ -79,7 +79,7 @@ function renderDeadOutbox(){
   const host=$("deadOutboxList");
   if(!deadOutbox.length){host.innerHTML='<p class="muted">No hay notificaciones en dead-letter que requieran revisión manual.</p>';return;}
   host.innerHTML='<div style="overflow-x:auto"><table><thead><tr><th>Radicado</th><th>Tipo</th><th>Fecha</th><th>Motivo</th><th>Resend</th><th>Acción</th></tr></thead><tbody>'+deadOutbox.map(x=>'<tr><td>'+esc(x.reference_code)+'</td><td>'+esc(x.event_type==='admin_response'?'Respuesta formal':'Confirmación de recepción')+'</td><td>'+new Date(x.created_at).toLocaleString("es-CO")+'</td><td>'+esc(x.last_error_code||'Sin código')+'</td><td>'+(x.has_provider_message_id?'ID de proveedor presente':'Sin ID de proveedor')+'</td><td><button class="secondary" data-retry-outbox="'+esc(x.outbox_id)+'" data-reference="'+esc(x.reference_code)+'">Revisar y reintentar</button></td></tr>').join('')+'</tbody></table></div>';
-  host.querySelectorAll("[data-retry-outbox]").forEach(button=>button.onclick=()=>retryDeadOutbox(button.dataset.outboxId,button.dataset.reference,button));
+  host.querySelectorAll("[data-retry-outbox]").forEach(button=>button.onclick=()=>retryDeadOutbox(button.dataset.retryOutbox,button.dataset.reference,button));
 }
 async function retryDeadOutbox(outboxId,reference,button){
   const confirmation="Confirma únicamente si ya revisaste la actividad de Resend y verificaste que este mensaje NO fue aceptado/enviado. Si el resultado es ambiguo o aparece como enviado, cancela.\n\n¿Confirmas que NO fue enviado?";
