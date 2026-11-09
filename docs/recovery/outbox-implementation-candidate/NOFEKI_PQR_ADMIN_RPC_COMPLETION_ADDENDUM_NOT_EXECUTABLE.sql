@@ -1,6 +1,6 @@
 -- NOFEKI PQR — ADMIN RPC COMPLETION ADDENDUM
 -- CANDIDATE ONLY. NOT A MIGRATION. DO NOT EXECUTE IN PRODUCTION.
--- Depends on NOFEKI_PQR_ATOMIC_OUTBOX_RPC_CANDIDATE_NOT_EXECUTABLE.sql.
+-- Depends on NOFEKI_PQR_ATOMIC_OUTBOX_RPC_CANDIDATE_FIXED_NOT_EXECUTABLE.sql.
 -- This addendum aligns the admin RPC surface with the Edge Function candidate.
 
 begin;
@@ -147,13 +147,13 @@ commit;
 -- IMPORTANT FOLLOW-UP:
 -- pqr_admin_transition_status and pqr_admin_create_response are defined in the
 -- base SQL candidate. The Edge Function must call those exact names/signatures.
--- Before worker deployment, extend worker completion to set
--- pqr_submissions.notification_status/notification_sent_at/notification_error
--- for applicant_confirmation events; the current worker only updates
--- pqr_events.email_status for response_sent source events.
+-- This addendum replaces pqr_outbox_finish/retry below to also project
+-- applicant_confirmation delivery into pqr_submissions notification columns.
+-- The worker remains responsible only for sending and calling these RPCs.
 
 -- Complete notification status projection for worker delivery/retry.
 -- This keeps notification status independent from the PQR case status.
+-- These replacement functions are the final definitions used with this addendum.
 create or replace function public.pqr_outbox_finish(
   p_outbox_id uuid,
   p_lease_token uuid,
