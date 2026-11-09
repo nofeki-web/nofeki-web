@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>PQR | NOFEKI</title>
+
+  <meta
+    name="description"
+    content="Canal de Peticiones, Quejas, Reclamos y demás solicitudes de NOFEKI."
+  >
+
+  <style>
+
+    :root {
+      --navy: #111827;
+      --turquoise: #14B8A6;
+      --white: #FFFFFF;
+      --gray-50: #F9FAFB;
+      --gray-100: #F3F4F6;
+      --gray-200: #E5E7EB;
+      --gray-500: #6B7280;
+      --gray-700: #374151;
+      --gray-900: #111827;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Helvetica, Arial, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-700);
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .header {
+      background: var(--navy);
+      padding: 22px 0;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: 0 auto;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand-logo {
+      width: 125px;
+      height: auto;
+      display: block;
+    }
+
+    .back-link {
+      color: #D1D5DB;
+      font-size: 14px;
+      transition: color 0.2s ease;
+    }
+
+    .back-link:hover {
+      color: var(--white);
+    }
+
+    .hero {
+      background: var(--white);
+      padding: 70px 0 60px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .eyebrow {
+      color: var(--turquoise);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      color: var(--gray-900);
+      font-size: clamp(36px, 6vw, 58px);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      max-width: 760px;
+      font-size: 18px;
+      color: var(--gray-500);
+    }
+
+    .content {
+      padding: 60px 0 80px;
+    }
+
+    .legal-card {
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 18px;
+      padding: 42px;
+      box-shadow: 0 8px 30px rgba(17, 24, 39, 0.04);
+    }
+
+    .legal-card + .legal-card {
+      margin-top: 24px;
+    }
+
+    h2 {
+      color: var(--gray-900);
+      font-size: 25px;
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
+
+    h3 {
+      color: var(--gray-900);
+      font-size: 18px;
+      margin: 28px 0 10px;
+    }
+
+    p {
+      margin-bottom: 16px;
+    }
+
+    ul {
+      padding-left: 22px;
+      margin: 14px 0 20px;
+    }
+
+    li {
+      margin-bottom: 9px;
+    }
+
+    strong {
+      color: var(--gray-900);
+    }
+
+    .highlight {
+      background: #ECFDF5;
+      border-left: 4px solid var(--turquoise);
+      padding: 20px 22px;
+      border-radius: 10px;
+      margin: 24px 0;
+    }
+
+    .contact-box {
+      background: var(--navy);
+      color: var(--white);
+      border-radius: 16px;
+      padding: 30px;
+      margin-top: 30px;
+    }
+
+    .contact-box h2 {
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .contact-box p {
+      color: #D1D5DB;
+    }
+
+    .contact-button {
+      display: inline-block;
+      background: var(--turquoise);
+      color: var(--white);
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 9px;
+      margin-top: 8px;
+      transition: opacity 0.2s ease;
+    }
+
+    .contact-button:hover {
+      opacity: 0.9;
+    }
+
+
+    .pqr-form{margin-top:24px;display:grid;gap:18px}
+    .pqr-form label{display:grid;gap:7px;color:#fff;font-size:14px;font-weight:600}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .pqr-form input:not([type=checkbox]):not([type=file]),.pqr-form select,.pqr-form textarea{
+      width:100%;padding:13px 14px;border:1px solid #4B5563;border-radius:9px;background:#fff;color:#111827;font:inherit;font-weight:400
+    }
+    .pqr-form input[type=file]{width:100%;padding:10px;border:1px dashed #6B7280;border-radius:9px;color:#E5E7EB;font-weight:400}
+    .pqr-form textarea{resize:vertical;min-height:140px}
+    .pqr-form input:focus,.pqr-form select:focus,.pqr-form textarea:focus{outline:3px solid rgba(20,184,166,.35);border-color:#14B8A6}
+    .pqr-form .field-help{color:#D1D5DB;font-size:12px;font-weight:400}
+    .pqr-form .consent-row{display:flex;align-items:flex-start;gap:10px;font-weight:400;line-height:1.5}
+    .pqr-form .consent-row input{margin-top:4px;flex:0 0 auto}
+    .pqr-form a,.pqr-alternative a{color:#5EEAD4;text-decoration:underline}
+    .pqr-form button:disabled{opacity:.65;cursor:wait}
+    .pqr-status{min-height:24px;margin:0;font-weight:600}
+    .pqr-status.success{color:#A7F3D0}
+    .pqr-status.error{color:#FCA5A5}
+    .pqr-alternative{margin:22px 0 0;color:#D1D5DB;font-size:14px}
+    .hp-field{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+    @media(max-width:700px){.form-grid{grid-template-columns:1fr}.contact-box{padding:22px}}
+
+    .footer {
+      background: var(--navy);
+      color: #D1D5DB;
+      padding: 45px 0 35px;
+    }
+
+    .footer .brand {
+      margin-bottom: 12px;
+    }
+
+    .footer .brand-logo {
+      width: 115px;
+    }
+
+    .footer p {
+      color: #9CA3AF;
+      margin-bottom: 18px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+      font-size: 14px;
+    }
+
+    .footer-links a {
+      color: #D1D5DB;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--white);
+    }
+
+    .footer small {
+      color: #6B7280;
+    }
+
+    @media (max-width: 700px) {
+
+      .header {
+        padding: 18px 0;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+      }
+
+      .brand-logo {
+        width: 105px;
+      }
+
+      .hero {
+        padding: 55px 0 45px;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .content {
+        padding: 35px 0 55px;
+      }
+
+      .legal-card {
+        padding: 26px 22px;
+        border-radius: 14px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .contact-box {
+        padding: 24px;
+      }
+
+      .footer-links {
+        gap: 12px 16px;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
+  <header class="header">
+
+    <div class="container">
+
+      <div class="header-inner">
+
+        <a href="index.html" aria-label="NOFEKI - Inicio">
+
+          <img
+            class="brand-logo"
+            src="assets/logo-blanco.png"
+            alt="NOFEKI"
+          >
+
+        </a>
+
+        <a
+          class="back-link"
+          href="index.html">
+          ← Volver a NOFEKI
+        </a>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       HERO
+  ========================== -->
+
+  <section class="hero">
+
+    <div class="container">
+
+      <div class="eyebrow">
+        Atención y contacto
+      </div>
+
+      <h1>
+        Peticiones, Quejas y Reclamos
+      </h1>
+
+      <p>
+        En NOFEKI valoramos las solicitudes, comentarios, inquietudes
+        y oportunidades de mejora de las personas que interactúan con
+        nuestros productos, servicios y contenidos.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       CONTENIDO
+  ========================== -->
+
+  <main class="content">
+
+    <div class="container">
+
+
+      <!-- 1 -->
+
+      <section class="legal-card">
+
+        <h2>
+          1. Objeto
+        </h2>
+
+        <p>
+          Este canal tiene como finalidad facilitar la recepción y
+          atención de peticiones, quejas, reclamos, solicitudes,
+          comentarios y demás comunicaciones relacionadas con NOFEKI,
+          sus productos, servicios, contenidos o canales digitales.
+        </p>
+
+        <p>
+          NOFEKI procurará atender cada solicitud de manera clara,
+          respetuosa y oportuna, teniendo en cuenta su naturaleza y
+          las disposiciones legales que resulten aplicables.
+        </p>
+
+      </section>
+
+
+      <!-- 2 -->
+
+      <section class="legal-card">
+
+        <h2>
+          2. ¿Qué puedes presentar?
+        </h2>
+
+        <p>
+          A través de este canal puedes comunicar, entre otros:
+        </p>
+
+        <ul>
+
+          <li>
+            <strong>Petición:</strong>
+            solicitud de información, aclaración o actuación relacionada
+            con NOFEKI.
+          </li>
+
+          <li>
+            <strong>Queja:</strong>
+            manifestación de inconformidad relacionada con una actuación,
+            atención o experiencia.
+          </li>
+
+          <li>
+            <strong>Reclamo:</strong>
+            manifestación de inconformidad relacionada con un producto,
+            servicio o situación que requiera revisión.
+          </li>
+
+          <li>
+            <strong>Solicitud:</strong>
+            requerimiento relacionado con nuestros productos, servicios,
+            contenidos o canales.
+          </li>
+
+          <li>
+            <strong>Solicitud relacionada con datos personales:</strong>
+            ejercicio de los derechos previstos en nuestra
+            <a
+              href="privacidad.html"
+              style="color:#0F766E;font-weight:600;">
+              Política de privacidad
+            </a>.
+          </li>
+
+        </ul>
+
+      </section>
+
+
+      <!-- 3 -->
+
+      <section class="legal-card">
+
+        <h2>
+          3. Información recomendada
+        </h2>
+
+        <p>
+          Para facilitar la revisión y respuesta de la solicitud,
+          recomendamos incluir:
+        </p>
+
+        <ul>
+
+          <li>
+            Nombre completo.
+          </li>
+
+          <li>
+            Correo electrónico para recibir respuesta.
+          </li>
+
+          <li>
+            Tipo de solicitud.
+          </li>
+
+          <li>
+            Descripción clara de la situación.
+          </li>
+
+          <li>
+            Motivos o razones de la solicitud, cuando corresponda.
+          </li>
+
+          <li>
+            Información o documentos que permitan comprender
+            adecuadamente el caso.
+          </li>
+
+        </ul>
+
+        <p>
+          Si la solicitud está relacionada con un producto, servicio,
+          comunicación o interacción específica, puede ser útil indicar
+          la fecha y cualquier información que permita identificarla.
+        </p>
+
+      </section>
+
+
+      <!-- 4 -->
+
+      <section class="legal-card">
+
+        <h2>
+          4. Recepción de solicitudes
+        </h2>
+
+        <p>
+          Puedes radicar tu solicitud mediante el formulario en línea
+          disponible al final de esta página o, si lo prefieres, por el
+          correo electrónico oficial de contacto de NOFEKI:
+        </p>
+
+        <div class="highlight">
+
+          <strong>
+            nofeki07@gmail.com
+          </strong>
+
+          <p style="margin:8px 0 0;">
+            Este correo es un canal alternativo para recibir peticiones,
+            quejas, reclamos, sugerencias y solicitudes relacionadas con
+            nuestros productos, servicios y datos personales.
+          </p>
+
+        </div>
+
+        <p>
+          La recepción de una comunicación no implica por sí misma la
+          aceptación de los hechos, pretensiones o conclusiones planteadas
+          por quien la presenta. Cada caso será revisado de acuerdo con
+          su naturaleza y la información disponible.
+        </p>
+
+      </section>
+
+
+      <!-- 5 -->
+
+      <section class="legal-card">
+
+        <h2>
+          5. Tiempos de atención y respuesta
+        </h2>
+
+        <p>
+          NOFEKI procurará atender y responder las peticiones, quejas,
+          reclamos y demás solicitudes recibidas de manera oportuna,
+          clara y de fondo, de acuerdo con la naturaleza de cada solicitud
+          y con las disposiciones legales que resulten aplicables.
+        </p>
+
+        <p>
+          El término de respuesta podrá variar según el tipo de solicitud,
+          la información requerida, la necesidad de realizar verificaciones
+          adicionales y el régimen legal aplicable al caso concreto.
+        </p>
+
+        <p>
+          Cuando resulte necesario solicitar información adicional para
+          atender adecuadamente una solicitud, NOFEKI podrá requerirla al
+          solicitante y, cuando corresponda, informar las circunstancias
+          que puedan afectar el tiempo de atención.
+        </p>
+
+        <p>
+          Cuando una solicitud se encuentre sometida a un término legal
+          específico, NOFEKI atenderá la solicitud de conformidad con
+          dicho término y las normas que resulten aplicables.
+        </p>
+
+        <p>
+          La recepción de una PQR no implica, por sí misma, la aceptación
+          de los hechos, pretensiones o solicitudes planteadas, ni supone
+          el reconocimiento automático de responsabilidad por parte de
+          NOFEKI.
+        </p>
+
+      </section>
+
+
+      <!-- 6 -->
+
+      <section class="legal-card">
+
+        <h2>
+          6. Solicitudes relacionadas con datos personales
+        </h2>
+
+        <p>
+          Si tu solicitud está relacionada con el tratamiento de datos
+          personales, podrás ejercer los derechos reconocidos por la
+          legislación colombiana aplicable y desarrollados en nuestra
+          Política de privacidad.
+        </p>
+
+        <p>
+          Estos pueden incluir, entre otros, solicitudes de consulta,
+          actualización, rectificación, corrección o, cuando corresponda,
+          supresión de datos personales y revocatoria de la autorización
+          en los términos legalmente aplicables.
+        </p>
+
+        <p>
+          Para conocer el procedimiento específico, consulta:
+        </p>
+
+        <p>
+
+          <a
+            href="privacidad.html"
+            style="
+              color:#0F766E;
+              font-weight:700;
+            ">
+            → Política de privacidad
+          </a>
+
+        </p>
+
+      </section>
+
+
+      <!-- 7 -->
+
+      <section class="legal-card">
+
+        <h2>
+          7. Protección de la información
+        </h2>
+
+        <p>
+          La información proporcionada a través de una PQR será tratada
+          de acuerdo con nuestra Política de privacidad y con las normas
+          aplicables en materia de protección de datos personales.
+        </p>
+
+        <p>
+          Recomendamos no incluir información personal sensible,
+          contraseñas, datos bancarios, información financiera confidencial
+          o cualquier otra información que no sea necesaria para atender
+          la solicitud.
+        </p>
+
+      </section>
+
+
+      <!-- 8 -->
+
+      <section class="legal-card">
+
+        <h2>
+          8. Atención de solicitudes
+        </h2>
+
+        <p>
+          NOFEKI podrá solicitar aclaraciones o información adicional
+          cuando sea necesario para comprender adecuadamente la solicitud
+          y emitir una respuesta.
+        </p>
+
+        <p>
+          Cuando una solicitud no corresponda al ámbito de actuación de
+          NOFEKI, se informará al solicitante en la medida en que sea
+          posible y resulte pertinente.
+        </p>
+
+        <p>
+          Las respuestas serán enviadas, siempre que sea posible, al
+          medio de contacto suministrado por el solicitante.
+        </p>
+
+      </section>
+
+
+      <!-- 9 -->
+
+      <section class="legal-card">
+
+        <h2>
+          9. Marco legal
+        </h2>
+
+        <p>
+          Las solicitudes serán atendidas de conformidad con las normas
+          colombianas que resulten aplicables según la naturaleza de la
+          solicitud, del producto o servicio y de la relación existente
+          entre NOFEKI y el solicitante.
+        </p>
+
+        <p>
+          Entre las disposiciones que pueden resultar relevantes se
+          encuentran las normas colombianas sobre derecho de petición,
+          protección de datos personales, protección al consumidor y
+          comercio electrónico, cuando sean aplicables al caso concreto.
+        </p>
+
+        <p>
+          La aplicación de términos, procedimientos o efectos jurídicos
+          específicos dependerá de la naturaleza de cada solicitud y del
+          régimen legal que corresponda.
+        </p>
+
+      </section>
+
+
+      <!-- 10 -->
+
+      <section class="legal-card">
+
+        <h2>
+          10. Actualizaciones
+        </h2>
+
+        <p>
+          NOFEKI podrá actualizar este documento cuando cambien sus
+          productos, servicios, canales de atención, estructura jurídica
+          o las disposiciones legales aplicables.
+        </p>
+
+        <p>
+          La versión publicada en este sitio será la versión vigente.
+        </p>
+
+        <p>
+          <strong>
+            Versión: 1.1
+          </strong>
+          <br>
+          <strong>
+            Fecha de actualización: 6 de octubre de 2026
+          </strong>
+        </p>
+
+      </section>
+
+
+      <!-- RADICACIÓN EN LÍNEA -->
+      <section class="contact-box" id="radicar">
+        <h2>Radica tu solicitud en línea</h2>
+        <p>Completa los datos y recibirás un número de radicado en pantalla para hacer seguimiento por nuestros canales de atención.</p>
+
+        <form id="pqrForm" class="pqr-form" novalidate>
+          <div class="form-grid">
+            <label>Tipo de solicitud
+              <select name="request_type" required>
+                <option value="">Selecciona una opción</option>
+                <option>Petición</option><option>Queja</option><option>Reclamo</option>
+                <option>Sugerencia</option><option>Protección de datos</option><option>Otra solicitud</option>
+              </select>
+            </label>
+            <label>Nombre completo
+              <input name="full_name" type="text" maxlength="120" autocomplete="name" required>
+            </label>
+            <label>Correo electrónico
+              <input name="email" type="email" maxlength="254" autocomplete="email" required>
+            </label>
+            <label>Asunto
+              <input name="subject" type="text" minlength="3" maxlength="160" required>
+            </label>
+          </div>
+          <label>Describe tu solicitud
+            <textarea name="message" rows="6" minlength="10" maxlength="5000" required placeholder="Cuéntanos qué ocurrió o qué necesitas. No incluyas contraseñas ni información financiera sensible."></textarea>
+            <small class="field-help">Entre 10 y 5.000 caracteres.</small>
+          </label>
+          <label>Adjuntar soporte (opcional)
+            <input id="pqrAttachment" name="attachment" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
+            <small class="field-help">Un archivo PDF, JPG o PNG. Tamaño máximo: 5 MB.</small>
+          </label>
+          <label class="consent-row">
+            <input type="checkbox" name="consent" required>
+            <span>Autorizo el tratamiento de mis datos personales para recibir, gestionar y responder esta solicitud, conforme a la <a href="privacidad.html" target="_blank" rel="noopener">Política de privacidad de NOFEKI</a>. Declaro que la información suministrada es veraz.</span>
+          </label>
+          <div class="hp-field" aria-hidden="true">
+            <label>No diligencies este campo<input name="website" type="text" tabindex="-1" autocomplete="off"></label>
+          </div>
+          <div class="turnstile-wrap" style="margin:22px 0 16px">
+            <div id="pqr-turnstile" aria-label="Verificación de seguridad"></div>
+            <small class="field-help">Completa la verificación de seguridad para enviar tu solicitud.</small>
+          </div>
+          <button class="contact-button" id="pqrSubmit" type="submit">Radicar solicitud</button>
+          <p id="pqrStatus" class="pqr-status" role="status" aria-live="polite"></p>
+        </form>
+        <p class="pqr-alternative">¿Prefieres el correo? También puedes escribirnos a <a href="mailto:nofeki07@gmail.com">nofeki07@gmail.com</a>.</p>
+      </section>
+
+
+    </div>
+
+  </main>
+
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer class="footer">
+
+    <div class="container">
+
+      <div class="brand">
+
+        <img
+          class="brand-logo"
+          src="assets/logo-blanco.png"
+          alt="NOFEKI"
+        >
+
+      </div>
+
+      <p>
+        Supply chain · Inventarios · Operaciones · Microapps
+      </p>
+
+
+      <div class="footer-links">
+
+        <a href="terminos.html">
+          Términos y condiciones
+        </a>
+
+        <a href="privacidad.html">
+          Política de privacidad
+        </a>
+
+        <a href="aviso-privacidad.html">
+          Aviso de privacidad
+        </a>
+
+        <a href="politica-cookies.html">
+          Política de cookies
+        </a>
+
+        <a href="propiedad-intelectual.html">
+          Propiedad intelectual
+        </a>
+
+        <a href="pqr.html">
+          PQR
+        </a>
+
+        <a href="mailto:nofeki07@gmail.com">
+          Contacto
+        </a>
+
+      </div>
+
+
+      <small>
+        © <span id="year"></span> NOFEKI. Todos los derechos reservados.
+      </small>
+
+    </div>
+
+  </footer>
+
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    let pqrTurnstileToken = "";
+    let pqrTurnstileWidget = null;
+
+    const loadPqrTurnstile = () => new Promise((resolve, reject) => {
+      if (window.turnstile) return resolve();
+      const existing = document.querySelector('script[data-pqr-turnstile]');
+      if (existing) {
+        existing.addEventListener("load", resolve, { once: true });
+        existing.addEventListener("error", () => reject(new Error("No se pudo cargar Cloudflare Turnstile.")), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.dataset.pqrTurnstile = "true";
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("No se pudo cargar Cloudflare Turnstile."));
+      document.head.appendChild(script);
+    });
+
+    const renderPqrTurnstile = async () => {
+      await loadPqrTurnstile();
+      const container = document.getElementById("pqr-turnstile");
+      if (!container || pqrTurnstileWidget !== null) return;
+      pqrTurnstileWidget = window.turnstile.render(container, {
+        sitekey: "0x4AAAAAAFl9gZWmFMMpoxsB",
+        callback: (token) => { pqrTurnstileToken = token; },
+        "expired-callback": () => { pqrTurnstileToken = ""; },
+        "error-callback": () => { pqrTurnstileToken = ""; }
+      });
+    };
+
+    renderPqrTurnstile().catch((error) => {
+      const status = document.getElementById("pqrStatus");
+      if (status) {
+        status.textContent = error.message || "No fue posible cargar la verificación de seguridad.";
+        status.classList.add("error");
+      }
+    });
+
+    const pqrForm = document.getElementById("pqrForm");
+    if (pqrForm) {
+      const submitButton = document.getElementById("pqrSubmit");
+      const statusBox = document.getElementById("pqrStatus");
+      const attachmentInput = document.getElementById("pqrAttachment");
+      const endpoint = "https://bxjgodhqseoxrnshqtfr.supabase.co/functions/v1/pqr-submit";
+
+      const fileToBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+        reader.onerror = () => reject(new Error("No fue posible leer el archivo adjunto."));
+        reader.readAsDataURL(file);
+      });
+
+      pqrForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        statusBox.textContent = "";
+        statusBox.className = "pqr-status";
+        if (!pqrForm.reportValidity()) return;
+        if (!pqrTurnstileToken) {
+          statusBox.textContent = "Completa la verificación de seguridad e inténtalo nuevamente.";
+          statusBox.classList.add("error");
+          return;
+        }
+
+        const file = attachmentInput.files[0];
+        const allowed = ["application/pdf", "image/jpeg", "image/png"];
+        if (file && (!allowed.includes(file.type) || file.size > 5 * 1024 * 1024)) {
+          statusBox.textContent = "El adjunto debe ser PDF, JPG o PNG y no superar 5 MB.";
+          statusBox.classList.add("error");
+          return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.textContent = "Enviando solicitud…";
+        try {
+          const form = new FormData(pqrForm);
+          const payload = {
+            request_type: form.get("request_type"),
+            full_name: form.get("full_name"),
+            email: form.get("email"),
+            subject: form.get("subject"),
+            message: form.get("message"),
+            consent: form.get("consent") === "on",
+            website: form.get("website") || "",
+            turnstileToken: pqrTurnstileToken
+          };
+          if (file) payload.attachment = { name: file.name, mime: file.type, base64: await fileToBase64(file) };
+
+          // Keep one key for this logical submission across network retries/reloads.
+          let requestKey = sessionStorage.getItem("nofeki:pqr:pending-request-key");
+          if (!requestKey) {
+            requestKey = crypto.randomUUID();
+            sessionStorage.setItem("nofeki:pqr:pending-request-key", requestKey);
+          }
+
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Idempotency-Key": requestKey
+            },
+            body: JSON.stringify(payload)
+          });
+          const result = await response.json();
+          if (!response.ok || !result.ok) throw new Error(result.error || "No fue posible radicar la solicitud.");
+
+          statusBox.textContent = "Solicitud recibida. Tu número de radicado es " + result.reference + ". Conserva este número para futuras consultas.";
+          statusBox.classList.add("success");
+          pqrForm.reset();
+          sessionStorage.removeItem("nofeki:pqr:pending-request-key");
+        } catch (error) {
+          statusBox.textContent = error.message || "Ocurrió un error. Intenta nuevamente o escríbenos al correo de contacto.";
+          statusBox.classList.add("error");
+        } finally {
+          pqrTurnstileToken = "";
+          if (window.turnstile && pqrTurnstileWidget !== null) window.turnstile.reset(pqrTurnstileWidget);
+          submitButton.disabled = false;
+          submitButton.textContent = "Radicar solicitud";
+        }
+      });
+    }
+  </script>
+
+</body>
+</html>
