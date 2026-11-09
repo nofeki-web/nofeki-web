@@ -65,7 +65,7 @@ async function processOne(event: OutboxEvent) {
     responseText = sourceEvent.response;
   }
 
-  const mail = buildMail(event, submission as Submission, responseText);
+  const mail = buildMail(event, submission as Submission, responseText, NOTIFY_EMAIL);
   const providerMessageId = await sendWithResend(mail, event.event_key);
 
   const { data: finished, error: finishError } = await db.rpc("pqr_outbox_finish", {
