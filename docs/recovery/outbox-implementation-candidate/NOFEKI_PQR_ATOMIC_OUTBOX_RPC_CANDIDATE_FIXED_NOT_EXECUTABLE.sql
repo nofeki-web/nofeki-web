@@ -208,8 +208,6 @@ begin
       or (v_submission.status = 'En revisión' and p_target_status = 'En gestión')
       or (v_submission.status = 'En gestión' and p_target_status = 'Respondida')
       or (v_submission.status = 'Respondida' and p_target_status = 'Cerrada')
-      or (v_submission.status = 'Respondida' and p_target_status = 'En gestión'
-          and v_reason is not null)
     ) then
       raise exception 'transition_not_allowed' using errcode = 'PT422';
     end if;
