@@ -106,3 +106,27 @@ Durante la continuación del trabajo se detectó y corrigió un delimitador doll
 Validación estática posterior del archivo SQL candidato: 6 aperturas y 6 cierres dollar-quote; cero delimitadores mal formados; cuatro comprobaciones de lease vigente (incluye la validación/uso correspondiente). Esta comprobación textual no equivale a compilación PostgreSQL. La ejecución aislada, pgTAP/concurrencia y revisión de grants/RLS siguen pendientes.
 
 Se añadió el contrato `NOFEKI_PQR_RESERVATION_AND_RATE_LIMIT_RPC_CONTRACT_2026-11-09.md` para coordinar clave idempotente y rate limit. La firma real conocida de `pqr_consume_rate_limit(text,integer,integer)` y sus permisos (service_role) deben respetarse; su invocación desde la futura RPC privilegiada aún requiere validación de permisos y pruebas transaccionales.
+
+
+## Continuación — 2026-11-09: radicación idempotente + Outbox inicial
+
+Se preparó el candidato SQL independiente:
+`NOFEKI_PQR_IDEMPOTENT_SUBMISSION_AND_INITIAL_OUTBOX_RPC_CANDIDATE_NOT_EXECUTABLE.sql`.
+
+Componentes:
+- `private.pqr_submission_requests`: clave UUID única, fingerprint, source hash, estado, lease/token de fencing, metadatos de adjunto y submission_id.
+- `pqr_submit_reserve`: lock transaccional por clave y source_hash; solo una clave nueva invoca `pqr_consume_rate_limit`; replay y reanudación no vuelven a cobrar cuota.
+- `pqr_submit_mark_uploaded`: ata ruta determinística y digest/tamaño/MIME a la reserva.
+- `pqr_submit_finalize`: en una sola transacción inserta PQR, evento inicial y dos Outbox independientes, y completa la reserva.
+
+La reserva usa SECURITY INVOKER y los grants propuestos restringen las RPC a service_role; no se introduce SECURITY DEFINER. La invocación anidada del rate limit se apoya en que la RPC la ejecutará service_role, que es el rol con EXECUTE observado.
+
+### Revisión estática y pendientes
+- Se eliminó un predicado duplicado `locked_until > now()` de `pqr_outbox_finish`.
+- Se endureció la validación para exigir MIME de adjunto no nulo.
+- Se retiró la escritura de `notification_status='queued'` del INSERT porque aún no se ha confirmado el CHECK/default real de esa columna. Las filas Outbox son la fuente de verdad del estado de notificación en este candidato.
+- El actor del evento inicial `system@nofeki.com`, las constraints reales de reference_code, pqr_events y pqr_submissions, y la semántica del estado inicial deben verificarse en PostgreSQL aislado antes de considerar una migración.
+- La RPC de reserva/finalización aún no incorpora conciliación automatizada de Storage, ni transición administrativa de reservas inciertas/abandonadas.
+- No se ha modificado `pqr-submit`, el formulario, la tabla real, Storage, secretos ni funciones desplegadas.
+
+**Validación realizada:** revisión estática del SQL y comparación con los contratos y el código actual recuperado. No se ha ejecutado SQL, no se ha compilado PostgreSQL, no se ha ejecutado Deno/TypeScript ni se han probado ACL/RLS/concurrencia reales. El candidato sigue expresamente no ejecutable y no apto para producción hasta superar esa matriz.
