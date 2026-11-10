@@ -264,6 +264,8 @@ declare
 begin
   if p_request_fingerprint is null
      or p_request_fingerprint !~ '^[0-9a-f]{64}$'
+     or p_request_type is null
+     or p_request_type not in ('Petición','Queja','Reclamo','Sugerencia','Protección de datos','Otra solicitud')
      or p_attachment_required is null
      or p_full_name is null or pg_catalog.length(pg_catalog.btrim(p_full_name)) not between 2 and 120
      or p_email is null or pg_catalog.length(p_email) > 254
