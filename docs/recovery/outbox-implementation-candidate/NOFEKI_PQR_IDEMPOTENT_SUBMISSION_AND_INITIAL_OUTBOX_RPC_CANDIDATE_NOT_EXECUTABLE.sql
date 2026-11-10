@@ -85,12 +85,11 @@ begin
   if p_idempotency_key is null
      or p_request_fingerprint is null
      or p_request_fingerprint !~ '^[0-9a-f]{64}$'
-     or p_request_type is null
      or p_source_hash is null
      or p_source_hash !~ '^[0-9a-f]{64}$'
-     or p_limit < 1 or p_limit > 20
-     or p_window_seconds < 60 or p_window_seconds > 86400
-     or p_lease_seconds < 30 or p_lease_seconds > 900 then
+     or p_limit is null or p_limit < 1 or p_limit > 20
+     or p_window_seconds is null or p_window_seconds < 60 or p_window_seconds > 86400
+     or p_lease_seconds is null or p_lease_seconds < 30 or p_lease_seconds > 900 then
     raise exception 'invalid_reservation_request' using errcode = '22023';
   end if;
 
@@ -195,15 +194,16 @@ as $$
 declare
   v_rows integer;
 begin
-  if p_storage_object_path is null
-     or p_storage_object_path <> p_idempotency_key::text || '/soporte.' ||
+  if p_idempotency_key is null or p_claim_token is null
+     or p_attachment_mime is null
+     or p_storage_object_path is null
+     or p_storage_object_path <> (p_idempotency_key::text || '/soporte.' ||
        case p_attachment_mime
          when 'application/pdf' then 'pdf'
          when 'image/jpeg' then 'jpg'
          when 'image/png' then 'png'
          else ''
-       end
-     or p_attachment_mime is null
+       end)
      or p_attachment_sha256 is null
      or p_attachment_sha256 !~ '^[0-9a-f]{64}$'
      or p_attachment_bytes is null
@@ -262,7 +262,8 @@ declare
   v_outbox_internal uuid;
   v_year text := pg_catalog.to_char(pg_catalog.now(), 'YYYY');
 begin
-  if p_request_fingerprint is null
+  if p_idempotency_key is null or p_claim_token is null
+     or p_request_fingerprint is null
      or p_request_fingerprint !~ '^[0-9a-f]{64}$'
      or p_request_type is null
      or p_request_type not in ('Petición','Queja','Reclamo','Sugerencia','Protección de datos','Otra solicitud')
@@ -375,5 +376,6 @@ commit;
 -- 2) verify pqr_outbox source_event_id and event_type constraints;
 -- 3) compile/execute against isolated PostgreSQL 17 and test rollback/concurrency;
 -- 4) add safe reconciliation/abandonment operations and retention policy;
--- 5) coordinate frontend + Edge Function rollout. This file is not executable
+-- 5) add and test explicit failure/uncertain transition RPCs and Storage reconciliation.
+-- 6) coordinate frontend + Edge Function rollout. This file is not executable
 -- in production.
