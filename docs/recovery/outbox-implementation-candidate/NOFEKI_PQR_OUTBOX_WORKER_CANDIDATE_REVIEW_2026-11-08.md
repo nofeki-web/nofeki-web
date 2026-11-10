@@ -179,3 +179,27 @@ También se añadieron comprobaciones explícitas de NULL para los límites num�
 
 ### Límite
 La revisión estática no equivale a parser/compilación PostgreSQL. No se ejecutó SQL, no se usó Storage, no se invocaron Edge Functions, no se enviaron correos y no se modificó el proyecto Supabase ni producción. La rama sigue siendo recuperación/candidato; no se integró a `main`.
+
+
+## Continuación — 2026-11-10: transiciones de recuperación de la radicación
+
+Se añadieron al SQL candidato:
+- tabla privada `private.pqr_submission_recovery_audit` con identificadores y códigos sanitizados;
+- RPC `pqr_submit_mark_failed`, restringida al claim token vigente y lease activo;
+- RPC `pqr_submit_mark_uncertain`, que pone en cuarentena resultados ambiguos y rechaza tokens reemplazados;
+- RPC `pqr_submit_reconcile_uncertain`, que solo permite `uncertain → failed` tras bloquear la reserva, confirmar ausencia de submission_id y comprobar que ninguna PQR referencia la ruta de adjunto.
+
+Las tres RPC usan SECURITY INVOKER, search_path vacío, REVOKE a PUBLIC/anon/authenticated y GRANT a service_role. La conciliación conserva metadata de Storage y no borra archivos. Se documentó que el actor de conciliación debe provenir de identidad autenticada/autorizada en backend; no se debe confiar en un actor enviado libremente por el navegador.
+
+La matriz se amplió con REC-01 a REC-08. Todos los casos están pendientes de ejecución real.
+
+### Revisión estática — límites
+Se revisó que las funciones estén insertadas antes del bloque de permisos y del COMMIT, y que las firmas de permisos coincidan con las definiciones. Esta es una inspección textual, no compilación PostgreSQL. Aún se deben verificar en PostgreSQL aislado:
+- compatibilidad de constraints y grants reales;
+- ejecución como service_role y denegación a anon/authenticated;
+- locks y carreras entre finalize, mark_failed, mark_uncertain y reconcile;
+- escritura de la tabla de auditoría;
+- comportamiento de la consulta de referencia Storage;
+- atomicidad y rollback ante excepciones.
+
+No se ejecutó SQL ni se modificó Supabase/producción.
