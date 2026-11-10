@@ -97,3 +97,12 @@ Se detectó un riesgo en la versión anterior del candidato: el catch general en
 - Compilación y ejecución SQL en PostgreSQL aislado: pendiente.
 - Pruebas reales de lease, fencing, transición a `uncertain`, grants/RLS y recuperación administrativa: pendientes.
 - No se ha desplegado worker, configurado scheduler ni cambiado secretos.
+
+
+## Revisión complementaria — 2026-11-09 (fencing SQL)
+
+Durante la continuación del trabajo se detectó y corrigió un delimitador dollar-quote mal formado en la definición candidata de `pqr_outbox_mark_uncertain` (`as $ ... $;`), que impedía compilar esa función. También se endurecieron las RPC `pqr_outbox_finish`, `pqr_outbox_retry` y `pqr_outbox_mark_uncertain`: además del estado `processing` y el token de lease, ahora exigen `locked_until > now()`. Así, un worker que llega después de expirar su lease no puede finalizar ni reprogramar el evento aunque todavía no haya sido reclamado por otro worker.
+
+Validación estática posterior del archivo SQL candidato: 6 aperturas y 6 cierres dollar-quote; cero delimitadores mal formados; cuatro comprobaciones de lease vigente (incluye la validación/uso correspondiente). Esta comprobación textual no equivale a compilación PostgreSQL. La ejecución aislada, pgTAP/concurrencia y revisión de grants/RLS siguen pendientes.
+
+Se añadió el contrato `NOFEKI_PQR_RESERVATION_AND_RATE_LIMIT_RPC_CONTRACT_2026-11-09.md` para coordinar clave idempotente y rate limit. La firma real conocida de `pqr_consume_rate_limit(text,integer,integer)` y sus permisos (service_role) deben respetarse; su invocación desde la futura RPC privilegiada aún requiere validación de permisos y pruebas transaccionales.
