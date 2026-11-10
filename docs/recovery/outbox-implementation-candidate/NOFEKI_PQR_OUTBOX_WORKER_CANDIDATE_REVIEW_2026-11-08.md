@@ -156,3 +156,26 @@ Este es un chequeo textual de consistencia, no un parser ni compilación SQL. La
 3. Definir conciliación/recuperación conservadora para Storage: objeto ya subido, resultado ambiguo, lease vencido y limpieza de objetos huérfanos.
 4. Definir política para reservas `failed` y `uncertain`, expiración, retención y auditoría.
 5. Diseñar e implementar el cambio coordinado del formulario y Edge Function solo después de la prueba aislada.
+
+
+## Continuación — 2026-11-10: contrato Storage y segunda pasada de reserva
+
+Se añadieron dos documentos:
+- `NOFEKI_PQR_STORAGE_SAGA_RECONCILIATION_CONTRACT_2026-11-10.md`: estados `reserved/uploaded/completed/failed/uncertain`, ruta determinística, verificación de objeto existente, fencing, reglas de no-borrado ante ambigüedad y cleanup conservador.
+- `NOFEKI_PQR_IDEMPOTENCY_STORAGE_ACCEPTANCE_TEST_MATRIX_2026-11-10.md`: matriz de pruebas de idempotencia, rate limit, leases, Storage, Outbox, seguridad y compatibilidad de esquema.
+
+### Defecto adicional detectado y corregido en el SQL de reserva
+
+La revisión de la definición completa de `pqr_submit_reserve` encontró una referencia a `p_request_type` dentro de su validación, aunque ese parámetro no existe en la firma de esa RPC. Esto habría impedido compilar la función. Se eliminó ese predicado de la reserva; la validación de tipo de solicitud permanece en `pqr_submit_finalize`, donde sí existe el parámetro.
+
+También se añadieron comprobaciones explícitas de NULL para los límites numéricos de la reserva y para idempotency key/claim token en las RPC de carga y finalización. Las comprobaciones de rango no rechazan NULL por sí solas en PL/pgSQL, por lo que era necesario endurecerlas.
+
+### Chequeo estático posterior
+- Tres funciones de radicación, con tres aperturas y tres cierres dollar-quote.
+- No queda referencia a `p_request_type` dentro de `pqr_submit_reserve`.
+- Guards de NULL para los tres parámetros de límite, clave idempotente y claim token.
+- La ruta de Storage se compara como una expresión concatenada explícita.
+- La matriz registra todos los escenarios como pendientes de ejecución real.
+
+### Límite
+La revisión estática no equivale a parser/compilación PostgreSQL. No se ejecutó SQL, no se usó Storage, no se invocaron Edge Functions, no se enviaron correos y no se modificó el proyecto Supabase ni producción. La rama sigue siendo recuperación/candidato; no se integró a `main`.
