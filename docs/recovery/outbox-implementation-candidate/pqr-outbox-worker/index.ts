@@ -175,7 +175,7 @@ async function processOne(event: OutboxEvent) {
     p_lease_token: event.lease_token,
     p_provider_message_id: providerMessageId,
   });
-  if (finishError) throw new Error("outbox_finish_rpc_failed");
+  if (finishError) throw new ProviderOutcomeUncertain("outbox_finish_persist_uncertain");
   if (finished !== true) {
     // The lease was superseded. A later worker will retry with the same
     // event_key; Resend deduplicates within its 24-hour retention window.
