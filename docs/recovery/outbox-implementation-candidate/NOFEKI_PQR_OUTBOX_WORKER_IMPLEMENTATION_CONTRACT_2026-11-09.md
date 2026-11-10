@@ -35,7 +35,7 @@ No se implementa envío directo desde `pqr-submit` ni `pqr-admin` una vez integr
 
 ## 4. Hallazgo que bloquea el worker final
 
-El SQL candidato actual solo modela `pending | processing | delivered | dead`. No incluye `uncertain` ni una RPC dedicada para finalizar en estado incierto. Además, `pqr_outbox_retry` devuelve el evento a `pending`, por lo que no debe usarse ante un timeout ambiguo. Antes de escribir el worker ejecutable se debe ampliar la máquina de estados y agregar una RPC fenced `pqr_outbox_mark_uncertain` (requiere outbox_id + lease_token + código seguro + timestamp).
+La primera versión del SQL/worker candidato no separaba resultados ambiguos. En la revisión del 2026-11-09 se corrigió el candidato: el SQL ahora incluye `uncertain` y una RPC fenced `pqr_outbox_mark_uncertain`; el worker clasifica timeouts, fallos de red, 408/429/5xx, respuesta sin ID y fallo al persistir `finish` como inciertos. La RPC libera el lease y el claim no vuelve a reclamar estos eventos. Esta corrección es estática y todavía requiere compilación Deno y pruebas PostgreSQL aisladas.
 
 La RPC debe:
 - aceptar solo lease vigente;
@@ -94,3 +94,17 @@ Métricas mínimas: filas reclamadas, entregadas, reintentadas, muertas, inciert
 ## 10. Estado de seguridad
 
 Este documento no crea una Edge Function ni configura cron. No se han enviado correos, cambiado secretos, modificado Supabase ni desplegado código.
+
+
+## Implementación candidata disponible (2026-11-09)
+
+Existe código en `docs/recovery/outbox-implementation-candidate/pqr-outbox-worker/index.ts`. La revisión de hoy corrigió la clasificación de resultados ambiguos y añadió la RPC de cuarentena en el SQL candidato. No se ha copiado a `supabase/functions`, no se ha desplegado y no se ha configurado scheduler.
+
+La verificación estática recuperando los archivos desde GitHub confirmó:
+- estado `uncertain` incluido en constraint;
+- RPC con fencing token;
+- EXECUTE revocado de PUBLIC/anon/authenticated y concedido a service_role;
+- worker invoca la RPC de cuarentena en vez de reintentar automáticamente;
+- misma clave `event_key` enviada a Resend.
+
+La verificación no compila TypeScript ni SQL. La política de recuperación administrativa de `uncertain` sigue pendiente.
