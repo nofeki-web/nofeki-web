@@ -203,3 +203,13 @@ Se revisó que las funciones estén insertadas antes del bloque de permisos y de
 - atomicidad y rollback ante excepciones.
 
 No se ejecutó SQL ni se modificó Supabase/producción.
+
+
+## Nota de integridad del artefacto — 2026-11-10
+
+Durante la edición de las RPC de recuperación se detectó que los delimitadores dollar-quote de la inserción inicial no quedaron íntegros. Para no conservar un candidato SQL potencialmente inválido:
+- se restauró el archivo base `NOFEKI_PQR_IDEMPOTENT_SUBMISSION_AND_INITIAL_OUTBOX_RPC_CANDIDATE_NOT_EXECUTABLE.sql` a la versión limpia previamente revisada;
+- las tres RPC de recuperación se aislaron en `NOFEKI_PQR_SUBMISSION_RECOVERY_RPCS_CANDIDATE_NOT_EXECUTABLE.sql`;
+- el archivo independiente tiene tres aperturas y tres cierres dollar-quote en el chequeo textual, además de GRANT/REVOKE para las tres firmas.
+
+La matriz y el contrato describen la intención conjunta, pero ambos archivos SQL son candidatos separados y **no deben ejecutarse todavía**. La integración posterior deberá consolidarlos tras compilar y probar ambos en PostgreSQL 17 aislado. Esta separación evita que un defecto de edición contamine el SQL base.
