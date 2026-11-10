@@ -260,7 +260,9 @@ declare
   v_outbox_internal uuid;
   v_year text := pg_catalog.to_char(pg_catalog.now(), 'YYYY');
 begin
-  if p_request_type not in ('Petición','Queja','Reclamo','Sugerencia','Protección de datos','Otra solicitud')
+  if p_request_type is null
+     or p_request_type not in ('Petición','Queja','Reclamo','Sugerencia','Protección de datos','Otra solicitud')
+     or p_attachment_required is null
      or p_full_name is null or pg_catalog.length(pg_catalog.btrim(p_full_name)) not between 2 and 120
      or p_email is null or pg_catalog.length(p_email) > 254
      or p_subject is null or pg_catalog.length(pg_catalog.btrim(p_subject)) not between 3 and 160
