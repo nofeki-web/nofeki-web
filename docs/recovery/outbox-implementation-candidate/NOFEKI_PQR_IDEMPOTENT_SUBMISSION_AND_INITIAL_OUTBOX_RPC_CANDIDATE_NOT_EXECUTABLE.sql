@@ -353,6 +353,276 @@ begin
 end;
 $$;
 
+
+-- Recovery audit contains identifiers and sanitized codes only; no PII/body/file data.
+create table if not exists private.pqr_submission_recovery_audit (
+  id bigint generated always as identity primary key,
+  idempotency_key uuid not null,
+  action text not null check (action in ('failed','uncertain','reconciled_to_failed')),
+  actor text not null check (pg_catalog.length(pg_catalog.btrim(actor)) between 1 and 120),
+  reason_code text not null check (reason_code ~ '^[a-z0-9_]{2,64}
+-- request/outbox state. Edge Function invokes as service_role only.
+revoke all on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  from public, anon, authenticated;
+grant execute on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  to service_role;
+grant execute on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  to service_role;
+grant execute on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  to service_role;
+
+
+revoke all on function public.pqr_submit_mark_failed(uuid,uuid,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_mark_uncertain(uuid,uuid,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_reconcile_uncertain(uuid,text,text)
+  from public, anon, authenticated;
+grant execute on function public.pqr_submit_mark_failed(uuid,uuid,text) to service_role;
+grant execute on function public.pqr_submit_mark_uncertain(uuid,uuid,text) to service_role;
+grant execute on function public.pqr_submit_reconcile_uncertain(uuid,text,text) to service_role;
+
+commit;
+
+-- END CANDIDATE. Before adoption:
+-- 1) verify actual pqr_submissions constraints/defaults/triggers and pqr_events
+--    actor_email/event_type constraints, including whether system@nofeki.com is valid;
+-- 2) verify pqr_outbox source_event_id and event_type constraints;
+-- 3) compile/execute against isolated PostgreSQL 17 and test rollback/concurrency;
+-- 4) add safe reconciliation/abandonment operations and retention policy;
+-- 5) validate recovery RPC audit, actor semantics and Storage reconciliation.
+-- 6) coordinate frontend + Edge Function rollout. This file is not executable
+-- in production.
+),
+  created_at timestamptz not null default pg_catalog.now()
+);
+alter table private.pqr_submission_recovery_audit enable row level security;
+revoke all on private.pqr_submission_recovery_audit from public, anon, authenticated;
+grant select, insert on private.pqr_submission_recovery_audit to service_role;
+
+-- A definitive failure is allowed only while the caller still owns the active
+-- claim and the database proves no submission has been committed for the key.
+create or replace function public.pqr_submit_mark_failed(
+  p_idempotency_key uuid,
+  p_claim_token uuid,
+  p_reason_code text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $
+declare
+  v_request private.pqr_submission_requests%rowtype;
+begin
+  if p_idempotency_key is null or p_claim_token is null
+     or p_reason_code is null or p_reason_code !~ '^[a-z0-9_]{2,64}
+-- request/outbox state. Edge Function invokes as service_role only.
+revoke all on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  from public, anon, authenticated;
+grant execute on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  to service_role;
+grant execute on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  to service_role;
+grant execute on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  to service_role;
+
+commit;
+
+-- END CANDIDATE. Before adoption:
+-- 1) verify actual pqr_submissions constraints/defaults/triggers and pqr_events
+--    actor_email/event_type constraints, including whether system@nofeki.com is valid;
+-- 2) verify pqr_outbox source_event_id and event_type constraints;
+-- 3) compile/execute against isolated PostgreSQL 17 and test rollback/concurrency;
+-- 4) add safe reconciliation/abandonment operations and retention policy;
+-- 5) add and test explicit failure/uncertain transition RPCs and Storage reconciliation.
+-- 6) coordinate frontend + Edge Function rollout. This file is not executable
+-- in production.
+ then
+    raise exception 'invalid_failure_transition' using errcode = '22023';
+  end if;
+
+  select r.* into v_request
+  from private.pqr_submission_requests r
+  where r.idempotency_key = p_idempotency_key
+  for update;
+
+  if not found or v_request.state not in ('reserved','uploaded')
+     or v_request.claim_token <> p_claim_token
+     or v_request.lease_until <= pg_catalog.now()
+     or v_request.submission_id is not null then
+    return false;
+  end if;
+
+  update private.pqr_submission_requests
+  set state = 'failed', claim_token = null, lease_until = null,
+      safe_error_code = p_reason_code, updated_at = pg_catalog.now()
+  where idempotency_key = p_idempotency_key;
+
+  insert into private.pqr_submission_recovery_audit
+    (idempotency_key, action, actor, reason_code)
+  values (p_idempotency_key, 'failed', 'edge_function', p_reason_code);
+  return true;
+end;
+$;
+
+-- Ambiguous outcomes are quarantined, never blindly retried. Token equality
+-- fences stale workers; lease expiry alone does not let a stale token win.
+create or replace function public.pqr_submit_mark_uncertain(
+  p_idempotency_key uuid,
+  p_claim_token uuid,
+  p_reason_code text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $
+declare
+  v_request private.pqr_submission_requests%rowtype;
+begin
+  if p_idempotency_key is null or p_claim_token is null
+     or p_reason_code is null or p_reason_code !~ '^[a-z0-9_]{2,64}
+-- request/outbox state. Edge Function invokes as service_role only.
+revoke all on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  from public, anon, authenticated;
+grant execute on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  to service_role;
+grant execute on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  to service_role;
+grant execute on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  to service_role;
+
+commit;
+
+-- END CANDIDATE. Before adoption:
+-- 1) verify actual pqr_submissions constraints/defaults/triggers and pqr_events
+--    actor_email/event_type constraints, including whether system@nofeki.com is valid;
+-- 2) verify pqr_outbox source_event_id and event_type constraints;
+-- 3) compile/execute against isolated PostgreSQL 17 and test rollback/concurrency;
+-- 4) add safe reconciliation/abandonment operations and retention policy;
+-- 5) add and test explicit failure/uncertain transition RPCs and Storage reconciliation.
+-- 6) coordinate frontend + Edge Function rollout. This file is not executable
+-- in production.
+ then
+    raise exception 'invalid_uncertain_transition' using errcode = '22023';
+  end if;
+
+  select r.* into v_request
+  from private.pqr_submission_requests r
+  where r.idempotency_key = p_idempotency_key
+  for update;
+
+  if not found or v_request.state not in ('reserved','uploaded')
+     or v_request.claim_token <> p_claim_token
+     or v_request.submission_id is not null then
+    return false;
+  end if;
+
+  update private.pqr_submission_requests
+  set state = 'uncertain', claim_token = null, lease_until = null,
+      safe_error_code = p_reason_code, updated_at = pg_catalog.now()
+  where idempotency_key = p_idempotency_key;
+
+  insert into private.pqr_submission_recovery_audit
+    (idempotency_key, action, actor, reason_code)
+  values (p_idempotency_key, 'uncertain', 'edge_function', p_reason_code);
+  return true;
+end;
+$;
+
+-- Operator reconciliation is intentionally one-way: uncertain -> failed,
+-- only after an authoritative DB read proves no linked submission exists.
+-- The caller must separately verify Storage before any later cleanup.
+create or replace function public.pqr_submit_reconcile_uncertain(
+  p_idempotency_key uuid,
+  p_actor text,
+  p_reason_code text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $
+declare
+  v_request private.pqr_submission_requests%rowtype;
+begin
+  if p_idempotency_key is null
+     or p_actor is null or pg_catalog.length(pg_catalog.btrim(p_actor)) not between 1 and 120
+     or p_reason_code is null or p_reason_code !~ '^[a-z0-9_]{2,64}
+-- request/outbox state. Edge Function invokes as service_role only.
+revoke all on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  from public, anon, authenticated;
+revoke all on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  from public, anon, authenticated;
+grant execute on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
+  to service_role;
+grant execute on function public.pqr_submit_mark_uploaded(uuid,uuid,text,text,bigint,text)
+  to service_role;
+grant execute on function public.pqr_submit_finalize(uuid,uuid,text,text,text,text,text,text,text,boolean)
+  to service_role;
+
+commit;
+
+-- END CANDIDATE. Before adoption:
+-- 1) verify actual pqr_submissions constraints/defaults/triggers and pqr_events
+--    actor_email/event_type constraints, including whether system@nofeki.com is valid;
+-- 2) verify pqr_outbox source_event_id and event_type constraints;
+-- 3) compile/execute against isolated PostgreSQL 17 and test rollback/concurrency;
+-- 4) add safe reconciliation/abandonment operations and retention policy;
+-- 5) add and test explicit failure/uncertain transition RPCs and Storage reconciliation.
+-- 6) coordinate frontend + Edge Function rollout. This file is not executable
+-- in production.
+ then
+    raise exception 'invalid_reconciliation_request' using errcode = '22023';
+  end if;
+
+  select r.* into v_request
+  from private.pqr_submission_requests r
+  where r.idempotency_key = p_idempotency_key
+  for update;
+
+  if not found or v_request.state <> 'uncertain'
+     or v_request.submission_id is not null then
+    return false;
+  end if;
+
+  if v_request.storage_object_path is not null and exists (
+    select 1 from public.pqr_submissions s
+    where s.attachment_path = v_request.storage_object_path
+  ) then
+    raise exception 'submission_attachment_reference_found' using errcode = '23514';
+  end if;
+
+  -- Finalize writes the PQR row and this request's completed state atomically.
+  -- Therefore an uncertain row with no submission_id and no path reference can
+  -- be resumed with the same idempotency key; no new quota slot is consumed.
+  update private.pqr_submission_requests
+  set state = 'failed', safe_error_code = p_reason_code,
+      updated_at = pg_catalog.now()
+  where idempotency_key = p_idempotency_key;
+
+  insert into private.pqr_submission_recovery_audit
+    (idempotency_key, action, actor, reason_code)
+  values (p_idempotency_key, 'reconciled_to_failed', pg_catalog.btrim(p_actor), p_reason_code);
+  return true;
+end;
+$;
+
 -- Public clients must never invoke privileged submission RPCs or inspect
 -- request/outbox state. Edge Function invokes as service_role only.
 revoke all on function public.pqr_submit_reserve(uuid,text,text,integer,integer,integer)
