@@ -130,3 +130,29 @@ La reserva usa SECURITY INVOKER y los grants propuestos restringen las RPC a ser
 - No se ha modificado `pqr-submit`, el formulario, la tabla real, Storage, secretos ni funciones desplegadas.
 
 **Validación realizada:** revisión estática del SQL y comparación con los contratos y el código actual recuperado. No se ha ejecutado SQL, no se ha compilado PostgreSQL, no se ha ejecutado Deno/TypeScript ni se han probado ACL/RLS/concurrencia reales. El candidato sigue expresamente no ejecutable y no apto para producción hasta superar esa matriz.
+
+
+## Revisión adicional de integridad de la RPC de radicación — 2026-11-09 (continuación)
+
+Durante la segunda pasada estática se detectó que la RPC `pqr_submit_finalize` debía volver a comprobar el fingerprint reservado, no solo confiar en que el claim token perteneciera a la reserva. Se añadió `p_request_fingerprint` a la firma, se valida su formato y se compara contra el valor persistido antes de insertar el radicado. La firma de los GRANT/REVOKE se actualizó en correspondencia.
+
+La pasada también detectó dos defectos textuales introducidos durante una edición anterior del candidato (cierre del patrón SHA-256 de adjunto y validación de tipo de solicitud). Se corrigieron y se eliminó un fragmento duplicado que había quedado después del marcador final del archivo.
+
+### Chequeo estático posterior
+- 3 funciones de radicación: reserve, mark_uploaded y finalize.
+- 3 aperturas y 3 cierres dollar-quote.
+- Un BEGIN y un COMMIT.
+- Regex de SHA-256 sin líneas truncadas.
+- Guard de tipo de solicitud presente.
+- Comparación del fingerprint reservado en finalize presente.
+- Firma de GRANT/REVOKE alineada con la firma de finalize.
+- No queda el fragmento duplicado.
+
+Este es un chequeo textual de consistencia, no un parser ni compilación SQL. La posibilidad de errores de sintaxis/semántica PostgreSQL sigue abierta hasta probar en PostgreSQL 17 aislado.
+
+### Riesgos aún abiertos
+1. Verificar constraints y defaults reales de `pqr_submissions`, `pqr_events` y `private.pqr_outbox`; especialmente actor del evento inicial, estados y formato único de radicado.
+2. Verificar el comportamiento transaccional y ACL de la llamada anidada a `pqr_consume_rate_limit` con service_role.
+3. Definir conciliación/recuperación conservadora para Storage: objeto ya subido, resultado ambiguo, lease vencido y limpieza de objetos huérfanos.
+4. Definir política para reservas `failed` y `uncertain`, expiración, retención y auditoría.
+5. Diseñar e implementar el cambio coordinado del formulario y Edge Function solo después de la prueba aislada.
