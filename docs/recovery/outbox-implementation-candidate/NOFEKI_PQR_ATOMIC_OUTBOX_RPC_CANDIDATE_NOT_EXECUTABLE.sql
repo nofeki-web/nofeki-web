@@ -453,6 +453,7 @@ begin
   where id = p_outbox_id
     and status = 'processing'
     and lock_token = p_lease_token
+    and locked_until > pg_catalog.now()
   returning source_event_id into v_source_event_id;
 
   get diagnostics v_rows = row_count;
