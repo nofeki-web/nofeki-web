@@ -520,7 +520,7 @@ returns boolean
 language plpgsql
 security invoker
 set search_path = ''
-as $
+as $$
 declare
   v_rows integer;
   v_source_event_id uuid;
@@ -546,7 +546,7 @@ begin
   end if;
   return v_rows = 1;
 end;
-$;
+$$;
 
 -- Manual dead-letter retry is deliberately not exposed in this first SQL
 -- candidate. It needs a separate admin audit/authorization contract and a
