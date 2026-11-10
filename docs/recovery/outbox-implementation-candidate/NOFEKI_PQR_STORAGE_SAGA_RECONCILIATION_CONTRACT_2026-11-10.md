@@ -124,3 +124,16 @@ No se recomienda implementar aún estas RPC hasta conocer constraints reales, po
 ## 10. Límite de ejecución
 
 Este documento es especificación. No se ha ejecutado SQL, Storage, Edge Function ni correo. No cambia el proyecto Supabase ni producción.
+
+
+## 11. RPC de recuperación añadidas al candidato — 2026-11-10
+
+Se incorporaron tres RPC server-only y una tabla privada de auditoría mínima:
+- `pqr_submit_mark_failed(key, claim_token, reason_code)`: solo convierte `reserved/uploaded` en `failed` si el token coincide, el lease sigue vigente y no hay submission_id.
+- `pqr_submit_mark_uncertain(key, claim_token, reason_code)`: pone en cuarentena una reserva cuyo resultado es ambiguo. Exige token coincidente; si ya fue reemplazado, el worker antiguo no puede modificarla. No depende de que el lease siga vigente, porque la ambigüedad puede descubrirse después de expirar.
+- `pqr_submit_reconcile_uncertain(key, actor, reason_code)`: operación administrativa explícita. Solo resuelve `uncertain → failed` cuando no existe submission_id ni una PQR que referencie la ruta del adjunto. Mantiene metadata del objeto para que un reintento pueda verificar/reutilizarlo; no borra Storage.
+- `private.pqr_submission_recovery_audit`: registra UUID idempotente, acción, actor y código sanitizado, sin PII ni contenido.
+
+La finalización de PQR, Outbox y estado `completed` ocurre en una única transacción; por esa atomicidad, si el estado sigue `uncertain` y no existe submission_id, se puede recuperar como `failed` solo después de la lectura autoritativa y comprobación de referencia del adjunto. Si la consulta no está disponible, no se concilia.
+
+**Límite de confianza:** el campo actor de la RPC de conciliación es suministrado por el backend administrativo. Antes de producción, la Edge Function deberá derivarlo de una identidad autenticada y autorizada, no aceptar un actor arbitrario del navegador. La tabla de auditoría no se expone a clientes.
