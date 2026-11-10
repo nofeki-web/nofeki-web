@@ -35,6 +35,13 @@ type Submission = {
 
 type Mail = { to: string; subject: string; html: string };
 
+class ProviderOutcomeUncertain extends Error {
+  constructor(code = "provider_outcome_uncertain") {
+    super(code);
+    this.name = "ProviderOutcomeUncertain";
+  }
+}
+
 const env = (name: string) => Deno.env.get(name)?.trim() ?? "";
 const SUPABASE_URL = env("SUPABASE_URL");
 const SERVICE_ROLE_KEY = env("SUPABASE_SERVICE_ROLE_KEY");
@@ -104,23 +111,34 @@ function buildMail(event: OutboxEvent, row: Submission, responseText: string | n
 }
 
 async function sendWithResend(mail: Mail, eventKey: string) {
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: "Bearer " + RESEND_API_KEY,
-      "Content-Type": "application/json",
-      "Idempotency-Key": eventKey,
-    },
-    body: JSON.stringify({ from: FROM_EMAIL, to: [mail.to], subject: mail.subject, html: mail.html }),
-    signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
-  });
+  let response: Response;
+  try {
+    response = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + RESEND_API_KEY,
+        "Content-Type": "application/json",
+        "Idempotency-Key": eventKey,
+      },
+      body: JSON.stringify({ from: FROM_EMAIL, to: [mail.to], subject: mail.subject, html: mail.html }),
+      signal: AbortSignal.timeout(PROVIDER_TIMEOUT_MS),
+    });
+  } catch {
+    // The request may have reached Resend even if the client timed out.
+    throw new ProviderOutcomeUncertain("provider_network_outcome_uncertain");
+  }
   const payload = await response.json().catch(() => ({}));
   if (!response.ok) {
-    // Do not persist provider response bodies; they may contain recipient data.
+    // 429 and 5xx can be transient/ambiguous. Quarantine rather than
+    // automatically re-send when provider acceptance cannot be ruled out.
+    if (response.status === 429 || response.status >= 500 || response.status === 408) {
+      throw new ProviderOutcomeUncertain("resend_http_" + response.status);
+    }
+    // Other 4xx responses are explicit provider rejections.
     throw new Error("resend_http_" + response.status);
   }
   const id = typeof payload?.id === "string" ? payload.id : null;
-  if (!id) throw new Error("resend_missing_message_id");
+  if (!id) throw new ProviderOutcomeUncertain("resend_missing_message_id");
   return id;
 }
 
@@ -212,7 +230,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const events = (claimed ?? []) as OutboxEvent[];
-    const counts = { claimed: events.length, delivered: 0, retrying: 0, dead: 0, stale: 0, errors: 0 };
+    const counts = { claimed: events.length, delivered: 0, retrying: 0, dead: 0, uncertain: 0, stale: 0, errors: 0 };
     for (const event of events) {
       try {
         const result = await processOne(event);
@@ -221,22 +239,39 @@ Deno.serve(async (req: Request) => {
       } catch (error) {
         counts.errors++;
         try {
-          const state = await retryOne(event, error);
-          if (state === "pending") counts.retrying++;
-          else if (state === "dead") counts.dead++;
-          else counts.stale++;
-          console.warn("PQR outbox delivery deferred", {
+          if (error instanceof ProviderOutcomeUncertain) {
+            const { data: marked, error: markError } = await db!.rpc("pqr_outbox_mark_uncertain", {
+              p_outbox_id: event.outbox_id,
+              p_lease_token: event.lease_token,
+              p_error_code: error.message,
+            });
+            if (markError) throw new Error("outbox_uncertain_rpc_failed");
+            if (marked === true) counts.uncertain++;
+            else counts.stale++;
+            console.warn("PQR outbox event quarantined", {
+              outbox_id: event.outbox_id,
+              attempt: event.attempt_number,
+              state: marked === true ? "uncertain" : "stale_lease",
+              error_code: error.message,
+            });
+          } else {
+            const state = await retryOne(event, error);
+            if (state === "pending") counts.retrying++;
+            else if (state === "dead") counts.dead++;
+            else counts.stale++;
+            console.warn("PQR outbox delivery deferred", {
+              outbox_id: event.outbox_id,
+              attempt: event.attempt_number,
+              state,
+              error_code: error instanceof Error ? error.message.slice(0, 80) : "unknown_error",
+            });
+          }
+        } catch (persistError) {
+          // Keep the lease until expiry if the quarantine/retry write fails.
+          // Operators must reconcile the event; do not claim a successful send.
+          console.error("PQR outbox failure-state persistence failed", {
             outbox_id: event.outbox_id,
-            attempt: event.attempt_number,
-            state,
-            error_code: error instanceof Error ? error.message.slice(0, 80) : "unknown_error",
-          });
-        } catch (retryError) {
-          // Do not release a lease if persistence failed; it will expire and
-          // be reclaimed safely with the same provider idempotency key.
-          console.error("PQR outbox retry persistence failed", {
-            outbox_id: event.outbox_id,
-            error_code: retryError instanceof Error ? retryError.message : "unknown_error",
+            error_code: persistError instanceof Error ? persistError.message : "unknown_error",
           });
         }
       }
