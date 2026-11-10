@@ -83,6 +83,12 @@ create table if not exists private.pqr_outbox (
 );
 
 alter table private.pqr_outbox
+  drop constraint if exists pqr_outbox_status_check;
+alter table private.pqr_outbox
+  add constraint pqr_outbox_status_check
+  check (status in ('pending', 'processing', 'delivered', 'dead', 'uncertain'));
+
+alter table private.pqr_outbox
   add column if not exists source_event_id uuid references public.pqr_events(id) on delete restrict;
 
 alter table private.pqr_outbox
