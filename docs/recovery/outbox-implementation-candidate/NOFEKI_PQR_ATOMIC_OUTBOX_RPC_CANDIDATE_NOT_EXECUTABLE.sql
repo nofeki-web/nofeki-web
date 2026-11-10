@@ -60,7 +60,7 @@ create table if not exists private.pqr_outbox (
   event_type text not null
     check (event_type in ('applicant_confirmation', 'internal_alert', 'admin_response')),
   status text not null default 'pending'
-    check (status in ('pending', 'processing', 'delivered', 'dead')),
+    check (status in ('pending', 'processing', 'delivered', 'dead', 'uncertain')),
   attempts integer not null default 0 check (attempts >= 0),
   max_attempts integer not null default 8 check (max_attempts between 1 and 25),
   available_at timestamptz not null default pg_catalog.now(),
@@ -500,6 +500,44 @@ begin
 end;
 $$;
 
+-- Ambiguous provider outcomes are quarantined; claim never reclaims them.
+-- Only a current lease token may move a processing row to uncertain.
+create or replace function public.pqr_outbox_mark_uncertain(
+  p_outbox_id uuid,
+  p_lease_token uuid,
+  p_error_code text
+)
+returns boolean
+language plpgsql
+security invoker
+set search_path = ''
+as $
+declare
+  v_rows integer;
+  v_source_event_id uuid;
+begin
+  update private.pqr_outbox
+  set status = 'uncertain',
+      lock_token = null,
+      locked_until = null,
+      last_error_code = pg_catalog.left(coalesce(p_error_code, 'provider_outcome_uncertain'), 80),
+      last_error_at = pg_catalog.now(),
+      updated_at = pg_catalog.now()
+  where id = p_outbox_id
+    and status = 'processing'
+    and lock_token = p_lease_token
+  returning source_event_id into v_source_event_id;
+
+  get diagnostics v_rows = row_count;
+  if v_rows = 1 and v_source_event_id is not null then
+    update public.pqr_events
+    set email_status = 'failed'
+    where id = v_source_event_id and event_type = 'response_sent';
+  end if;
+  return v_rows = 1;
+end;
+$;
+
 -- Manual dead-letter retry is deliberately not exposed in this first SQL
 -- candidate. It needs a separate admin audit/authorization contract and a
 -- policy for events outside the email provider's idempotency retention window.
@@ -514,6 +552,8 @@ revoke all on function public.pqr_outbox_finish(uuid,uuid,text)
   from public, anon, authenticated;
 revoke all on function public.pqr_outbox_retry(uuid,uuid,text,integer)
   from public, anon, authenticated;
+revoke all on function public.pqr_outbox_mark_uncertain(uuid,uuid,text)
+  from public, anon, authenticated;
 
 grant execute on function public.pqr_admin_transition_status(uuid,text,bigint,text,uuid,text,text,text)
   to service_role;
@@ -524,6 +564,8 @@ grant execute on function public.pqr_outbox_claim(integer,integer)
 grant execute on function public.pqr_outbox_finish(uuid,uuid,text)
   to service_role;
 grant execute on function public.pqr_outbox_retry(uuid,uuid,text,integer)
+  to service_role;
+grant execute on function public.pqr_outbox_mark_uncertain(uuid,uuid,text)
   to service_role;
 
 commit;
