@@ -120,3 +120,30 @@ Turnstile se verifica en cada intento HTTP, incluso replay. El replay no consume
 ## Límite de esta etapa
 
 Este contrato no modifica funciones desplegadas, formulario, tablas, buckets, secretos ni datos. No se ha ejecutado SQL ni se afirma que la idempotencia esté implementada.
+
+
+## Implementación candidata preparada — 2026-11-09
+
+Se creó el archivo separado:
+`NOFEKI_PQR_IDEMPOTENT_SUBMISSION_AND_INITIAL_OUTBOX_RPC_CANDIDATE_NOT_EXECUTABLE.sql`.
+
+Incluye:
+- tabla privada `private.pqr_submission_requests` con fingerprint, hash de fuente, estado, token de fencing, lease, metadatos de Storage y vínculo al radicado;
+- `pqr_submit_reserve`: serializa por clave y por fuente, cobra rate limit únicamente al crear una clave nueva y permite reanudar una reserva vencida sin consumir cuota otra vez;
+- `pqr_submit_mark_uploaded`: registra solo metadatos verificados y ruta determinística ligada al UUID;
+- `pqr_submit_finalize`: inserta radicado, historial inicial y dos filas Outbox (`applicant_confirmation`, `internal_alert`) en una sola transacción; no envía correos;
+- grants únicamente a `service_role` para las RPC y tabla privada.
+
+La RPC de reserva es SECURITY INVOKER. Por tanto, al invocarse con service_role, la llamada anidada a `pqr_consume_rate_limit` usa el mismo rol; esto respeta el modelo de permisos observado y evita introducir SECURITY DEFINER. Debe comprobarse con ACL reales en PostgreSQL aislado.
+
+## Límites detectados antes de integración
+
+- La ruta determinística propuesta es `<idempotency-uuid>/soporte.<ext>`; la Edge Function debe verificar bytes/hash al encontrar un objeto ya existente. La RPC no puede verificar Storage por sí sola.
+- La RPC de finalización no incluye PII ni cuerpo del archivo en la tabla de reservas. Los datos de PQR se insertan solo al finalizar.
+- El código de referencia conserva el formato actual `NFK-YYYY-XXXXXXXX`; la restricción UNIQUE real y el manejo de colisión deben verificarse. Ante colisión, toda la transacción revierte; la misma clave puede reintentarse.
+- La RPC no escribe `notification_status` porque el CHECK/default real de esa columna aún debe inspeccionarse. La respuesta RPC informa `queued` y las filas Outbox son la fuente de verdad; al integrar, el panel deberá derivar los estados por evento o actualizar la columna tras verificar su contrato.
+- El actor del evento inicial usa `system@nofeki.com`; validar cualquier CHECK de email/actor real. Si existe restricción distinta, definir identidad de sistema compatible antes de migrar.
+- Falta una RPC explícita de transición a `failed`/ `uncertain`, conciliación de Storage, limpieza conservadora y expiración/retención. No marcar como fallida una operación con resultado ambiguo.
+- El candidato depende de la tabla `private.pqr_outbox` y de las restricciones/columnas del candidato Outbox administrativo.
+
+**No se ha ejecutado ni compilado SQL.** La revisión fue estática sobre texto y contratos inspeccionados. No hay pruebas de PostgreSQL, RLS, ACL, rollback o concurrencia real.
