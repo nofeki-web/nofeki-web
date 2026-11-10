@@ -75,10 +75,13 @@ No se ejecutó PostgreSQL, Deno, Storage, Resend ni el formulario en esta contin
 
 ## Continuación 2026-11-10 — RPC de recuperación
 
-El SQL candidato incorpora ahora:
+El candidato independiente `NOFEKI_PQR_SUBMISSION_RECOVERY_RPCS_CANDIDATE_NOT_EXECUTABLE.sql` incorpora:
 - tabla privada `pqr_submission_recovery_audit`;
 - `pqr_submit_mark_failed`;
 - `pqr_submit_mark_uncertain`;
 - `pqr_submit_reconcile_uncertain`.
 
 Se añadieron REC-01 a REC-08 para cubrir fencing, leases, transición a uncertain, conciliación con y sin referencias, y permisos. Todas permanecen pendientes de PostgreSQL 17 aislado. La matriz no declara aprobaciones funcionales.
+
+
+Nota de integración: las RPC de recuperación permanecen en un SQL candidato separado del candidato base de radicación. No consolidar ni ejecutar hasta compilar ambos en PostgreSQL 17 aislado y verificar constraints, grants y concurrencia.
