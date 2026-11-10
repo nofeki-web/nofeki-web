@@ -85,6 +85,7 @@ begin
   if p_idempotency_key is null
      or p_request_fingerprint is null
      or p_request_fingerprint !~ '^[0-9a-f]{64}$'
+     or p_request_type is null
      or p_source_hash is null
      or p_source_hash !~ '^[0-9a-f]{64}$'
      or p_limit < 1 or p_limit > 20
@@ -204,7 +205,7 @@ begin
        end
      or p_attachment_mime is null
      or p_attachment_sha256 is null
-     or p_attachment_sha256 !~ '^[0-9a-f]{64}
+     or p_attachment_sha256 !~ '^[0-9a-f]{64}$'
      or p_attachment_bytes is null
      or p_attachment_bytes < 1 or p_attachment_bytes > 5242880
      or p_attachment_mime not in ('application/pdf','image/jpeg','image/png') then
@@ -262,7 +263,7 @@ declare
   v_year text := pg_catalog.to_char(pg_catalog.now(), 'YYYY');
 begin
   if p_request_fingerprint is null
-     or p_request_fingerprint !~ '^[0-9a-f]{64} ('Petición','Queja','Reclamo','Sugerencia','Protección de datos','Otra solicitud')
+     or p_request_fingerprint !~ '^[0-9a-f]{64}$'
      or p_attachment_required is null
      or p_full_name is null or pg_catalog.length(pg_catalog.btrim(p_full_name)) not between 2 and 120
      or p_email is null or pg_catalog.length(p_email) > 254
