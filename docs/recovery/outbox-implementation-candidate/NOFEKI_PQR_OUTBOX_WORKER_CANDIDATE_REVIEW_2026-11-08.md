@@ -76,3 +76,24 @@ En el changelog visible no se identificó un cambio incompatible específico par
 Se ejecutó con Node.js un harness independiente de siete escenarios de estado: claim exclusivo, lease vencido/fencing token, backoff, dead-letter, resultado ambiguo del proveedor conservando la clave, evento entregado no reclamable y suma de retardos menor de 24 horas. Resultado: **7 aprobados, 0 fallidos**.
 
 Esta ejecución fue del harness local equivalente, no del archivo versionado completo ni del worker Deno. No valida llamadas reales a Supabase/Resend ni SQL/PostgreSQL. El archivo versionado de pruebas queda como artefacto reproducible para el entorno de desarrollo.
+
+
+## Revisión complementaria — 2026-11-09
+
+Se detectó un riesgo en la versión anterior del candidato: el catch general enviaba a `pqr_outbox_retry` también ante timeout de red y ante fallo al persistir `pqr_outbox_finish`. En esos escenarios Resend podría haber aceptado el mensaje, por lo que devolver el evento a `pending` podía producir un duplicado cuando la idempotencia del proveedor ya no estuviera vigente.
+
+### Correcciones incorporadas en rama recovery
+
+- El estado Outbox ahora contempla `uncertain`, incluido un `ALTER TABLE ... DROP/ADD CONSTRAINT` explícito para que la definición candidata sea coherente si la tabla ya existe en el entorno aislado.
+- Se añadió RPC `pqr_outbox_mark_uncertain(outbox_id, lease_token, error_code)`, protegida por lease token. Libera el lease y pone el evento en cuarentena; el claim existente no reclama `uncertain`.
+- El worker clasifica fallos de red/timeout, respuestas 408/429/5xx, respuesta exitosa sin ID y fallo de persistencia posterior al envío como resultado incierto. Usa la RPC de cuarentena y no el retry automático.
+- Los errores previos al envío y los rechazos explícitos no ambiguos conservan el camino de retry acotado.
+- La clave `event_key` se mantiene estable; no se crea una clave nueva por intento.
+
+### Validación pendiente
+
+- Revisión estática de los cambios: completada contra los archivos recuperados de GitHub.
+- Compilación Deno/TypeScript: pendiente (Deno no está disponible en el entorno actual).
+- Compilación y ejecución SQL en PostgreSQL aislado: pendiente.
+- Pruebas reales de lease, fencing, transición a `uncertain`, grants/RLS y recuperación administrativa: pendientes.
+- No se ha desplegado worker, configurado scheduler ni cambiado secretos.
