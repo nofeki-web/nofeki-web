@@ -297,13 +297,13 @@ begin
   insert into public.pqr_submissions (
     id, reference_code, request_type, full_name, email, subject, message,
     attachment_path, privacy_version, consented_at, source_hash,
-    notification_status, status
+    status
   ) values (
     v_id, v_reference, p_request_type, pg_catalog.btrim(p_full_name),
     pg_catalog.lower(pg_catalog.btrim(p_email)), pg_catalog.btrim(p_subject),
     pg_catalog.btrim(p_message), v_request.storage_object_path,
     p_privacy_version, pg_catalog.now(), v_request.source_hash,
-    'queued', 'Recibida'
+    'Recibida'
   );
 
   insert into public.pqr_events (
