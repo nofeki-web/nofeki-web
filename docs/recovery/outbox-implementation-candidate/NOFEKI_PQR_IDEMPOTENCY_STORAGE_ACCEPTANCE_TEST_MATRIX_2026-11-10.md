@@ -51,7 +51,7 @@ Estado: matriz de verificación; pendiente de ejecutar en PostgreSQL 17 aislado 
 | SEC-03 | Logs de fallos | Sin PII, contenido, token ni API keys | Unit + review | Pendiente |
 | DATA-01 | Constraints/defaults reales de tablas | Candidatos compatibles o adaptados antes de migración | Schema inspection | Pendiente |
 | DATA-02 | Radicado colisiona con unique constraint | Rollback íntegro; reintento controlado genera nuevo ID/radicado | PG integration | Pendiente |
-| DATA-03 | Evento inicial y actor de sistema | Valores admitidos por constraints y semántica auditada | PG integration | Pendiente |
+| DATA-03 | Evento inicial y actor de sistema | Valores admitidos por constraints y semántica auditada | PG integration | Pendiente |\n| REC-01 | mark_failed con token/lease válidos | Estado failed, token liberado, metadata Storage preservada y audit registrada | PG integration | Pendiente |\n| REC-02 | mark_failed con token antiguo o lease vencido | false; sin cambio ni audit de transición | PG integration | Pendiente |\n| REC-03 | mark_uncertain con token actual | Estado uncertain; sin reintento automático | PG integration | Pendiente |\n| REC-04 | mark_uncertain con token reemplazado | false; worker stale no puede poner en cuarentena el claim nuevo | PG integration | Pendiente |\n| REC-05 | Conciliar uncertain con attachment referenciado | Excepción/abort; no cambia estado ni borra objeto | PG integration | Pendiente |\n| REC-06 | Conciliar uncertain sin referencia ni submission_id | Estado failed; metadata preservada; actor y razón auditados | PG integration | Pendiente |\n| REC-07 | Intentar conciliar estado distinto de uncertain | false; sin mutación | PG integration | Pendiente |\n| REC-08 | anon/authenticated invocan RPC de recuperación | Permiso denegado | PG ACL | Pendiente |
 
 ## Hallazgos estáticos de esta continuación
 
@@ -71,3 +71,14 @@ No declarar listo para integración hasta que:
 6. Haya rollout coordinado y plan de reversa, con aprobación explícita separada para producción.
 
 No se ejecutó PostgreSQL, Deno, Storage, Resend ni el formulario en esta continuación. El estado de toda la matriz permanece **Pendiente**; los chequeos descritos arriba son estáticos.
+
+
+## Continuación 2026-11-10 — RPC de recuperación
+
+El SQL candidato incorpora ahora:
+- tabla privada `pqr_submission_recovery_audit`;
+- `pqr_submit_mark_failed`;
+- `pqr_submit_mark_uncertain`;
+- `pqr_submit_reconcile_uncertain`.
+
+Se añadieron REC-01 a REC-08 para cubrir fencing, leases, transición a uncertain, conciliación con y sin referencias, y permisos. Todas permanecen pendientes de PostgreSQL 17 aislado. La matriz no declara aprobaciones funcionales.
