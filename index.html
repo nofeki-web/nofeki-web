@@ -24,8 +24,7 @@
 
 <link rel="icon" type="image/png" href="assets/isotipo-principal.png">
 <link rel="apple-touch-icon" href="assets/isotipo-principal.png">
-<link rel="preload" as="image" href="https://cdn.metaintro.com/rs%3Afill%3A800%3A450/q%3A65/plain/images/warehouse-6.png" fetchpriority="high" media="(max-width: 800px)">
-<link rel="preload" as="image" href="https://cdn.metaintro.com/rs%3Afill%3A2400%3A1350/q%3A85/plain/images/warehouse-6.png" fetchpriority="high" media="(min-width: 801px)">
+<link rel="preload" as="image" href="/assets/hero-supply-chain-clean.jpg" fetchpriority="high">
 
 <style>
 :root{
@@ -1866,6 +1865,41 @@ header.hero[hidden]{display:none!important}
  #microapps .product{padding-top:24px!important}
 }
 
+
+/* ===== HERO FIRST PAINT: preview 2026-11-09 =====
+   Imagen local de mismo origen + fondo coherente mientras se decodifica.
+   Unifica las reglas tardías que antes dejaban un navy plano en móvil.
+*/
+html,body{background-color:#fff!important}
+header.hero{
+  background-color:#0b1b2c!important;
+  background-image:
+    linear-gradient(90deg,rgba(5,17,30,.82) 0%,rgba(5,17,30,.56) 48%,rgba(5,17,30,.24) 100%),
+    linear-gradient(0deg,rgba(5,17,30,.28),transparent 46%),
+    url("/assets/hero-supply-chain-clean.jpg")!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+}
+@media(max-width:800px){
+  header.hero{
+    min-height:calc(100svh - 66px)!important;
+    height:auto!important;
+    background-color:#0b1b2c!important;
+    background-image:
+      linear-gradient(180deg,rgba(5,17,30,.78) 0%,rgba(5,17,30,.56) 58%,rgba(5,17,30,.48) 100%),
+      url("/assets/hero-supply-chain-clean.jpg")!important;
+    background-size:cover!important;
+    background-position:58% center!important;
+  }
+  header.hero .hero-copy{padding-top:58px!important;padding-bottom:72px!important}
+}
+.motion-ready header.hero .hero-copy>*{
+  opacity:1!important;
+  transform:none!important;
+  transition:none!important;
+}
+
 </style>
 </head>
 
@@ -3390,10 +3424,9 @@ window.addEventListener('load',function(){
   if(hero){
     const copy=hero.querySelectorAll('.hero-copy .eyebrow,.hero-copy h1,.hero-copy p,.hero-copy .hero-actions');
     const photo=null;
-    gsap.set(copy,{y:26,autoAlpha:0});
-    
-    const intro=gsap.timeline({defaults:{ease:'power3.out'}});
-    intro.to(copy,{y:0,autoAlpha:1,duration:.85,stagger:.13},.12);
+    // El contenido del Hero se muestra inmediatamente; no esperar al evento load
+    // ni ocultarlo detrás de una animación inicial.
+    gsap.set(copy,{clearProps:'all'});
     
   }
   function animatePanel(panel){
