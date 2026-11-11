@@ -46,6 +46,7 @@ Estado: matriz de verificación; pendiente de ejecutar en PostgreSQL 17 aislado 
 | OUT-02 | Applicant email accepted; internal alert falla | Estados independientes | Worker integration | Pendiente |
 | OUT-03 | Timeout/5xx tras solicitud a Resend | uncertain, no retry ciego con clave nueva | Worker integration | Pendiente |
 | OUT-04 | Worker stale tras expirar lease | No finish/retry con token viejo | PG + Worker | Pendiente |
+| OUT-05 | Cola/scheduler reanuda un evento después de la ventana de idempotencia del proveedor | No llamar Resend de nuevo; pasar a `uncertain`/conciliación auditada, sin duplicar correo | PG + Worker + Resend sandbox | Pendiente |
 | SEC-01 | anon/authenticated invocan RPC privilegiada | Permiso denegado | PG ACL | Pendiente |
 | SEC-02 | anon/authenticated consultan request/outbox privados | Sin acceso | PG RLS/ACL | Pendiente |
 | SEC-03 | Logs de fallos | Sin PII, contenido, token ni API keys | Unit + review | Pendiente |
@@ -85,3 +86,10 @@ Se añadieron REC-01 a REC-08 para cubrir fencing, leases, transición a uncerta
 
 
 Nota de integración: las RPC de recuperación permanecen en un SQL candidato separado del candidato base de radicación. No consolidar ni ejecutar hasta compilar ambos en PostgreSQL 17 aislado y verificar constraints, grants y concurrencia.
+
+
+## Hallazgo estático adicional — ventana temporal de idempotencia del proveedor (2026-11-10)
+
+El worker conserva `event_key` y el backoff nominal configurado suma menos de 24 horas. Sin embargo, ese cálculo no limita el tiempo real transcurrido: una pausa del scheduler, indisponibilidad prolongada o retraso operativo puede hacer que un evento vuelva a reclamarse después de la ventana de retención de la clave del proveedor. El código actual no consulta ni aplica un vencimiento temporal antes de llamar a Resend. En ese escenario, reutilizar la misma clave ya no garantiza deduplicación.
+
+**Bloqueo para integración:** incorporar una marca persistente de primer intento ante el proveedor (no reiniciable en reintentos), devolverla desde `pqr_outbox_claim` y hacer que el worker se abstenga de llamar a Resend cuando se alcance un margen de seguridad anterior al vencimiento de idempotencia. El evento debe pasar a `uncertain` para conciliación, nunca a un reenvío automático. Probar también retrasos del scheduler superiores a 24 horas. No se ha modificado aún el SQL ni el worker.
