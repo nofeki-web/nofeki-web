@@ -46,7 +46,9 @@ Estado: matriz de verificación; pendiente de ejecutar en PostgreSQL 17 aislado 
 | OUT-02 | Applicant email accepted; internal alert falla | Estados independientes | Worker integration | Pendiente |
 | OUT-03 | Timeout/5xx tras solicitud a Resend | uncertain, no retry ciego con clave nueva | Worker integration | Pendiente |
 | OUT-04 | Worker stale tras expirar lease | No finish/retry con token viejo | PG + Worker | Pendiente |
-| OUT-05 | Cola/scheduler reanuda un evento después de la ventana de idempotencia del proveedor | No llamar Resend de nuevo; pasar a `uncertain`/conciliación auditada, sin duplicar correo | PG + Worker + Resend sandbox | Pendiente |
+| OUT-05 | Cola/scheduler reanuda un evento después de 23 h desde la primera marca | No llamar Resend; pasar a `uncertain`/conciliación auditada | PG + Worker + Resend sandbox | Pendiente |
+| OUT-06 | Reclamación/reintento intenta reiniciar `first_provider_attempt_at` | La marca conserva el primer timestamp; token vencido no puede crearla ni cambiarla | PG integration + Worker | Pendiente |
+| OUT-07 | RPC de marca temporal falla o devuelve dato inválido | Worker no llama a Resend; deja lease para recuperación segura | Worker unit + PG | Pendiente |
 | SEC-01 | anon/authenticated invocan RPC privilegiada | Permiso denegado | PG ACL | Pendiente |
 | SEC-02 | anon/authenticated consultan request/outbox privados | Sin acceso | PG RLS/ACL | Pendiente |
 | SEC-03 | Logs de fallos | Sin PII, contenido, token ni API keys | Unit + review | Pendiente |
@@ -101,3 +103,10 @@ Nota de integración: las RPC de recuperación permanecen en un SQL candidato se
 El worker conserva `event_key` y el backoff nominal configurado suma menos de 24 horas. Sin embargo, ese cálculo no limita el tiempo real transcurrido: una pausa del scheduler, indisponibilidad prolongada o retraso operativo puede hacer que un evento vuelva a reclamarse después de la ventana de retención de la clave del proveedor. El código actual no consulta ni aplica un vencimiento temporal antes de llamar a Resend. En ese escenario, reutilizar la misma clave ya no garantiza deduplicación.
 
 **Bloqueo para integración:** incorporar una marca persistente de primer intento ante el proveedor (no reiniciable en reintentos), devolverla desde `pqr_outbox_claim` y hacer que el worker se abstenga de llamar a Resend cuando se alcance un margen de seguridad anterior al vencimiento de idempotencia. El evento debe pasar a `uncertain` para conciliación, nunca a un reenvío automático. Probar también retrasos del scheduler superiores a 24 horas. No se ha modificado aún el SQL ni el worker.
+
+
+## Implementación candidata del límite de idempotencia — 2026-11-11
+
+Se incorporó `first_provider_attempt_at` a `private.pqr_outbox`, con `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` para bases donde la tabla ya exista. La RPC `pqr_outbox_mark_provider_attempt` fija la primera marca con `coalesce` únicamente bajo lease/token vigentes y devuelve el valor persistido. El worker la invoca antes de `fetch` y usa un límite conservador de 23 horas frente a la retención oficial de 24 horas de Resend; al superarlo llama a `pqr_outbox_mark_uncertain` y no contacta al proveedor. Si no puede obtener una marca válida, tampoco envía.
+
+OUT-05, OUT-06 y OUT-07 siguen **Pendientes** hasta pruebas en PostgreSQL 17 y runtime Deno. La revisión fue estática; no demuestra compilación ni comportamiento en ejecución.
