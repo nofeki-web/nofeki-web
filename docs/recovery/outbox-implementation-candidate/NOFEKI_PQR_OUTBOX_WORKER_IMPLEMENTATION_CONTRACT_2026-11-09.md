@@ -108,3 +108,12 @@ La verificación estática recuperando los archivos desde GitHub confirmó:
 - misma clave `event_key` enviada a Resend.
 
 La verificación no compila TypeScript ni SQL. La política de recuperación administrativa de `uncertain` sigue pendiente.
+
+
+## 11. Límite temporal de idempotencia del proveedor — bloqueo añadido 2026-11-10
+
+La clave `event_key` solo deduplica dentro de la ventana de retención garantizada por el proveedor. El backoff configurado suma aproximadamente 13,7 horas en condiciones ideales, pero no limita las pausas del scheduler ni el tiempo real entre intentos. Por tanto, no basta con conservar la misma clave: el worker debe aplicar un límite temporal persistido.
+
+Antes de la primera llamada a Resend, registrar en base de datos `first_provider_attempt_at` (o un vencimiento equivalente), sin reiniciarlo en reintentos. `pqr_outbox_claim` debe devolver ese dato. El worker debe comparar el tiempo actual con un límite conservador anterior al vencimiento documentado por Resend y, si ya se alcanzó, no llamar al proveedor: debe poner el evento en `uncertain` y exigir conciliación administrativa auditada. La marca debe persistir aunque el proceso se reinicie. La política exacta debe verificarse contra la documentación vigente de Resend y probarse con pausas de scheduler superiores a 24 horas.
+
+Este control no está implementado en el SQL ni en el worker actuales. OUT-05 de la matriz es bloqueante. No declarar el worker listo hasta implementar y probar este límite.
