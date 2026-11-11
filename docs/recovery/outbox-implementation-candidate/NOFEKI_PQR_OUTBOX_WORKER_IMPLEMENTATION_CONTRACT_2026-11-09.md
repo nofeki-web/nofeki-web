@@ -116,4 +116,14 @@ La clave `event_key` solo deduplica dentro de la ventana de retención garantiza
 
 Antes de la primera llamada a Resend, registrar en base de datos `first_provider_attempt_at` (o un vencimiento equivalente), sin reiniciarlo en reintentos. `pqr_outbox_claim` debe devolver ese dato. El worker debe comparar el tiempo actual con un límite conservador anterior al vencimiento documentado por Resend y, si ya se alcanzó, no llamar al proveedor: debe poner el evento en `uncertain` y exigir conciliación administrativa auditada. La marca debe persistir aunque el proceso se reinicie. La política exacta debe verificarse contra la documentación vigente de Resend y probarse con pausas de scheduler superiores a 24 horas.
 
-Este control no está implementado en el SQL ni en el worker actuales. OUT-05 de la matriz es bloqueante. No declarar el worker listo hasta implementar y probar este límite.
+Implementación candidata añadida el 2026-11-11: `private.pqr_outbox.first_provider_attempt_at` se establece mediante `pqr_outbox_mark_provider_attempt(outbox_id, lease_token)` con `coalesce`, por lo que nunca se reinicia; la RPC exige lease/token vigentes y devuelve la marca persistida. El worker registra la marca antes de la llamada HTTP y, al cumplir 23 horas (ventana documentada de 24 horas menos una hora de margen), evita llamar a Resend y pasa el evento a `uncertain` con `provider_idempotency_window_expired`. Si la RPC de marca falla, el worker no envía. Si la marca es inválida, no envía. OUT-05 sigue pendiente de pruebas PostgreSQL/runtime y no se considera cerrado.
+
+
+## 12. Reglas de seguridad de la marca temporal
+
+- La marca se escribe antes del primer intento de red, por lo que el margen puede consumirse aunque el proceso caiga antes de que la petición salga; esto es deliberadamente conservador.
+- La marca no se modifica al reclamar leases, reintentar errores explícitos ni reiniciar el worker.
+- El worker no envía si no puede persistir/leer la marca o si el dato no es una fecha válida.
+- Al alcanzar 23 horas, el evento se pone en `uncertain`; no se borra ni se cambia `event_key`, y no se programa reintento automático.
+- Un claim con token obsoleto no puede crear ni modificar la marca.
+- El valor de 23 horas es una política conservadora del candidato, basada en la retención oficial de 24 horas documentada por Resend; debe quedar parametrizado/revisado antes de producción.
