@@ -54,8 +54,15 @@ const MAX_BATCH = 5;
 const LEASE_SECONDS = 180;
 const PROVIDER_TIMEOUT_MS = 12_000;
 
-// Exponential schedule totals less than Resend's documented 24-hour
-// idempotency-key retention window. Never retry this same event after 24h.
+// Resend retains idempotency keys for 24 hours. Use a 23-hour cutoff to
+// leave a one-hour safety margin for clock skew and request transit.
+const PROVIDER_IDEMPOTENCY_WINDOW_MS = 24 * 60 * 60 * 1000;
+const PROVIDER_IDEMPOTENCY_SAFETY_MARGIN_MS = 60 * 60 * 1000;
+const PROVIDER_IDEMPOTENCY_MAX_AGE_MS =
+  PROVIDER_IDEMPOTENCY_WINDOW_MS - PROVIDER_IDEMPOTENCY_SAFETY_MARGIN_MS;
+
+// Nominal delays are below the cutoff; the persisted timestamp also protects
+// against scheduler pauses, restarts and long periods without worker execution.
 const RETRY_DELAYS_SECONDS = [30, 120, 600, 1_800, 3_600, 7_200, 14_400, 21_600];
 
 const db = SUPABASE_URL && SERVICE_ROLE_KEY
@@ -168,6 +175,28 @@ async function processOne(event: OutboxEvent) {
   }
 
   const mail = buildMail(event, submission as Submission, responseText);
+
+  // Persist the first authorized provider attempt before network I/O. This
+  // timestamp is immutable, so a delayed scheduler cannot reset the window.
+  const { data: firstAttemptAt, error: attemptStampError } = await db.rpc(
+    "pqr_outbox_mark_provider_attempt",
+    { p_outbox_id: event.outbox_id, p_lease_token: event.lease_token },
+  );
+  if (attemptStampError) throw new Error("provider_attempt_timestamp_failed");
+  if (typeof firstAttemptAt !== "string" || !Number.isFinite(Date.parse(firstAttemptAt))) {
+    return "stale_lease";
+  }
+
+  if (Date.now() - Date.parse(firstAttemptAt) >= PROVIDER_IDEMPOTENCY_MAX_AGE_MS) {
+    const { data: marked, error: markError } = await db.rpc("pqr_outbox_mark_uncertain", {
+      p_outbox_id: event.outbox_id,
+      p_lease_token: event.lease_token,
+      p_error_code: "provider_idempotency_window_expired",
+    });
+    if (markError) throw new Error("outbox_uncertain_rpc_failed");
+    return marked === true ? "uncertain" : "stale_lease";
+  }
+
   const providerMessageId = await sendWithResend(mail, event.event_key);
 
   const { data: finished, error: finishError } = await db.rpc("pqr_outbox_finish", {
@@ -235,6 +264,7 @@ Deno.serve(async (req: Request) => {
       try {
         const result = await processOne(event);
         if (result === "delivered") counts.delivered++;
+        else if (result === "uncertain") counts.uncertain++;
         else counts.stale++;
       } catch (error) {
         counts.errors++;
