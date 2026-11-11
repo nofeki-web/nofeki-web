@@ -62,6 +62,7 @@ create table if not exists private.pqr_outbox (
   status text not null default 'pending'
     check (status in ('pending', 'processing', 'delivered', 'dead', 'uncertain')),
   attempts integer not null default 0 check (attempts >= 0),
+  first_provider_attempt_at timestamptz,
   max_attempts integer not null default 8 check (max_attempts between 1 and 25),
   available_at timestamptz not null default pg_catalog.now(),
   locked_until timestamptz,
@@ -90,6 +91,11 @@ alter table private.pqr_outbox
 
 alter table private.pqr_outbox
   add column if not exists source_event_id uuid references public.pqr_events(id) on delete restrict;
+
+-- Persist the first moment an active lease is authorized to call the provider.
+-- It is set once and never reset by retries or lease reclamation.
+alter table private.pqr_outbox
+  add column if not exists first_provider_attempt_at timestamptz;
 
 alter table private.pqr_outbox
   drop constraint if exists pqr_outbox_admin_response_source_check;
@@ -428,6 +434,37 @@ begin
 end;
 $$;
 
+-- Record the first provider-attempt timestamp before making the HTTP call.
+-- The timestamp is immutable across retries and lease reclamation.
+create or replace function public.pqr_outbox_mark_provider_attempt(
+  p_outbox_id uuid,
+  p_lease_token uuid
+)
+returns timestamptz
+language plpgsql
+security invoker
+set search_path = ''
+as $
+declare
+  v_first_attempt timestamptz;
+begin
+  if p_outbox_id is null or p_lease_token is null then
+    raise exception 'invalid_provider_attempt_request' using errcode = '22023';
+  end if;
+
+  update private.pqr_outbox
+  set first_provider_attempt_at = coalesce(first_provider_attempt_at, pg_catalog.now()),
+      updated_at = pg_catalog.now()
+  where id = p_outbox_id
+    and status = 'processing'
+    and lock_token = p_lease_token
+    and locked_until > pg_catalog.now()
+  returning first_provider_attempt_at into v_first_attempt;
+
+  return v_first_attempt;
+end;
+$;
+
 create or replace function public.pqr_outbox_finish(
   p_outbox_id uuid,
   p_lease_token uuid,
@@ -557,6 +594,8 @@ revoke all on function public.pqr_admin_create_response(uuid,bigint,uuid,text,te
   from public, anon, authenticated;
 revoke all on function public.pqr_outbox_claim(integer,integer)
   from public, anon, authenticated;
+revoke all on function public.pqr_outbox_mark_provider_attempt(uuid,uuid)
+  from public, anon, authenticated;
 revoke all on function public.pqr_outbox_finish(uuid,uuid,text)
   from public, anon, authenticated;
 revoke all on function public.pqr_outbox_retry(uuid,uuid,text,integer)
@@ -569,6 +608,8 @@ grant execute on function public.pqr_admin_transition_status(uuid,text,bigint,te
 grant execute on function public.pqr_admin_create_response(uuid,bigint,uuid,text,text,text)
   to service_role;
 grant execute on function public.pqr_outbox_claim(integer,integer)
+  to service_role;
+grant execute on function public.pqr_outbox_mark_provider_attempt(uuid,uuid)
   to service_role;
 grant execute on function public.pqr_outbox_finish(uuid,uuid,text)
   to service_role;
