@@ -110,3 +110,25 @@ El worker conserva `event_key` y el backoff nominal configurado suma menos de 24
 Se incorporó `first_provider_attempt_at` a `private.pqr_outbox`, con `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` para bases donde la tabla ya exista. La RPC `pqr_outbox_mark_provider_attempt` fija la primera marca con `coalesce` únicamente bajo lease/token vigentes y devuelve el valor persistido. El worker la invoca antes de `fetch` y usa un límite conservador de 23 horas frente a la retención oficial de 24 horas de Resend; al superarlo llama a `pqr_outbox_mark_uncertain` y no contacta al proveedor. Si no puede obtener una marca válida, tampoco envía.
 
 OUT-05, OUT-06 y OUT-07 siguen **Pendientes** hasta pruebas en PostgreSQL 17 y runtime Deno. La revisión fue estática; no demuestra compilación ni comportamiento en ejecución.
+
+
+## Continuación 2026-11-11 — conciliación administrativa de Outbox uncertain
+
+Se añadió el candidato separado `NOFEKI_PQR_OUTBOX_UNCERTAIN_ADMIN_RECONCILIATION_CANDIDATE_NOT_EXECUTABLE.sql` y su contrato.
+
+| ID | Escenario | Resultado esperado | Nivel requerido | Estado |
+|---|---|---|---|---|
+| OUT-08 | Confirmar entrega con provider_message_id | uncertain → delivered; evento response_sent marcado sent; auditoría | PG integration | Pendiente |
+| OUT-09 | Confirmar entrega sin ID proveedor | Error; sin mutación | PG integration | Pendiente |
+| OUT-10 | Autorizar retry con evidencia de no aceptación | uncertain → pending; event_key rota; primera marca limpia; auditoría | PG integration + review | Pendiente |
+| OUT-11 | Autorizar retry sin motivo/evidencia suficiente | Rechazo; permanece uncertain | PG integration + admin E2E | Pendiente |
+| OUT-12 | Repetir action_id idéntico | Devuelve resultado anterior sin segunda transición | PG integration | Pendiente |
+| OUT-13 | Reutilizar action_id con parámetros distintos | Conflicto; sin mutación | PG integration | Pendiente |
+| OUT-14 | Dos conciliaciones concurrentes | Solo una transición desde uncertain | PG concurrency | Pendiente |
+| OUT-15 | Conciliar fila que no está uncertain | Sin mutación | PG integration | Pendiente |
+| SEC-04 | Usuario fuera de allowlist intenta conciliación | pqr-admin rechaza antes de RPC | Admin E2E | Pendiente |
+| SEC-05 | anon/authenticated ejecuta RPC o lee auditoría | Permiso denegado | PG ACL/RLS | Pendiente |
+
+La acción `authorize_retry` solo debe utilizarse después de verificar positivamente que el proveedor no aceptó el mensaje. La ausencia de confirmación o de correo recibido no es evidencia suficiente. La operación administrativa no llama al proveedor; el worker normal procesará posteriormente el evento con una nueva clave.
+
+**Hallazgo estático bloqueante:** al revisar el SQL base se detectó que `pqr_outbox_mark_provider_attempt` parece tener delimitadores PL/pgSQL incorrectos (`as $` y `$;` en lugar de `as $$` y `$$;`). Debe corregirse y verificarse junto con el SQL completo antes de cualquier compilación o integración. No se ha ejecutado SQL.
